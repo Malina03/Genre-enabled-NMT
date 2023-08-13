@@ -11,7 +11,7 @@ if __name__ == "__main__":
     args = get_args()
     if args.wandb:
         # only log the training process 
-        wandb_name = f"{args.train_file.split('/')[-1].split('.')[1]}_{args.train_file.split('/')[-1].split('.')[0]}"
+        wandb_name = f"{args.train_file.split('/')[-1].split('.')[1]}_{args.exp_type}"
         # Initialize wandb
         wandb.init(project="genre_NMT", name=wandb_name, config=args)
 
