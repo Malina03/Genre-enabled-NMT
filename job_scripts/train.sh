@@ -40,7 +40,10 @@ if [ $exp_type = 'genre_aware' ]; then
 elif [ $exp_type = 'baseline' ] 
     train_file="$root_dir/data/${corpus}.en-$language.train.tsv"
     dev_file="${root_dir}/data/${corpus}.en-$language.dev.tsv"
-fi    
+else   
+    echo "Invalid experiment type"
+    exit 1
+fi
 
 python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --root_dir $root_dir \
