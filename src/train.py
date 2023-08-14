@@ -66,7 +66,7 @@ if __name__ == "__main__":
                 preds = preds[0]
             decode_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
             predictions = [pred.strip() for pred in decode_preds]
-            logging_dir = os.path.join(args.root_dir, "logs", args.exp_type)
+            logging_dir = os.path.join(args.root_dir, "eval", args.exp_type)
             if not os.path.exists(logging_dir):
                 os.makedirs(logging_dir)
             eval_corpus = args.test_file.split("/")[-1].split(".")[0]
