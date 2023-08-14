@@ -54,7 +54,7 @@ res = read_scores(args.folder, args.fname, args.ref_with_tags)
 
 x = PrettyTable()
 x.field_names = ["Test file", "BLEU", "COMET", "TER", "chrF", "chrFpp", "BertScore_f1", "BertScore_precision", "BertScore_recall"]
-row = [args.name, round(res['bleu'].iloc[0],3), round(res['comet_avg'].iloc[0],3), round(res['ter'].iloc[0],3), round(res['chrf'].iloc[0],3), round(res['chrfpp'].iloc[0],3), round(res['bert_score_f1'].iloc[0],3), round(res['bert_score_p'].iloc[0],3), round(res['bert_score_r'].iloc[0],3)]
+row = [args.fname, round(res['bleu'].iloc[0],3), round(res['comet_avg'].iloc[0],3), round(res['ter'].iloc[0],3), round(res['chrf'].iloc[0],3), round(res['chrfpp'].iloc[0],3), round(res['bert_score_f1'].iloc[0],3), round(res['bert_score_p'].iloc[0],3), round(res['bert_score_r'].iloc[0],3)]
 x.add_row(row)
 
 y = PrettyTable()
