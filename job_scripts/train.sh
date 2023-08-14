@@ -59,7 +59,7 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --learning_rate 1e-5 \
     --exp_type $exp_type \
     --model_name $model \
-    --early_stopping 2 \
+    --early_stopping 3 \
     --eval_baseline \
-    --epochs 20 \
+    --num_train_epochs 20 \
     &> $log_file
