@@ -369,9 +369,9 @@ def save_datasets(train, dev, test, tgt_lang, path, name):
 
 
     # save en_par and tgt_lang_par with genre tokens
-    train[['en_par_tokens', tgt_lang + '_par']].to_csv(path + name + '.train.tag.tsv', sep='\t', index=False)
-    dev[['en_par_tokens', tgt_lang + '_par']].to_csv(path + name + '.dev.tag.tsv', sep='\t', index=False)
-    test[['en_par_tokens', tgt_lang + '_par']].to_csv(path + name + '.test.tag.tsv', sep='\t', index=False)
+    train[['en_par_tokens', tgt_lang + '_par']].to_csv(path + name + '.train.tag.tsv', sep='\t', index=False, header=False)
+    dev[['en_par_tokens', tgt_lang + '_par']].to_csv(path + name + '.dev.tag.tsv', sep='\t', index=False, header=False)
+    test[['en_par_tokens', tgt_lang + '_par']].to_csv(path + name + '.test.tag.tsv', sep='\t', index=False, header=False)
 
     print('Saved datasets to ' + path + name + '.tsv and ' + path + name + '.tag.tsv and ' + path + name + '_complete.tsv')
 
