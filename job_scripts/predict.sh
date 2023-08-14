@@ -34,7 +34,7 @@ test_file="${root_dir}/data/${test_on}"
 
 checkpoint=$root_dir/models/$exp_type/$train_corpus/checkpoint-*
 
-log_file="${root_dir}/logs/$exp_type/eval_${test_corpus}.log"
+log_file="${root_dir}/logs/$exp_type/eval_${test_on}.log"
 # if log directory does not exist, create it - but it really should exist
 if [ ! -d "$root_dir/logs/$exp_type/" ]; then
     mkdir -p $root_dir/logs/$exp_type/
