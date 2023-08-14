@@ -5,6 +5,7 @@ import regex as re
 import pandas as pd
 import numpy as np
 import json
+from pathlib import Path
 
 
 
@@ -224,44 +225,178 @@ def preprocess(path, lang_code, length_threshold, drop_par_duplicates = True, dr
 	return 
 
 
-def analyze_prepared_corpus(lang_code):
-	"""
-	Takes the CSV file, created by the filter_non_textual function and analyzes the corpus.
+def satisfy_all_genre_counts(target_cnt, curr_cnt, genres, data):
+    """ Function to check if all genre counts are satisfied.
+    Args:
+        target_cnt (dict): target counts for each genre
+        curr_cnt (dict): current counts for each genre
+        genres (list): list of genres in a given domain
+        data (pandas.DataFrame): data for a given domain
 
-	Args:
-	- file_name (str): path to the CSV file
-	"""
-	corpus_df = pd.read_csv(f"Macocu-{lang_code}-en-doc-format-filtered.csv", sep= "\t", index_col = 0)
+    Returns:
+        bool: True if all genre counts are satisfied, False otherwise
+    """
 
-	print("View the corpus:")
-	print(corpus_df.head(3))
+    for genre in genres:
+        if curr_cnt[genre] + data[data['X-GENRE']== genre]['en_par'].sum() > target_cnt[genre]:
+            return False
+    return True
 
-	# Inspect corpus information
-	print("All information about the corpus: \n")
-	print(corpus_df.describe(include="all"))
+def update_genre_counts(curr_cnt, genres, data):
+    """ Function to update genre counts.
+    Args:
+        curr_cnt (dict): current counts for each genre
+        genres (list): list of genres in a given domain
+        data (pandas.DataFrame): data for a given domain
+    
+    Returns:
+        curr_cnt (dict): updated counts for each genre
+    """
+    for genre in genres:
+        curr_cnt[genre] += data[data['X-GENRE'] == genre]['en_par'].sum()
+    return curr_cnt
 
-	# Inspect en_var_doc statistics
+def check_non_zero(test_cnt, dev_cnt):
+    """ Function to check if the target counts are non-zero.
+    Args:
+        test_target_cnt (dict): target counts for test set
+        dev_target_cnt (dict): target counts for dev set
+    """
+    for genre in test_cnt:
+        if test_cnt[genre] == 0:
+            raise ValueError("Test count for genre {} is 0".format(genre))
+    for genre in dev_cnt:
+        if dev_cnt[genre] == 0:
+            raise ValueError("Dev  count for genre {} is 0".format(genre))
 
-	print("\nPrediction of English varieties (on document level):\n")
-	print(corpus_df.en_var_doc.value_counts(normalize = True).to_markdown())
+def split_data(data, test_prop= 0.1, dev_prop = 0.1, test_size = 0, dev_size = 0):
+    """
+    Split data into train, dev, and test sets. All splits have the same distribution of genres. 
+    Internet domains of the data don't overlap bw splits.
 
-	print("\nPrediction of English varieties (on domain level):\n")
-	print(corpus_df.en_var_dom.value_counts(normalize = True).to_markdown())
+    Args:
+        data (pandas.DataFrame): data to split
+        test_prop (float): proportion of data to put in test set. Default is 0.1
+        dev_prop (float): proportion of data to put in dev set. Default is 0.1
+        test_size (int): number of sentences to add to the test set. Default is 0. If it is greater than 0, 
+            then the test_no is used instead of test_prop to determine the size of the test set.
+        dev_size (int): number of sentences to add to the dev set. Default is 0. If it is greater than 0, 
+            then the dev_no is used instead of dev_prop to determine the size of the dev set.
+    
+    Returns:
+        train (pandas.DataFrame): train set
+        dev (pandas.DataFrame): dev set
+        test (pandas.DataFrame): test set
+    """
 
-	# Inspect translation direction
-	print("\nPrediction of translation direction:\n")
-	print(corpus_df.translation_direction.value_counts(normalize = True).to_markdown())
+    dom_genre = data.groupby(['en_domain','X-GENRE'])['en_par'].count().reset_index()
+    labels = list(dom_genre['X-GENRE'].unique())
+    ratios = {label : dom_genre[dom_genre['X-GENRE']==label]['en_par'].sum()/dom_genre['en_par'].sum() for label in labels}
+    total = dom_genre['en_par'].sum()
+    if test_size != 0:
+        test_prop = test_size/total
+    if dev_size != 0:
+        dev_prop = dev_size/total
+    test_target_cnt = {label: int(ratios[label] * total * test_prop) for label in ratios}
+    dev_target_cnt = {label: int(ratios[label] * total * dev_prop) for label in ratios}
+    test_curr_cnt = {label: 0 for label in ratios}
+    dev_curr_cnt = {label: 0 for label in ratios}
+    test_domains = []
+    dev_domains = []
+    train_domains = []
 
-	print("\nInformation on the bicleaner score:\n")
-	print(corpus_df.average_score.describe().to_markdown())
+    for domain in dom_genre['en_domain'].unique():
+        # print(domain)
+        genres = list(dom_genre[dom_genre['en_domain']==domain]['X-GENRE'])
+        if satisfy_all_genre_counts(test_target_cnt, test_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain]):
+            test_curr_cnt = update_genre_counts(test_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain])
+            test_domains.append(domain)
+        elif satisfy_all_genre_counts(dev_target_cnt, dev_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain]):
+            dev_curr_cnt = update_genre_counts(dev_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain])
+            dev_domains.append(domain)
+        else:
+            train_domains.append(domain)
+    
+    check_non_zero(test_curr_cnt, dev_curr_cnt)
 
-	print("\nFinal length of texts in the corpus:")
-	print(corpus_df.en_length.describe().to_markdown())
+    test = data[data['en_domain'].isin(test_domains)]
+    dev = data[data['en_domain'].isin(dev_domains)]
+    train = data[data['en_domain'].isin(train_domains)]
+
+    return train, dev, test
+
+def save_datasets(train, dev, test, tgt_lang, path, name):
+    """
+    Saves the datasets to tsv files with and without genre tokens, also saves complete dataframe where all 
+    datasets are merged and 'set' column shows the set of each row.
+
+    Args:
+        train (pd.DataFrame): train dataset
+        dev (pd.DataFrame): dev dataset
+        test (pd.DataFrame): test dataset
+        tgt_lang (str): target language
+        path (str): path to save the files
+        name (str): name of the files
+
+    """
+
+    # merge columns add test, dev or train to new column 'set'
+    train['set'] = ['train'] * train.shape[0]
+    dev['set'] = ['dev'] * dev.shape[0]
+    test['set'] = ['test'] * test.shape[0]
+    # merge all datasets
+    df = pd.concat([train, dev, test])
+    # save all columns to tsv
+    df.to_csv(path + name + '_complete.tsv', sep='\t', index=False)
+    # save only en_par and is_par columns to csv
+    train[['en_par', tgt_lang + '_par']].to_csv(path + name + '.train.tsv', sep='\t', index=False)
+    dev[['en_par', tgt_lang + '_par']].to_csv(path + name + '.dev.tsv', sep='\t', index=False)
+    test[['en_par', tgt_lang + '_par']].to_csv(path + name + '.test.tsv', sep='\t', index=False)
+    
+    # add token in from of en_par according to mapping
+    genre_tokens = {'Prose/Lyrical': '>>lit<<','Instruction': '>>instr<<', 'Promotion': '>>promo<<', 'Opinion/Argumentation': '>>arg<<' , 'Other': '>>other<<' , 'Information/Explanation': '>>info<<', 'News': '>>news<<', 'Legal': '>>law<<', 'Forum': 
+                    '>>forum<<'}
+
+    # make column "tokens" with genre tokens 
+    train['tokens'] = train['X-GENRE'].replace(genre_tokens)
+    dev['tokens'] = dev['X-GENRE'].replace(genre_tokens)
+    test['tokens'] = test['X-GENRE'].replace(genre_tokens)
+
+    # merge genre tokens with en_par in new column en_par_tokens as string
+    train['en_par_tokens'] = train['tokens'] + ' ' + train['en_par']
+    dev['en_par_tokens'] = dev['tokens'] + ' ' + dev['en_par']
+    test['en_par_tokens'] = test['tokens'] + ' ' + test['en_par']
+
+
+    # save en_par and tgt_lang_par with genre tokens
+    train[['en_par_tokens', tgt_lang + '_par']].to_csv(path + name + '.train.tag.tsv', sep='\t', index=False)
+    dev[['en_par_tokens', tgt_lang + '_par']].to_csv(path + name + '.dev.tag.tsv', sep='\t', index=False)
+    test[['en_par_tokens', tgt_lang + '_par']].to_csv(path + name + '.test.tag.tsv', sep='\t', index=False)
+
+    print('Saved datasets to ' + path + name + '.tsv and ' + path + name + '.tag.tsv and ' + path + name + '_complete.tsv')
+
+
+
+def main():
+	preprocess(Path("data/"), "is", 1, drop_par_duplicates = True, drop_doc_duplicates = False, keep_columns=True, info = False)
 	
-	# Analyze English domains in the corpus_df
-	count = pd.DataFrame({"Count": list(corpus_df.en_domain.value_counts())[:30], "Percentage": list(corpus_df.en_domain.value_counts(normalize="True")*100)[:30]}, index = corpus_df.en_domain.value_counts()[:30].index)
+	# combine labelled docs with sentence-level
+	doc_labels = pd.read_csv("data/labelled_25.csv", sep="\t", header=0)
+	data= pd.read_csv("data/Macocu-is-en-doc-format-duplicates.csv", sep="\t", header=0)
+	# select only docs longer than 25 (min thershold for genre classification)
+	data = data[data['en_length'] >= 25]
+	# remove all columns except en_doc and X-GENRE
+	doc_labels = doc_labels[["en_doc", "X-GENRE"]]
+	# merge doc_data and data based on en_doc
+	data = pd.merge(doc_labels, data, on="en_doc")
+	# remove Unnamed: 0 column
+	data = data.drop(columns=["Unnamed: 0"])
+	data.to_csv("data/Macocu-is-en-sent-doc-labelled.csv", sep="\t") 
 
-	print("\nAn analysis of the 30 most frequent English domains:")
-	print(count.to_markdown())
+	# make train, dev, test sets
+	train, dev, test = split_data(data,test_size=5000, dev_size=5000)
+	save_datasets(train, dev, test, "is", "data/en-is/", "MaCoCu.en-is")
+    
 
-	print("\n\nAnalysis completed.")
+if __name__ == "__main__":
+	main()
