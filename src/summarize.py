@@ -27,10 +27,10 @@ def read_scores(folder, fname, ref_with_tags):
     ter = float(open(folder + fname + "_predictions.txt.eval.ter", "r").readlines()[0].strip('\n'))
     chrf = float(open(folder + fname + "_predictions.txt.eval.chrf", "r").readlines()[0].strip('\n'))
     chrfpp = float(open(folder + fname + "_predictions.txt.eval.chrfpp", "r").readlines()[0].strip('\n'))
-    bleurt = [float(l) for l in open(folder + fname + "_predictions.txt.eval.bleurt", "r").readlines()]
+    bleurt = [float(l) for l in open(folder + fname + "_predictions.txt.eval.bleurt", "r").readlines()[:1]]
     # 2,4,6 precison, recall, f1
     bert_score = open(folder + fname + '_predictions.txt.eval.bertscore', 'r').readlines()[0].strip('\n').split(' ')
-    comet = [float(l.split(" ")[-1].strip()) for l in open(folder + fname + "_predictions.txt.eval.comet", "r").readlines()]
+    comet = [float(l.split(" ")[-1].strip()) for l in open(folder + fname + "_predictions.txt.eval.comet", "r").readlines()[:1]]
 
     res = pd.DataFrame()
     res['genre'] = genres
