@@ -37,7 +37,7 @@ model="Helsinki-NLP/opus-mt-en-${language}"
 if [ $exp_type = 'genre_aware' ] || [ $exp_type = 'genre_aware2' ]; then
     train_file="$root_dir/data/${corpus}.en-$language.train.tag.tsv"
     dev_file="${root_dir}/data/${corpus}.en-$language.dev.tag.tsv"
-elif [ $exp_type = 'baseline' ] || [ $exp_type = 'baseline2']; then
+elif [ $exp_type = 'baseline' ] || [ $exp_type = 'baseline2' ]; then
     train_file="$root_dir/data/${corpus}.en-$language.train.tsv"
     dev_file="${root_dir}/data/${corpus}.en-$language.dev.tsv"
 else   
