@@ -19,7 +19,7 @@ def read_scores(folder, fname, ref_with_tags):
     - res (pandas DataFrame): a dataframe with the scores and the genres'''
 
 
-    ref_with_tags = pd.read_csv(ref_with_tags, sep='\t')
+    ref_with_tags = pd.read_csv(ref_with_tags, sep='\t', header=0)
     tokens_to_genres = {'>>info<<': 'Information/Explanation', '>>promo<<': 'Promotion', '>>news<<': 'News', '>>law<<': 'Legal', '>>other<<': 'Other', '>>arg<<': 'Opinion/Argumentation', '>>instr<<': 'Instruction', '>>lit<<': 'Prose/Lyrical', '>>forum<<': 'Forum'}
     genres = [tokens_to_genres[line.split(' ')[0]] for line in ref_with_tags.en_par_tokens.to_list()]
     
@@ -42,8 +42,8 @@ def read_scores(folder, fname, ref_with_tags):
     res['chrf'] = [chrf] * len(genres)
     res['chrfpp'] = [chrfpp] * len(genres)
     res['comet_avg'] = [comet[-1]] * len(genres)
-    res['comet'] = comet[:-1]
-    res['bleurt'] = bleurt
+    res['comet'] = comet[1:-1]
+    res['bleurt'] = bleurt[1]
 
     return res
 
