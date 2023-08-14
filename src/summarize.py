@@ -19,7 +19,7 @@ def read_scores(folder, fname, ref_with_tags):
     - res (pandas DataFrame): a dataframe with the scores and the genres'''
 
 
-    ref_with_tags = pd.read_csv(ref_with_tags, sep='\t', header=0)
+    ref_with_tags = pd.read_csv(ref_with_tags, sep='\t')
     tokens_to_genres = {'>>info<<': 'Information/Explanation', '>>promo<<': 'Promotion', '>>news<<': 'News', '>>law<<': 'Legal', '>>other<<': 'Other', '>>arg<<': 'Opinion/Argumentation', '>>instr<<': 'Instruction', '>>lit<<': 'Prose/Lyrical', '>>forum<<': 'Forum'}
     genres = [tokens_to_genres[line.split(' ')[0]] for line in ref_with_tags.en_par_tokens.to_list()]
     
@@ -27,10 +27,10 @@ def read_scores(folder, fname, ref_with_tags):
     ter = float(open(folder + fname + "_predictions.txt.eval.ter", "r").readlines()[0].strip('\n'))
     chrf = float(open(folder + fname + "_predictions.txt.eval.chrf", "r").readlines()[0].strip('\n'))
     chrfpp = float(open(folder + fname + "_predictions.txt.eval.chrfpp", "r").readlines()[0].strip('\n'))
-    bleurt = [float(l) for l in open(folder + fname + "_predictions.txt.eval.bleurt", "r").readlines()[:1]]
+    bleurt = [float(l) for l in open(folder + fname + "_predictions.txt.eval.bleurt", "r").readlines()]
     # 2,4,6 precison, recall, f1
     bert_score = open(folder + fname + '_predictions.txt.eval.bertscore', 'r').readlines()[0].strip('\n').split(' ')
-    comet = [float(l.split(" ")[-1].strip()) for l in open(folder + fname + "_predictions.txt.eval.comet", "r").readlines()[:1]]
+    comet = [float(l.split(" ")[-1].strip()) for l in open(folder + fname + "_predictions.txt.eval.comet", "r").readlines()]
 
     res = pd.DataFrame()
     res['genre'] = genres
