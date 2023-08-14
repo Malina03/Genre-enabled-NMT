@@ -14,7 +14,7 @@ set -eu -o pipefail
 # Calculate all metrics between two files
 out_file=$1 # File produced by model
 lang=$2 # Target language
-exp_type=$3 # Type of experiment (genre-aware or baseline)
+exp_type=$3 # Type of experiment (genre_aware or baseline)
 eval_file=$4 # File to evaluate against
 
 root_dir="/scratch/s3412768/genre_NMT/en-${lang}"
