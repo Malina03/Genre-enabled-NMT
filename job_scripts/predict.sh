@@ -22,7 +22,7 @@ source /home1/s3412768/.envs/nmt2/bin/activate
 
 train_corpus=$1 # the corpus that the model was trained on
 language=$2 # the target language
-exp_type=$3 # type of experiment (genre_aware or baseline)
+exp_type=$3 # type of experiment (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
 test_on=$4 # the test file to evaluate on, assuming it is placed in root_dir/data
 
 
