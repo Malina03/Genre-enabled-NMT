@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=36:00:00
+#SBATCH --time=72:00:00
 #SBATCH --job-name=en-is
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
@@ -21,7 +21,7 @@ source /home1/s3412768/.envs/nmt2/bin/activate
 
 corpus=$1 # corpus to fine-tune on
 language=$2 # target language
-exp_type=$3 # type of experiment (genre or domain)
+exp_type=$3 # type of experiment (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
 log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/train_${corpus}.log"
@@ -34,10 +34,10 @@ model="Helsinki-NLP/opus-mt-en-${language}"
 
 
 
-if [ $exp_type = 'genre_aware' ] || [ $exp_type = 'genre_aware2' ]; then
+if [ $exp_type = 'genre_aware' ] || [ $exp_type = 'genre_aware_token' ]; then
     train_file="$root_dir/data/${corpus}.en-$language.train.tag.tsv"
     dev_file="${root_dir}/data/${corpus}.en-$language.dev.tag.tsv"
-elif [ $exp_type = 'baseline' ] || [ $exp_type = 'baseline2' ]; then
+elif [ $exp_type = 'baseline' ]; then
     train_file="$root_dir/data/${corpus}.en-$language.train.tsv"
     dev_file="${root_dir}/data/${corpus}.en-$language.dev.tsv"
 else   
@@ -61,5 +61,5 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --model_name $model \
     --early_stopping 3 \
     --eval_baseline \
-    --num_train_epochs 20 \
+    --num_train_epochs 75 \
     &> $log_file

@@ -18,7 +18,7 @@ if __name__ == "__main__":
     
     # Load the data
     tokenizer = AutoTokenizer.from_pretrained(args.model_name, max_length=args.max_length, truncation=True)
-    if args.exp_type == "genre_aware":
+    if "genre_aware_token" in args.exp_type:
         tags = ['>>info<<', '>>promo<<', '>>news<<', '>>law<', '>>other<<', '>>arg<<', '>>instr<<', '>>lit<<', '>>forum<<']
         tokenizer.add_special_tokens({'additional_special_tokens': tags})
 
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     if args.checkpoint is None:
         # config = AutoConfig.from_pretrained(args.model_name)
         model = AutoModelForSeq2SeqLM.from_pretrained(args.model_name)
-        if args.exp_type == "genre_aware":
+        if "genre_aware_token" in args.exp_type:
             model.resize_token_embeddings(len(tokenizer))
     else:
         model = AutoModelForSeq2SeqLM.from_pretrained(args.checkpoint, local_files_only=True)
