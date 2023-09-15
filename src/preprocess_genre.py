@@ -34,6 +34,9 @@ def tmx_to_json(fname, tgt_language, save_path):
     corpus = open(fname, "rb").read()
     corpus = corpus.decode("utf-8")
 
+    if tgt_language == "hr":
+        lang_id = "hr_latin"
+
     tu_re = re.compile('<tu tuid=".*?>\n(.*?)<\/tu>', re.DOTALL)
     # Compile relevant information inside tus
     bi_score_re = re.compile('<prop type="score-bicleaner-ai">(.*?)</prop>')
@@ -44,9 +47,9 @@ def tmx_to_json(fname, tgt_language, save_path):
     en_par_re = re.compile('<tuv xml:lang="en">.*?<seg>(.*?)</seg>', re.DOTALL)
     en_var_doc_re = re.compile('<prop type="english-variant-document">(.*?)</prop>')
     en_var_dom_re = re.compile('<prop type="english-variant-domain">(.*?)</prop>')
-    sl_source_re = re.compile(f'<tuv xml:lang="{tgt_language}">.*?<prop type="source-document">(.*?)</prop>', re.DOTALL)
-    sl_par_id_re = re.compile(f'<tuv xml:lang="{tgt_language}">.*?<prop type="paragraph-id">(.*?)</prop', re.DOTALL)
-    sl_par_re = re.compile(f'<tuv xml:lang="{tgt_language}">.*?<seg>(.*?)</seg>', re.DOTALL)
+    sl_source_re = re.compile(f'<tuv xml:lang="{lang_id}">.*?<prop type="source-document">(.*?)</prop>', re.DOTALL)
+    sl_par_id_re = re.compile(f'<tuv xml:lang="{lang_id}">.*?<prop type="paragraph-id">(.*?)</prop', re.DOTALL)
+    sl_par_re = re.compile(f'<tuv xml:lang="{lang_id}">.*?<seg>(.*?)</seg>', re.DOTALL)
     tus_list = tu_re.findall(corpus)
     
     tus_content = []
@@ -64,7 +67,7 @@ def tmx_to_json(fname, tgt_language, save_path):
         sl_par_id = sl_par_id_re.search(i).group(1)
         sl_par = sl_par_re.search(i).group(1)
         # Add information to the dictionary
-        current_tu = {"score_bicleaner_ai": float(bi_score), "translation_direction": translation_dir, "en_source": en_source, "en_par_id": en_par_id, "en_par": en_par, "en_var_doc": en_var_doc, "en_var_dom": en_var_dom, "is_source": sl_source, "is_par_id": sl_par_id, "is_par": sl_par}
+        current_tu = {"score_bicleaner_ai": float(bi_score), "translation_direction": translation_dir, "en_source": en_source, "en_par_id": en_par_id, "en_par": en_par, "en_var_doc": en_var_doc, "en_var_dom": en_var_dom, f"{tgt_language}_source": sl_source, f"{tgt_language}_par_id": sl_par_id, f"{tgt_language}_par": sl_par}
         # Append the dictionary to the list
         tus_content.append(current_tu)
         
