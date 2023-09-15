@@ -6,23 +6,33 @@ import pandas as pd
 import numpy as np
 import json
 from pathlib import Path
+import argparse
+from x_genre_predict import classify_dataset
 
 
-
-def download_corpus(url):
-    
+def download_corpus(url, f_name):
     # Downloading the file by sending the request to the URL
-    corpus_file = wget.download(url)
+    corpus_file = wget.download(url, f_name)
     print('Downloading Completed')
 
-    # Unzip the file
-    with gzip.open('MaCoCu-is-en.tmx.gz', 'rb') as f_in:
-        with open('MaCoCu-is-en.tmx', 'wb') as f_out:
+    
+def unzip_corpus(f_name): 
+# Unzip the file
+    with gzip.open(f_name, 'rb') as f_in:
+        with open(f_name[:-3], 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
     print('Unzipping Completed')
     return 
 
-def tmx_to_json(corpus, tgt_language, save_path):
+def tmx_to_json(fname, tgt_language, save_path):
+
+    if not Path(fname).exists():
+        unzip_corpus(fname + ".gz")
+        # Read the corpus
+
+    corpus = open(fname, "rb").read()
+    corpus = corpus.decode("utf-8")
+
     tu_re = re.compile('<tu tuid=".*?>\n(.*?)<\/tu>', re.DOTALL)
     # Compile relevant information inside tus
     bi_score_re = re.compile('<prop type="score-bicleaner-ai">(.*?)</prop>')
@@ -376,26 +386,65 @@ def save_datasets(train, dev, test, tgt_lang, path, name):
     print('Saved datasets to ' + path + name + '.tsv and ' + path + name + '.tag.tsv and ' + path + name + '_complete.tsv')
 
 
+def create_arg_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--lang_code', type=str, required=True, help='Language code of the target language')
+    parser.add_argument('--length_threshold', type=int, default=25, help='Minimum length of the documents used for genre classification')
+    parser.add_argument('-df', "--data_folder", type=str, default='data/', help='Folder where the data is stored')
+    parser.add_argument('-download_corpus', "--download_corpus", type=bool, default=False, help='Whether to download the corpus or not')
+    parser.add_argument('-preprocess', "--preprocess", type=bool, default=False, help='Whether to preprocess the corpus or not')
+    parser.add_argument('-label', "--label", type=bool, default=False, help='Whether to label the corpus or not')
+    parser.add_argument('-test_size', "--test_size", type=int, default=5000, help='Number of sentences to put in the test set')
+    parser.add_argument('-dev_size', "--dev_size", type=int, default=5000, help='Number of sentences to put in the dev set')
+    args = parser.parse_args()
+    return args
+
+def get_url(lang_code):
+    if lang_code == "hr":
+        url = 'https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1814/MaCoCu-hr-en.tmx.gz'
+    elif lang_code == 'is':
+        url = 'https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1812/MaCoCu-is-en.tmx.gz'
+    return url
+
 
 def main():
-	preprocess(Path("data/"), "is", 1, drop_par_duplicates = True, drop_doc_duplicates = False, keep_columns=True, info = False)
-	
-	# combine labelled docs with sentence-level
-	doc_labels = pd.read_csv("data/labelled_25.csv", sep="\t", header=0)
-	data= pd.read_csv("data/Macocu-is-en-doc-format-duplicates.csv", sep="\t", header=0)
-	# select only docs longer than 25 (min thershold for genre classification)
-	data = data[data['en_length'] >= 25]
-	# remove all columns except en_doc and X-GENRE
-	doc_labels = doc_labels[["en_doc", "X-GENRE"]]
-	# merge doc_data and data based on en_doc
-	data = pd.merge(doc_labels, data, on="en_doc")
-	# remove Unnamed: 0 column
-	data = data.drop(columns=["Unnamed: 0"])
-	data.to_csv("data/Macocu-is-en-sent-doc-labelled.csv", sep="\t") 
+    args = create_arg_parser()
 
+    if args.download_corpus or not Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz').exists():
+        url = get_url(args.lang_code)
+        print(f"Downloading corpus from {url} and saving it as {args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'}")
+        download_corpus(url, Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'))
+        tmx_to_json(Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx'), args.lang_code, Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.json'))
+    
+    if args.preprocess or not Path(args.data_folder/f'Macocu-{args.lang_code}-en-doc-format.csv').exists():    
+        print("Preprocessing started.")
+        preprocess(Path("data/"), args.lang_code, 1, drop_par_duplicates = True, drop_doc_duplicates = False, keep_columns=True, info = False)
+        print("Preprocessing done.")
+
+    if args.label or not Path(args.data_folder/f'Macocu-{args.lang_code}-en-sent-doc-labelled.csv').exists():
+        # load the preprocessed data
+        data= pd.read_csv(Path(args.data_folder/f"/Macocu-{args.lang_code}-en-doc-format-duplicates.csv"), sep="\t", header=0)
+        # only use docs with length >= args.length_threshold
+        data = data[data['en_length'] >= args.length_threshold]
+        print("Labelling started. Using docs with length >= {}".format(args.length_threshold))
+        doc_labels = classify_dataset(data, "en_doc", args.data_folder/f'Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv')
+        print(f"Labelling done. Saving the labelled data to data/Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv")
+        # Combine the sentence level data and doc_labels
+        print(f"Combining the sentence level data and doc_labels. Saving the combined data to data/Macocu-{args.lang_code}-en-sent-doc-labelled.csv")
+        # remove all columns except en_doc and X-GENRE
+        doc_labels = doc_labels[["en_doc", "X-GENRE"]]
+        # merge doc_data and data based on en_doc
+        data = pd.merge(doc_labels, data, on="en_doc")
+        # remove Unnamed: 0 column
+        data = data.drop(columns=["Unnamed: 0"])
+        data.to_csv("data/Macocu-is-en-sent-doc-labelled.csv", sep="\t") 
+    else:
+         data = pd.read_csv(Path(args.data_folder/f"/Macocu-{args.lang_code}-en-sent-doc-labelled.csv"), sep="\t", header=0)
+    
+    print("Splitting the data into train, dev, test sets.")
 	# make train, dev, test sets
-	train, dev, test = split_data(data,test_size=5000, dev_size=5000)
-	save_datasets(train, dev, test, "is", "data/en-is/", "MaCoCu.en-is")
+    train, dev, test = split_data(data,test_size=args.test_size, dev_size=args.dev_size)
+    save_datasets(train, dev, test, args.lang_code, args.data_folder, f"MaCoCu.en-{args.lang_code}")
     
 
 if __name__ == "__main__":
