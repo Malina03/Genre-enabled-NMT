@@ -388,14 +388,15 @@ def save_datasets(train, dev, test, tgt_lang, path, name):
 
 def create_arg_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--lang_code', type=str, required=True, help='Language code of the target language')
-    parser.add_argument('--length_threshold', type=int, default=25, help='Minimum length of the documents used for genre classification')
+    parser.add_argument('-lang', '--lang_code', type=str, required=True, help='Language code of the target language')
+    parser.add_argument('-len', '--length_threshold', type=int, default=25, help='Minimum length of the documents used for genre classification')
     parser.add_argument('-df', "--data_folder", type=str, default='data/', help='Folder where the data is stored')
     parser.add_argument('-download_corpus', "--download_corpus", type=bool, default=False, help='Whether to download the corpus or not')
     parser.add_argument('-preprocess', "--preprocess", type=bool, default=False, help='Whether to preprocess the corpus or not')
     parser.add_argument('-label', "--label", type=bool, default=False, help='Whether to label the corpus or not')
     parser.add_argument('-test_size', "--test_size", type=int, default=5000, help='Number of sentences to put in the test set')
     parser.add_argument('-dev_size', "--dev_size", type=int, default=5000, help='Number of sentences to put in the dev set')
+    parser.add_argument('-url', '--url', type = str, help='Specify the url to download the corpus from, overrides the deafult urls in the get_url function')
     args = parser.parse_args()
     return args
 
@@ -411,7 +412,7 @@ def main():
     args = create_arg_parser()
 
     if args.download_corpus or not Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz').exists():
-        url = get_url(args.lang_code)
+        url = args.url if args.url else get_url(args.lang_code)
         print(f"Downloading corpus from {url} and saving it as {args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'}")
         download_corpus(url, Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'))
         tmx_to_json(Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx'), args.lang_code, Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.json'))
