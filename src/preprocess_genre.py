@@ -1,6 +1,6 @@
 import gzip
 import shutil
-import wget
+# import wget
 import regex as re
 import pandas as pd
 import numpy as np
@@ -397,6 +397,7 @@ def create_arg_parser():
     parser.add_argument('-test_size', "--test_size", type=int, default=5000, help='Number of sentences to put in the test set')
     parser.add_argument('-dev_size', "--dev_size", type=int, default=5000, help='Number of sentences to put in the dev set')
     parser.add_argument('-url', '--url', type = str, help='Specify the url to download the corpus from, overrides the deafult urls in the get_url function')
+    parser.add_argument('-tmx_to_json', '--tmx_to_json', type = bool, default = False, help='Whether to convert the tmx file to json or not')
     args = parser.parse_args()
     return args
 
@@ -411,10 +412,12 @@ def get_url(lang_code):
 def main():
     args = create_arg_parser()
 
-    if args.download_corpus or not Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz').exists():
-        url = args.url if args.url else get_url(args.lang_code)
-        print(f"Downloading corpus from {url} and saving it as {args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'}")
-        download_corpus(url, Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'))
+    # if args.download_corpus or not Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz').exists():
+    #     url = args.url if args.url else get_url(args.lang_code)
+    #     print(f"Downloading corpus from {url} and saving it as {args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'}")
+    #     download_corpus(url, Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'))
+    
+    if args.tmx_to_json or not Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.json').exists():    
         tmx_to_json(Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx'), args.lang_code, Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.json'))
     
     if args.preprocess or not Path(args.data_folder/f'Macocu-{args.lang_code}-en-doc-format.csv').exists():    
