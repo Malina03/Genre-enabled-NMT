@@ -427,7 +427,7 @@ def main():
 
     if args.label or not data_folder/f'Macocu-{args.lang_code}-en-sent-doc-labelled.csv'.exists():
         # load the preprocessed data
-        data= pd.read_csv(data_folder/f"/Macocu-{args.lang_code}-en-doc-format-duplicates.csv"), sep="\t", header=0)
+        data= pd.read_csv(data_folder/f"/Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
         # only use docs with length >= args.length_threshold
         data = data[data['en_length'] >= args.length_threshold]
         print("Labelling started. Using docs with length >= {}".format(args.length_threshold))
