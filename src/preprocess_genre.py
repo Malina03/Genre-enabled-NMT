@@ -411,39 +411,39 @@ def get_url(lang_code):
 
 def main():
     args = create_arg_parser()
-
+    data_folder = Path(args.data_folder)
     # if args.download_corpus or not Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz').exists():
     #     url = args.url if args.url else get_url(args.lang_code)
     #     print(f"Downloading corpus from {url} and saving it as {args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'}")
     #     download_corpus(url, Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'))
     
-    if args.tmx_to_json or not Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.json').exists():    
-        tmx_to_json(Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx'), args.lang_code, Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.json'))
+    if args.tmx_to_json or not data_folder/f'MaCoCu-{args.lang_code}-en.json'.exists():    
+        tmx_to_json(data_folder/f'MaCoCu-{args.lang_code}-en.tmx', args.lang_code, data_folder/f'MaCoCu-{args.lang_code}-en.json')
     
-    if args.preprocess or not Path(args.data_folder/f'Macocu-{args.lang_code}-en-doc-format.csv').exists():    
+    if args.preprocess or not data_folder/f'Macocu-{args.lang_code}-en-doc-format.csv'.exists():    
         print("Preprocessing started.")
-        preprocess(Path("data/"), args.lang_code, 1, drop_par_duplicates = True, drop_doc_duplicates = False, keep_columns=True, info = False)
+        preprocess(data_folder, args.lang_code, 1, drop_par_duplicates = True, drop_doc_duplicates = False, keep_columns=True, info = False)
         print("Preprocessing done.")
 
-    if args.label or not Path(args.data_folder/f'Macocu-{args.lang_code}-en-sent-doc-labelled.csv').exists():
+    if args.label or not data_folder/f'Macocu-{args.lang_code}-en-sent-doc-labelled.csv'.exists():
         # load the preprocessed data
-        data= pd.read_csv(Path(args.data_folder/f"/Macocu-{args.lang_code}-en-doc-format-duplicates.csv"), sep="\t", header=0)
+        data= pd.read_csv(data_folder/f"/Macocu-{args.lang_code}-en-doc-format-duplicates.csv"), sep="\t", header=0)
         # only use docs with length >= args.length_threshold
         data = data[data['en_length'] >= args.length_threshold]
         print("Labelling started. Using docs with length >= {}".format(args.length_threshold))
-        doc_labels = classify_dataset(data, "en_doc", args.data_folder/f'Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv')
-        print(f"Labelling done. Saving the labelled data to data/Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv")
+        doc_labels = classify_dataset(data, "en_doc", data_folder/f'Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv')
+        print(f"Labelling done. Saving the labelled data to {args.data_folder}/Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv")
         # Combine the sentence level data and doc_labels
-        print(f"Combining the sentence level data and doc_labels. Saving the combined data to data/Macocu-{args.lang_code}-en-sent-doc-labelled.csv")
+        print(f"Combining the sentence level data and doc_labels. Saving the combined data to {args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled.csv")
         # remove all columns except en_doc and X-GENRE
         doc_labels = doc_labels[["en_doc", "X-GENRE"]]
         # merge doc_data and data based on en_doc
         data = pd.merge(doc_labels, data, on="en_doc")
         # remove Unnamed: 0 column
         data = data.drop(columns=["Unnamed: 0"])
-        data.to_csv("data/Macocu-is-en-sent-doc-labelled.csv", sep="\t") 
+        data.to_csv(f"{args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t") 
     else:
-         data = pd.read_csv(Path(args.data_folder/f"/Macocu-{args.lang_code}-en-sent-doc-labelled.csv"), sep="\t", header=0)
+         data = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", header=0)
     
     print("Splitting the data into train, dev, test sets.")
 	# make train, dev, test sets
