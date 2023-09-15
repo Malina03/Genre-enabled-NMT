@@ -28,7 +28,7 @@ def tmx_to_json(fname, tgt_language, save_path):
 
     if not Path(fname).exists():
         print(f"Unzipping file {fname}.gz")
-        unzip_corpus(fname.name + ".gz")
+        unzip_corpus(Path(fname.name + ".gz"))
         # Read the corpus
 
     corpus = open(fname, "rb").read()
