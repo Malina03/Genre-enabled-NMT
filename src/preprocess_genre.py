@@ -109,9 +109,11 @@ def preprocess(path, lang_code, length_threshold, drop_par_duplicates = True, dr
 
 	# Add information whether the domains are the same
 	corpus_df["same_domains"] = np.where(corpus_df["en_domain"] == corpus_df[f"{lang_code}_domain"], "yes", 'no')
+	print("Added same domains column.")
 
-	# Add column for domains that are different
-	corpus_df["different_domains"] = corpus_df["en_domain"] + " " + corpus_df[f"{lang_code}_domain"]
+
+	# # Add column for domains that are different
+	# corpus_df["different_domains"] = corpus_df["en_domain"] + " " + corpus_df[f"{lang_code}_domain"]
 
 	if info:
 	# Print the information
@@ -223,7 +225,7 @@ def preprocess(path, lang_code, length_threshold, drop_par_duplicates = True, dr
 
 	
 	if keep_columns == False:
-		corpus_df = corpus_df.drop(columns = ['score_bicleaner_ai', 'en_par_id', 'en_par', f'{lang_code}_par_id', f'{lang_code}_par',  'same_domains', 'different_domains'])
+		corpus_df = corpus_df.drop(columns = ['score_bicleaner_ai', 'en_par_id', 'en_par', f'{lang_code}_par_id', f'{lang_code}_par',  'same_domains'])
 		if drop_par_duplicates == True:
 			corpus_df = corpus_df.drop(columns = ['en-par-src-text'])
 
