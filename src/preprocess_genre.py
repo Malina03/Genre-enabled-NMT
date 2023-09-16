@@ -91,7 +91,8 @@ def preprocess(path, lang_code, length_threshold, drop_par_duplicates = True, dr
 
 	# Convert data to a dataframe
 	corpus_df = pd.DataFrame(tus_content)
-
+    
+	print("Dataframe loaded. Initial number of sentences: {}".format(corpus_df.en_source.count()))
 	# Sort by english url and then by en_par_id to order the paragraphs into texts
 	corpus_df = corpus_df.sort_values(by = ["en_source", "en_par_id"])
 
