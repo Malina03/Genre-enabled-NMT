@@ -115,7 +115,7 @@ def preprocess(path, lang_code, length_threshold, drop_par_duplicates = True, dr
 	# # Add column for domains that are different
 	# corpus_df["different_domains"] = corpus_df["en_domain"] + " " + corpus_df[f"{lang_code}_domain"]
 
-	if info:
+	if info == True:
 	# Print the information
 		print("Information about the web domains for the two languages is added. See the head of the dataframe:\n")
 		print(corpus_df.head(2))
@@ -146,7 +146,7 @@ def preprocess(path, lang_code, length_threshold, drop_par_duplicates = True, dr
 	# Discard instances that are from different domains
 	corpus_df = corpus_df[corpus_df["same_domains"] == "yes"]
 
-	if info:
+	if info == True:
 		print("Instances from different domains were discarded.\n")
 
 		sentences_same_domains, texts_same_domains = calculate_discarded(previous_no_sentences, previous_no_texts, False)
@@ -204,21 +204,21 @@ def preprocess(path, lang_code, length_threshold, drop_par_duplicates = True, dr
 	# Add information about length of the other language
 	corpus_df[f"{lang_code}_length"] = corpus_df[f"{lang_code}_doc"].str.split().str.len()
 
-	if info:
+	if info == True:
 		print("\nInitial length of texts in the corpus:")
 		print(corpus_df.en_length.describe().to_markdown())
 
 	# Discard instances that have length less than  79 (median from other datasets)
 	corpus_df = corpus_df[corpus_df["en_length"] > length_threshold - 1]
 
-	if info:
+	if info == True:
 		print(f"\nTexts that have less than {length_threshold} words were discarded.\n")
 
 		sentences_after_length, texts_after_length = calculate_discarded(sentences_after_text_deduplication, texts_after_text_deduplication, True)
 
 	corpus_df['length_diff'] = abs(corpus_df[f'{lang_code}_length'] - corpus_df['en_length'])
 
-	if info:
+	if info == True:
 		# Difference in length between documents
 		print("\nDifference in length between documents:\n")
 		print(corpus_df['length_diff'].describe().to_markdown())
@@ -229,7 +229,7 @@ def preprocess(path, lang_code, length_threshold, drop_par_duplicates = True, dr
 		if drop_par_duplicates == True:
 			corpus_df = corpus_df.drop(columns = ['en-par-src-text'])
 
-	if info:
+	if info == True:
 		# View the final dataframe
 		print("The final dataframe: \n")
 		print(corpus_df.head(5))
@@ -438,13 +438,16 @@ def main():
         data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
         # only use docs with length >= args.length_threshold
         data = data[data['en_length'] >= args.length_threshold]
+        # only use unique docs for labelling to save time
+        data = data.drop_duplicates("en_doc")
         print("Labelling started. Using docs with length >= {}".format(args.length_threshold))
         doc_labels = classify_dataset(data, "en_doc", data_folder/f'Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv')
         print(f"Labelling done. Saving the labelled data to {args.data_folder}/Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv")
         # Combine the sentence level data and doc_labels
         print(f"Combining the sentence level data and doc_labels. Saving the combined data to {args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled.csv")
-        # remove all columns except en_doc and X-GENRE
-        doc_labels = doc_labels[["en_doc", "X-GENRE"]]
+        # load the full dataset again to get all all sentences back 
+        del data
+        data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
         # merge doc_data and data based on en_doc
         data = pd.merge(doc_labels, data, on="en_doc")
         # remove Unnamed: 0 column
