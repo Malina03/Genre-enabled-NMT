@@ -238,7 +238,8 @@ def preprocess(path, lang_code, length_threshold, drop_par_duplicates = True, dr
 		corpus_df.to_csv(path/f"Macocu-{lang_code}-en-doc-format-duplicates.csv", sep= "\t")
 	else:
 		corpus_df.to_csv(path/f"Macocu-{lang_code}-en-doc-format.csv", sep= "\t")	
-
+	del corpus_df
+    
 	return 
 
 
@@ -434,7 +435,7 @@ def main():
 
     if args.label or not Path(data_folder/f'Macocu-{args.lang_code}-en-sent-doc-labelled.csv').exists():
         # load the preprocessed data
-        data= pd.read_csv(data_folder/f"/Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
+        data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
         # only use docs with length >= args.length_threshold
         data = data[data['en_length'] >= args.length_threshold]
         print("Labelling started. Using docs with length >= {}".format(args.length_threshold))
