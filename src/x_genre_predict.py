@@ -48,12 +48,19 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc"):
     print("Prediction started.")
     start_time = time.time()
 
+    batches = len(batches_list_new)
+    curr_batch = 0
+
     for i in tqdm(batches_list_new):
+        if curr_batch % 500 == 0:
+            print("Predicting batch {} out of {}.".format(curr_batch, batches))
+        
         output = model.predict(i)
         current_y_pred = [model.config.id2label[i] for i in output[0]]
 
         for i in current_y_pred:
             y_pred.append(i)
+        curr_batch += 1
 
     prediction_time = round((time.time() - start_time)/60,2)
 
