@@ -34,7 +34,7 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc"):
         arr_range = iter(arr_range)
         return iter(lambda: tuple(islice(arr_range, arr_size)), ())
 
-    batches_list = list(chunk(dataframe[dataframe_column], 8))
+    batches_list = list(chunk(dataframe[dataframe_column], 12))
 
     batches_list_new = []
 
@@ -51,9 +51,12 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc"):
     batches = len(batches_list_new)
     curr_batch = 0
 
-    for i in tqdm(batches_list_new):
-        if curr_batch % 500 == 0:
+    for i in batches_list_new:
+        if curr_batch % 1000 == 0:
             print("Predicting batch {} out of {}.".format(curr_batch, batches))
+            # save the dataframe with predictions every 1000 batches
+            dataframe["X-GENRE"] = y_pred
+            dataframe.to_csv("{}_{}".format(final_file, curr_batch/1000), sep="\t")
         
         output = model.predict(i)
         current_y_pred = [model.config.id2label[i] for i in output[0]]
