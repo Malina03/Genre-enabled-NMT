@@ -442,7 +442,7 @@ def main():
         data = data.drop_duplicates("en_doc")
         print("Labelling started. Using docs with length >= {}".format(args.length_threshold))
         doc_labels = classify_dataset(data, "en_doc", data_folder/f'Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv')
-        print(f"Labelling done. Saving the labelled data to {args.data_folder}/Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv")
+        print(f"Labelling done. Saving the labelled data to {args.data_folder}/Macocu-{args.lang_code}-en.doc.labels.{args.length_threshold}.csv")
         # Combine the sentence level data and doc_labels
         print(f"Combining the sentence level data and doc_labels. Saving the combined data to {args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled.csv")
         # load the full dataset again to get all all sentences back 

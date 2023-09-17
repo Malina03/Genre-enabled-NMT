@@ -34,7 +34,7 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc"):
         arr_range = iter(arr_range)
         return iter(lambda: tuple(islice(arr_range, arr_size)), ())
 
-    batches_list = list(chunk(dataframe[dataframe_column], 16))
+    batches_list = list(chunk(dataframe[dataframe_column], 8))
 
     batches_list_new = []
 
