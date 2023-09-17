@@ -55,8 +55,11 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc"):
         if curr_batch % 1000 == 0:
             print("Predicting batch {} out of {}.".format(curr_batch, batches))
             # save the dataframe with predictions every 1000 batches
-            dataframe["X-GENRE"] = y_pred
-            dataframe.to_csv("{}_{}".format(final_file, curr_batch/1000), sep="\t")
+            # copy first current batch to a new dataframe
+            dat = dataframe.iloc[:curr_batch]
+            dat["X-GENRE"] = y_pred
+            dat.to_csv("{}_{}".format(final_file, curr_batch/1000), sep="\t")
+            del dat
         
         output = model.predict(i)
         current_y_pred = [model.config.id2label[i] for i in output[0]]
