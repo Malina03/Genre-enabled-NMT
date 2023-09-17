@@ -56,8 +56,8 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc"):
             print("Predicting batch {} out of {}.".format(curr_batch, batches))
             # save the dataframe with predictions every 1000 batches
             # copy first current batch to a new dataframe
-            dat = dataframe.iloc[:curr_batch]
-            dat["X-GENRE"] = y_pred
+            dat = dataframe.iloc[(curr_batch-1000)*8:curr_batch*8]
+            dat["X-GENRE"] = y_pred[(curr_batch-1000)*8:curr_batch*8]
             dat.to_csv("{}_{}".format(final_file, curr_batch/1000), sep="\t")
             del dat
         
