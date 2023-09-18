@@ -44,8 +44,8 @@ def read_scores(folder, fname, ref_with_tags):
     res['chrf'] = [chrf] * len(genres)
     res['chrfpp'] = [chrfpp] * len(genres)
     res['comet_avg'] = [comet[-1]] * len(genres)
-    res['comet'] = comet[1:-1]
-    res['bleurt'] = bleurt[1:]
+    res['comet'] = comet[:-1]
+    res['bleurt'] = bleurt
 
     return res
 
