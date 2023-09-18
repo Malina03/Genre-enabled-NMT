@@ -37,9 +37,15 @@ model="Helsinki-NLP/opus-mt-en-${language}"
 if [ $exp_type = 'genre_aware' ] || [ $exp_type = 'genre_aware_token' ]; then
     train_file="$root_dir/data/${corpus}.en-$language.train.tag.tsv"
     dev_file="${root_dir}/data/${corpus}.en-$language.dev.tag.tsv"
+elif [ $exp_type = 'doc_genre_aware' ] || [ $exp_type = 'doc_genre_aware_token' ]; then
+    train_file="$root_dir/data/${corpus}.en-$language.doc.train.tag.tsv"
+    dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tag.tsv"
 elif [ $exp_type = 'baseline' ]; then
     train_file="$root_dir/data/${corpus}.en-$language.train.tsv"
     dev_file="${root_dir}/data/${corpus}.en-$language.dev.tsv"
+elif [ $exp_type = 'doc_baseline' ]; then
+    train_file="$root_dir/data/${corpus}.en-$language.doc.train.tsv"
+    dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tsv"
 else   
     echo "Invalid experiment type"
     exit 1
