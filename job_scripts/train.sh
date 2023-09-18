@@ -21,7 +21,7 @@ source /home1/s3412768/.envs/nmt2/bin/activate
 
 corpus=$1 # corpus to fine-tune on
 language=$2 # target language
-exp_type=$3 # type of experiment (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
+exp_type=$3 # type of experiment ([doc_]genre_aware[_token] -genres are added as proper tokens- or [doc_]baseline)
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
 log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/train_${corpus}.log"
