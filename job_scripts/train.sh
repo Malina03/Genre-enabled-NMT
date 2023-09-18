@@ -61,5 +61,5 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --model_name $model \
     --early_stopping 3 \
     --eval_baseline \
-    --num_train_epochs 75 \
+    --num_train_epochs 20 \
     &> $log_file

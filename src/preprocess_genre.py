@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import argparse
 from x_genre_predict import classify_dataset
+import os
 
 
 def download_corpus(url, f_name):
@@ -343,7 +344,7 @@ def split_data(data, test_prop= 0.1, dev_prop = 0.1, test_size = 0, dev_size = 0
 
     return train, dev, test
 
-def save_datasets(train, dev, test, tgt_lang, path, name):
+def save_datasets(train, dev, test, tgt_lang, tgt_col, path, name):
     """
     Saves the datasets to tsv files with and without genre tokens, also saves complete dataframe where all 
     datasets are merged and 'set' column shows the set of each row.
@@ -357,19 +358,20 @@ def save_datasets(train, dev, test, tgt_lang, path, name):
         name (str): name of the files
 
     """
-
-    # merge columns add test, dev or train to new column 'set'
-    train['set'] = ['train'] * train.shape[0]
-    dev['set'] = ['dev'] * dev.shape[0]
-    test['set'] = ['test'] * test.shape[0]
-    # merge all datasets
-    df = pd.concat([train, dev, test])
-    # save all columns to tsv
-    df.to_csv(path + name + '_complete.tsv', sep='\t', index=False)
+    # save all columns to tsv if it doesn't exist 
+    if not os.path.exists(path + name + '_complete.tsv'):
+        # merge columns add test, dev or train to new column 'set'
+        train['set'] = ['train'] * train.shape[0]
+        dev['set'] = ['dev'] * dev.shape[0]
+        test['set'] = ['test'] * test.shape[0]
+        # merge all datasets
+        df = pd.concat([train, dev, test])
+        df.to_csv(path + name + '_complete.tsv', sep='\t', index=False)
     # save only en_par and is_par columns to csv
-    train[['en_par', tgt_lang + '_par']].to_csv(path + name + '.train.tsv', sep='\t', index=False)
-    dev[['en_par', tgt_lang + '_par']].to_csv(path + name + '.dev.tsv', sep='\t', index=False)
-    test[['en_par', tgt_lang + '_par']].to_csv(path + name + '.test.tsv', sep='\t', index=False)
+
+    train[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path + name + '.train.tsv', sep='\t', index=False, header=False)
+    dev[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path + name + '.dev.tsv', sep='\t', index=False, header=False)
+    test[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path + name + '.test.tsv', sep='\t', index=False, header=False)
     
     # add token in from of en_par according to mapping
     genre_tokens = {'Prose/Lyrical': '>>lit<<','Instruction': '>>instr<<', 'Promotion': '>>promo<<', 'Opinion/Argumentation': '>>arg<<' , 'Other': '>>other<<' , 'Information/Explanation': '>>info<<', 'News': '>>news<<', 'Legal': '>>law<<', 'Forum': 
@@ -381,18 +383,18 @@ def save_datasets(train, dev, test, tgt_lang, path, name):
     test['tokens'] = test['X-GENRE'].replace(genre_tokens)
 
     # merge genre tokens with en_par in new column en_par_tokens as string
-    train['en_par_tokens'] = train['tokens'] + ' ' + train['en_par']
-    dev['en_par_tokens'] = dev['tokens'] + ' ' + dev['en_par']
-    test['en_par_tokens'] = test['tokens'] + ' ' + test['en_par']
+    train[f'en_{tgt_col}_tokens'] = train['tokens'] + ' ' + train[f'en_{tgt_col}']
+    dev[f'en_{tgt_col}_tokens'] = dev['tokens'] + ' ' + dev[f'en_{tgt_col}']
+    test[f'en_{tgt_col}_tokens'] = test['tokens'] + ' ' + test[f'en_{tgt_col}']
 
 
     # save en_par and tgt_lang_par with genre tokens
-    train[['en_par_tokens', tgt_lang + '_par']].to_csv(path + name + '.train.tag.tsv', sep='\t', index=False, header=False)
-    dev[['en_par_tokens', tgt_lang + '_par']].to_csv(path + name + '.dev.tag.tsv', sep='\t', index=False, header=False)
-    test[['en_par_tokens', tgt_lang + '_par']].to_csv(path + name + '.test.tag.tsv', sep='\t', index=False, header=False)
+
+    train[[f'en_{tgt_col}_tokens', f'{tgt_lang}_{tgt_col}']].to_csv(path + name + '.train.tag.tsv', sep='\t', index=False, header=False)
+    dev[[f'en_{tgt_col}_tokens', f'{tgt_lang}_{tgt_col}']].to_csv(path + name + '.dev.tag.tsv', sep='\t', index=False, header=False)
+    test[[f'en_{tgt_col}_tokens', f'{tgt_lang}_{tgt_col}']].to_csv(path + name + '.test.tag.tsv', sep='\t', index=False, header=False)
 
     print('Saved datasets to ' + path + name + '.tsv and ' + path + name + '.tag.tsv and ' + path + name + '_complete.tsv')
-
 
 def create_arg_parser():
     parser = argparse.ArgumentParser()
@@ -459,7 +461,8 @@ def main():
     print("Splitting the data into train, dev, test sets.")
 	# make train, dev, test sets
     train, dev, test = split_data(data,test_size=args.test_size, dev_size=args.dev_size)
-    save_datasets(train, dev, test, args.lang_code, args.data_folder, f"MaCoCu.en-{args.lang_code}")
+    save_datasets(train, dev, test, args.lang_code, "par", args.data_folder, f"MaCoCu.en-{args.lang_code}")
+    save_datasets(train.drop_duplicates(['en_doc']), dev.drop_duplicates(['en_doc']), test.drop_duplicates(['en_doc']), args.lang_code, "doc", args.data_folder, f"MaCoCu.en-{args.lang_code}.doc")
     
 
 if __name__ == "__main__":
