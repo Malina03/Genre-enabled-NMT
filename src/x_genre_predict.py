@@ -52,8 +52,9 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc"):
     curr_batch = 0
 
     ## added to finish timedout run
-    batches_list_new = batches_list_new[0:1000*16]
-    curr_batch = 1000*16
+    curr_batch = 1000*16+1
+    batches_list_new = batches_list_new[0:curr_batch]
+    y_pred = [0]*8*curr_batch
 
     for i in batches_list_new:
         if curr_batch % 1000 == 0:
