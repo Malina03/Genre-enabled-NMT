@@ -51,6 +51,10 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc"):
     batches = len(batches_list_new)
     curr_batch = 0
 
+    ## added to finish timedout run
+    batches_list_new = batches_list_new[0:1000*16]
+    curr_batch = 1000*16
+
     for i in batches_list_new:
         if curr_batch % 1000 == 0:
             print("Predicting batch {} out of {}.".format(curr_batch, batches))
@@ -68,16 +72,34 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc"):
             y_pred.append(i)
         curr_batch += 1
 
+    # save the final batch of predictions
+    dat = dataframe.iloc[(curr_batch-1000)*8:curr_batch*8]
+    dat["X-GENRE"] = y_pred[(curr_batch-1000)*8:curr_batch*8]
+    dat.to_csv("{}_{}".format(final_file, curr_batch/1000+1), sep="\t")
+    del dat
+
     prediction_time = round((time.time() - start_time)/60,2)
 
     print("\n\nPrediction completed. It took {} minutes for {} instances - {} minutes per one instance.".format(prediction_time, dataframe.shape[0], prediction_time/dataframe.shape[0]))
 
-    dataframe["X-GENRE"] = y_pred
+    # load the saved predictions and add them to the dataframe
+    for i in range(1, curr_batch/1000 + 1):
+        if i == 1:
+            res = pd.read_csv("{}_{}".format(final_file, i), sep="\t")
+        else:
+            res = res.append(pd.read_csv("{}_{}".format(final_file, i), sep="\t"))
 
-    # Save the new dataframe which contains the y_pred values as well
-    dataframe.to_csv("{}".format(final_file), sep="\t")
+    res.to_csv("{}".format(final_file), sep="\t")
 
-    return dataframe
+    return res
+
+
+    # # dataframe["X-GENRE"] = y_pred
+
+    # # Save the new dataframe which contains the y_pred values as well
+    # dataframe.to_csv("{}".format(final_file), sep="\t")
+
+    # return dataframe
 
 
 def classify_dataset(data, tgt_column, save_file):

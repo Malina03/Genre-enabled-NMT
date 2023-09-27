@@ -288,7 +288,7 @@ def check_non_zero(test_cnt, dev_cnt):
         if dev_cnt[genre] == 0:
             raise ValueError("Dev  count for genre {} is 0".format(genre))
 
-def split_data(data, test_prop= 0.1, dev_prop = 0.1, test_size = 0, dev_size = 0):
+def split_data(data, test_prop= 0.1, dev_prop = 0.1, test_size = 0, dev_size = 0, balance = True):
     """
     Split data into train, dev, and test sets. All splits have the same distribution of genres. 
     Internet domains of the data don't overlap bw splits.
@@ -310,14 +310,19 @@ def split_data(data, test_prop= 0.1, dev_prop = 0.1, test_size = 0, dev_size = 0
 
     dom_genre = data.groupby(['en_domain','X-GENRE'])['en_par'].count().reset_index()
     labels = list(dom_genre['X-GENRE'].unique())
-    ratios = {label : dom_genre[dom_genre['X-GENRE']==label]['en_par'].sum()/dom_genre['en_par'].sum() for label in labels}
-    total = dom_genre['en_par'].sum()
-    if test_size != 0:
-        test_prop = test_size/total
-    if dev_size != 0:
-        dev_prop = dev_size/total
-    test_target_cnt = {label: int(ratios[label] * total * test_prop) for label in ratios}
-    dev_target_cnt = {label: int(ratios[label] * total * dev_prop) for label in ratios}
+    if balance:
+        ratios = {label : dom_genre[dom_genre['X-GENRE']==label]['en_par'].sum()/dom_genre['en_par'].sum() for label in labels}
+        total = dom_genre['en_par'].sum()
+        if test_size != 0:
+            test_prop = test_size/total
+        if dev_size != 0:
+            dev_prop = dev_size/total
+        test_target_cnt = {label: int(ratios[label] * total * test_prop) for label in ratios}
+        dev_target_cnt = {label: int(ratios[label] * total * dev_prop) for label in ratios}
+    else:
+         # have a fixed number of 1000 sentences per genre in each set
+        test_target_cnt = {label: 1000 for label in labels}
+        dev_target_cnt = {label: 1000 for label in labels}
     test_curr_cnt = {label: 0 for label in ratios}
     dev_curr_cnt = {label: 0 for label in ratios}
     test_domains = []
@@ -460,7 +465,7 @@ def main():
     
     print("Splitting the data into train, dev, test sets.")
 	# make train, dev, test sets
-    train, dev, test = split_data(data,test_size=args.test_size, dev_size=args.dev_size)
+    train, dev, test = split_data(data,test_size=args.test_size, dev_size=args.dev_size, balance = False)
     save_datasets(train, dev, test, args.lang_code, "par", args.data_folder, f"MaCoCu.en-{args.lang_code}")
     save_datasets(train.drop_duplicates(['en_doc']), dev.drop_duplicates(['en_doc']), test.drop_duplicates(['en_doc']), args.lang_code, "doc", args.data_folder, f"MaCoCu.en-{args.lang_code}.doc")
     
