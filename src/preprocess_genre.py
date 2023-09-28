@@ -323,8 +323,8 @@ def split_data(data, test_prop= 0.1, dev_prop = 0.1, test_size = 0, dev_size = 0
          # have a fixed number of 1000 sentences per genre in each set
         test_target_cnt = {label: 1000 for label in labels}
         dev_target_cnt = {label: 1000 for label in labels}
-    test_curr_cnt = {label: 0 for label in ratios}
-    dev_curr_cnt = {label: 0 for label in ratios}
+    test_curr_cnt = {label: 0 for label in labels}
+    dev_curr_cnt = {label: 0 for label in labels}
     test_domains = []
     dev_domains = []
     train_domains = []
