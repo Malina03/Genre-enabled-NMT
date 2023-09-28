@@ -442,21 +442,26 @@ def main():
 
     if args.label or not Path(data_folder/f'Macocu-{args.lang_code}-en-sent-doc-labelled.csv').exists():
         # load the preprocessed data
-        data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
-        # only use docs with length >= args.length_threshold
-        data = data[data['en_length'] >= args.length_threshold]
-        # only use unique docs for labelling to save time
-        data = data.drop_duplicates("en_doc")
-        print("Labelling started. Using docs with length >= {}".format(args.length_threshold))
-        doc_labels = classify_dataset(data, "en_doc", data_folder/f'Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv')
-        print(f"Labelling done. Saving the labelled data to {args.data_folder}/Macocu-{args.lang_code}-en.doc.labels.{args.length_threshold}.csv")
-        # Combine the sentence level data and doc_labels
-        print(f"Combining the sentence level data and doc_labels. Saving the combined data to {args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled.csv")
-        # load the full dataset again to get all all sentences back 
-        del data
-        data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
-        # merge doc_data and data based on en_doc
-        data = pd.merge(doc_labels, data, on="en_doc")
+        # data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
+        # # only use docs with length >= args.length_threshold
+        # data = data[data['en_length'] >= args.length_threshold]
+        # # only use unique docs for labelling to save time
+        # data = data.drop_duplicates("en_doc")
+        # print("Labelling started. Using docs with length >= {}".format(args.length_threshold))
+        # doc_labels = classify_dataset(data, "en_doc", data_folder/f'Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv')
+        # print(f"Labelling done. Saving the labelled data to {args.data_folder}/Macocu-{args.lang_code}-en.doc.labels.{args.length_threshold}.csv")
+        # # Combine the sentence level data and doc_labels
+        # print(f"Combining the sentence level data and doc_labels. Saving the combined data to {args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled.csv")
+        # # load the full dataset again to get all all sentences back 
+        # del data
+        # data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
+        # # merge doc_data and data based on en_doc
+        # data = pd.merge(doc_labels, data, on="en_doc")
+        # load and merge all Macocu-hr-en.labelled.25.csv_*.* csv files
+        data = pd.DataFrame()
+        for file in data_folder.glob(f"Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv_*.*"):
+            print(f"Loading {file}")
+            data = pd.concat([data, pd.read_csv(file, sep="\t", header=0)])
         # remove Unnamed: 0 column
         data = data.drop(columns=["Unnamed: 0"])
         data.to_csv(f"{args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t") 

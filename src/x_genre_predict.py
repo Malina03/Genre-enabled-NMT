@@ -52,9 +52,9 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc"):
     curr_batch = 0
 
     ## added to finish timedout run
-    curr_batch = 1000*16+1
-    batches_list_new = batches_list_new[curr_batch:]
-    y_pred = [0]*8*curr_batch
+    # curr_batch = 1000*17+1
+    # batches_list_new = batches_list_new[curr_batch:]
+    # y_pred = [0]*8*curr_batch
 
     for i in batches_list_new:
         if curr_batch % 1000 == 0:
@@ -76,7 +76,7 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc"):
     # save the final batch of predictions
     dat = dataframe.iloc[(curr_batch-1000)*8:((curr_batch-1000)*8+len(current_y_pred))]
     dat["X-GENRE"] = y_pred[(curr_batch-1000)*8:((curr_batch-1000)*8+len(current_y_pred))]
-    dat.to_csv("{}_{}".format(final_file, curr_batch/1000+1), sep="\t")
+    dat.to_csv("{}_{}".format(final_file, int(curr_batch/1000)), sep="\t")
     del dat
 
     prediction_time = round((time.time() - start_time)/60,2)
@@ -84,7 +84,7 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc"):
     print("\n\nPrediction completed. It took {} minutes for {} instances - {} minutes per one instance.".format(prediction_time, dataframe.shape[0], prediction_time/dataframe.shape[0]))
 
     # load the saved predictions and add them to the dataframe
-    for i in range(1, curr_batch/1000 + 1):
+    for i in range(1, int(curr_batch/1000)):
         if i == 1:
             res = pd.read_csv("{}_{}".format(final_file, i), sep="\t")
         else:
