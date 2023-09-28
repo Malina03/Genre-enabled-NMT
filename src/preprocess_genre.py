@@ -310,8 +310,8 @@ def split_data(data, test_prop= 0.1, dev_prop = 0.1, test_size = 0, dev_size = 0
     # print the number of sentences in each genre
     print(data.groupby(['X-GENRE'])['en_par'].count().reset_index())
     # remove sentences with genre 0
-    data = data[data['X-GENRE'] != 0]
-    
+    data = data[data['X-GENRE'] != "0"]
+
     dom_genre = data.groupby(['en_domain','X-GENRE'])['en_par'].count().reset_index()
     labels = list(dom_genre['X-GENRE'].unique())
     print(labels)
