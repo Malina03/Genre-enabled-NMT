@@ -53,7 +53,7 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc"):
 
     ## added to finish timedout run
     curr_batch = 1000*16+1
-    batches_list_new = batches_list_new[0:curr_batch]
+    batches_list_new = batches_list_new[curr_batch:]
     y_pred = [0]*8*curr_batch
 
     for i in batches_list_new:
@@ -74,8 +74,8 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc"):
         curr_batch += 1
 
     # save the final batch of predictions
-    dat = dataframe.iloc[(curr_batch-1000)*8:curr_batch*8]
-    dat["X-GENRE"] = y_pred[(curr_batch-1000)*8:curr_batch*8]
+    dat = dataframe.iloc[(curr_batch-1000)*8:((curr_batch-1000)*8+len(current_y_pred))]
+    dat["X-GENRE"] = y_pred[(curr_batch-1000)*8:((curr_batch-1000)*8+len(current_y_pred))]
     dat.to_csv("{}_{}".format(final_file, curr_batch/1000+1), sep="\t")
     del dat
 
