@@ -310,6 +310,7 @@ def split_data(data, test_prop= 0.1, dev_prop = 0.1, test_size = 0, dev_size = 0
 
     dom_genre = data.groupby(['en_domain','X-GENRE'])['en_par'].count().reset_index()
     labels = list(dom_genre['X-GENRE'].unique())
+    print(labels)
     if balance:
         ratios = {label : dom_genre[dom_genre['X-GENRE']==label]['en_par'].sum()/dom_genre['en_par'].sum() for label in labels}
         total = dom_genre['en_par'].sum()
@@ -458,11 +459,14 @@ def main():
         # # merge doc_data and data based on en_doc
         # data = pd.merge(doc_labels, data, on="en_doc")
         # load and merge all Macocu-hr-en.labelled.25.csv_*.* csv files
-        data = pd.DataFrame()
+        doc_data = pd.DataFrame()
         for file in data_folder.glob(f"Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv_*.*"):
             print(f"Loading {file}")
-            data = pd.concat([data, pd.read_csv(file, sep="\t", header=0)])
-        # remove Unnamed: 0 column
+            doc_data = pd.concat([doc_data, pd.read_csv(file, sep="\t", header=0)])
+        data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
+        # merge doc_data and data based on en_doc
+        data = pd.merge(doc_data, data, on="en_doc")
+         # remove Unnamed: 0 column
         data = data.drop(columns=["Unnamed: 0"])
         data.to_csv(f"{args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t") 
     else:
