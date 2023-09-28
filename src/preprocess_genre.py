@@ -463,12 +463,14 @@ def main():
         for file in data_folder.glob(f"Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv_*.*"):
             print(f"Loading {file}")
             doc_data = pd.concat([doc_data, pd.read_csv(file, sep="\t", header=0)])
+        # drop all but en_doc and X-GENRE columns
+        doc_data = doc_data[['en_doc', 'X-GENRE']]
         data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
         # merge doc_data and data based on en_doc
         data = pd.merge(doc_data, data, on="en_doc")
          # remove Unnamed: 0 column
-        # data = data.drop(columns=["Unnamed: 0"])
-        data.to_csv(f"{args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t") 
+        data = data.drop(columns=["Unnamed: 0"])
+        data.to_csv(f"{args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", index=False) 
     else:
          data = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", header=0)
     
