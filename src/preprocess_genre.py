@@ -467,7 +467,7 @@ def main():
         # merge doc_data and data based on en_doc
         data = pd.merge(doc_data, data, on="en_doc")
          # remove Unnamed: 0 column
-        data = data.drop(columns=["Unnamed: 0"])
+        # data = data.drop(columns=["Unnamed: 0"])
         data.to_csv(f"{args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t") 
     else:
          data = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", header=0)
