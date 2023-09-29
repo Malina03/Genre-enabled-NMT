@@ -31,7 +31,10 @@ if [ ! -d "$root_dir/logs/$model_type/$exp_type" ]; then
     mkdir -p $root_dir/logs/$model_type/$exp_type
 fi
 
-model="Helsinki-NLP/opus-mt-en-${language}"
+if $lang == 'hr'; then
+    model="Helsinki-NLP/opus-mt-en-sla"
+else
+    model="Helsinki-NLP/opus-mt-en-${language}"
 
 
 
