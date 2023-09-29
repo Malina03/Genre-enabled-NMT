@@ -261,9 +261,16 @@ def satisfy_all_genre_counts(target_cnt, curr_cnt, genres, data):
             return False
     return True
 
-def satisfied_min_genre_count(target_cnt, curr_cnt, genres):
+def satisfied_min_genre_count(target_cnt, curr_cnt, genres, data):
     for genre in genres:
         if curr_cnt[genre] < target_cnt[genre]:
+            # check if for the rest of the genres the current_count + data would be greater than the target count + 10%
+            for g in genres:
+                if g != genre:
+                    if curr_cnt[g] + data[data['X-GENRE']== g]['en_par'].sum() > target_cnt[g] + 0.1 * target_cnt[g]:
+                        # if by adding this domain, the genre targets for the other genres are passed by more than 10%, then don't add this domain
+                        return True
+            # add domain if the target count for this genre is not satisfied and it wouldn't pass the target count for the other genres by more than 10%
             return False
     return True
 
@@ -353,10 +360,10 @@ def split_data(data, test_prop= 0.1, dev_prop = 0.1, test_size = 0, dev_size = 0
             else:
                 train_domains.append(domain)
         else:
-            if not satisfied_min_genre_count(test_target_cnt, test_curr_cnt, genres):
+            if not satisfied_min_genre_count(test_target_cnt, test_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain]):
                 test_curr_cnt = update_genre_counts(test_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain])
                 test_domains.append(domain)
-            elif not satisfied_min_genre_count(dev_target_cnt, dev_curr_cnt, genres):
+            elif not satisfied_min_genre_count(dev_target_cnt, dev_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain]):
                 dev_curr_cnt = update_genre_counts(dev_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain])
                 dev_domains.append(domain)
             else:
