@@ -1,14 +1,14 @@
 import pandas as pd
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 def print_genre_distribution(data):
     print("Genre distribution:")
     print(data['X-GENRE'].value_counts())
     print("Total number of lines:", len(data))
 
-def plot_genre_distribution(data, save_file):
-    data['X-GENRE'].value_counts().plot(kind='bar')
-    plt.savefig(save_file)
+# def plot_genre_distribution(data, save_file):
+#     data['X-GENRE'].value_counts().plot(kind='bar')
+#     plt.savefig(save_file)
 
 def main():
     data = pd.read_csv('/scratch/s3412768/genre_NMT/en-hr/data/MaCoCu.en-hr_complete.tsv', sep='\t')
