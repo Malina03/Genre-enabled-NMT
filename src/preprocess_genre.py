@@ -262,16 +262,21 @@ def satisfy_all_genre_counts(target_cnt, curr_cnt, genres, data):
     return True
 
 def satisfied_min_genre_count(target_cnt, curr_cnt, genres, data):
+    flag = 0
     for genre in genres:
         if curr_cnt[genre] < target_cnt[genre]:
             # check if for the rest of the genres the current_count + data would be greater than the target count + 10%
             for g in genres:
                 if g != genre:
-                    if curr_cnt[g] + data[data['X-GENRE']== g]['en_par'].sum() > target_cnt[g] + 0.1 * target_cnt[g]:
-                        # if by adding this domain, the genre targets for the other genres are passed by more than 10%, then don't add this domain
+                    if curr_cnt[g] + data[data['X-GENRE']== g]['en_par'].sum() > target_cnt[g] + 0.5 * target_cnt[g]:
+                        # if by adding this domain, the genre targets for the other genres are passed by more than 50%, then don't add this domain
                         return True
-            # add domain if the target count for this genre is not satisfied and it wouldn't pass the target count for the other genres by more than 10%
-            return False
+            # add domain if the target count for this genre is not satisfied and it wouldn't pass the target count for the other genres by more than 50%
+            flag += 1
+    # if for all genres, satisfying the tgt cnt would't pass the tgt cnt for the other genres by more than 50%, then add this domain
+    if flag == len(genres):
+        return False
+    # rteturn true to not add the domain if the target counts are already satisfied or cannot be satisified
     return True
 
 def update_genre_counts(curr_cnt, genres, data):
