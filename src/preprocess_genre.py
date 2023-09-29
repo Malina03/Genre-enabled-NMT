@@ -261,22 +261,28 @@ def satisfy_all_genre_counts(target_cnt, curr_cnt, genres, data):
             return False
     return True
 
-def satisfied_min_genre_count(target_cnt, curr_cnt, genres, data):
-    flag = 0
+
+
+def satisfied_min_genre_count(target_cnt, curr_cnt, genres):
     for genre in genres:
         if curr_cnt[genre] < target_cnt[genre]:
-            # check if for the rest of the genres the current_count + data would be greater than the target count + 10%
-            for g in genres:
-                if g != genre:
-                    if curr_cnt[g] + data[data['X-GENRE']== g]['en_par'].sum() > target_cnt[g] + 0.5 * target_cnt[g]:
-                        # if by adding this domain, the genre targets for the other genres are passed by more than 50%, then don't add this domain
-                        return True
-            # add domain if the target count for this genre is not satisfied and it wouldn't pass the target count for the other genres by more than 50%
-            flag += 1
-    # if for all genres, satisfying the tgt cnt would't pass the tgt cnt for the other genres by more than 50%, then add this domain
-    if flag == len(genres):
+            return False
+    return True
+
+def valid_addition(target_cnt, curr_cnt, genres, data):
+    """ Function to check if a domain can be added to the test set.
+
+    Args:
+
+
+    """
+    if satisfied_min_genre_count(target_cnt, curr_cnt, genres):
         return False
-    # rteturn true to not add the domain if the target counts are already satisfied or cannot be satisified
+    
+    for genre in genres:
+        if curr_cnt[genre] + data[data['X-GENRE'] == genre]['en_par'].sum() > 3 * target_cnt[genre]:
+            # check if for the rest of the genres the current_count + data would be greater than the target count 3 times
+            return False
     return True
 
 def update_genre_counts(curr_cnt, genres, data):
@@ -365,10 +371,11 @@ def split_data(data, test_prop= 0.1, dev_prop = 0.1, test_size = 0, dev_size = 0
             else:
                 train_domains.append(domain)
         else:
-            if not satisfied_min_genre_count(test_target_cnt, test_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain]):
+            # Add domain to test set if it satisfies the minimum target counts for all genres and doesn't go over  3 * target count for any genre
+            if valid_addition(test_target_cnt, test_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain]):
                 test_curr_cnt = update_genre_counts(test_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain])
                 test_domains.append(domain)
-            elif not satisfied_min_genre_count(dev_target_cnt, dev_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain]):
+            elif valid_addition(dev_target_cnt, dev_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain]):
                 dev_curr_cnt = update_genre_counts(dev_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain])
                 dev_domains.append(domain)
             else:

@@ -1,6 +1,6 @@
 '''Fine-tune a pre-trained model from Huggingface on a new dataset.'''
 
-from transformers import AutoTokenizer, EarlyStoppingCallback, AutoModelForSeq2SeqLM, Seq2SeqTrainer, DataCollatorForSeq2Seq
+from transformers import AutoTokenizer, EarlyStoppingCallback, AutoModelForSeq2SeqLM, Seq2SeqTrainer, DataCollatorForSeq2Seq, AutoConfig
 from utils import get_args, get_train_args, load_data, compute_metrics
 import wandb
 from functools import partial
@@ -11,7 +11,7 @@ if __name__ == "__main__":
     args = get_args()
     if args.wandb:
         # only log the training process 
-        wandb_name = f"{args.train_file.split('/')[-1].split('.')[1]}_{args.exp_type}"
+        wandb_name = f"{args.train_file.split('/')[-1].split('.')[1]}_{args.model_type}_{args.exp_type}"
         # Initialize wandb
         wandb.init(project="genre_NMT", name=wandb_name, config=args)
 
@@ -33,7 +33,12 @@ if __name__ == "__main__":
     # Load the model
     if args.checkpoint is None:
         # config = AutoConfig.from_pretrained(args.model_name)
-        model = AutoModelForSeq2SeqLM.from_pretrained(args.model_name)
+        if "from_scratch" in args.model_type:
+            print("Training from scratch")
+            config = AutoConfig.from_pretrained(args.model_name)
+            model = AutoModelForSeq2SeqLM.from_config(config)
+        else:
+            model = AutoModelForSeq2SeqLM.from_pretrained(args.model_name)
         if "genre_aware_token" in args.exp_type:
             model.resize_token_embeddings(len(tokenizer))
     else:
@@ -66,7 +71,7 @@ if __name__ == "__main__":
                 preds = preds[0]
             decode_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
             predictions = [pred.strip() for pred in decode_preds]
-            logging_dir = os.path.join(args.root_dir, "eval", args.exp_type)
+            logging_dir = os.path.join(args.root_dir, "eval", args.model_type, args.exp_type)
             if not os.path.exists(logging_dir):
                 os.makedirs(logging_dir)
             eval_corpus = args.test_file.split("/")[-1].split(".")[0]

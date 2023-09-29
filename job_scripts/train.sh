@@ -4,7 +4,7 @@
 #SBATCH --job-name=train
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
-#SBATCH --mem=50G
+#SBATCH --mem=100G
 
 
 export PATH="$PATH:/home1/s3412768/.local/bin"
@@ -22,12 +22,13 @@ source /home1/s3412768/.envs/nmt2/bin/activate
 corpus=$1 # corpus to fine-tune on
 language=$2 # target language
 exp_type=$3 # type of experiment ([doc_]genre_aware[_token] -genres are added as proper tokens- or [doc_]baseline)
+model_type=$4 # type of model (e.g. fine_tuned or from_scratch.)
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
-log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/train_${corpus}.log"
+log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$model_type/$exp_type/train_${corpus}.log"
 # if log directory does not exist, create it
-if [ ! -d "$root_dir/logs/$exp_type" ]; then
-    mkdir -p $root_dir/logs/$exp_type
+if [ ! -d "$root_dir/logs/$model_type/$exp_type" ]; then
+    mkdir -p $root_dir/logs/$model_type/$exp_type
 fi
 
 model="Helsinki-NLP/opus-mt-en-${language}"
@@ -64,8 +65,9 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --evaluation_strategy epoch \
     --learning_rate 1e-5 \
     --exp_type $exp_type \
+    --model_type $model_type \
     --model_name $model \
     --early_stopping 3 \
     --eval_baseline \
-    --num_train_epochs 20 \
+    --num_train_epochs 30 \
     &> $log_file
