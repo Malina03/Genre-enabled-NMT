@@ -13,9 +13,9 @@ def print_genre_distribution(data):
 def main():
     data = pd.read_csv('/scratch/s3412768/genre_NMT/en-hr/data/MaCoCu.en-hr_complete.tsv', sep='\t')
     # check if the sources are different by set
-    dev_src = data[['set']=='dev']['en_domain'].unique()
-    test_src = data[['set']=='test']['en_domain'].unique()
-    train_src = data[['set']=='train']['en_domain'].unique()
+    dev_src = data[data['set']=='dev']['en_domain'].unique()
+    test_src = data[data['set']=='test']['en_domain'].unique()
+    train_src = data[data['set']=='train']['en_domain'].unique()
     print("Check if the sources are different by set")
     print(set(test_src).intersection(set(train_src)).intersection(set(dev_src)))
 
