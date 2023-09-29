@@ -384,21 +384,22 @@ def save_datasets(train, dev, test, tgt_lang, tgt_col, path, name):
         name (str): name of the files
 
     """
+    
     # if tgt_col == 'par':
     # save all columns to tsv if it doesn't exist 
-    if not os.path.exists(path + name + '_complete.tsv'):
+    if not os.path.exists(path + "/" +  name + '_complete.tsv'):
         # merge columns add test, dev or train to new column 'set'
         train['set'] = ['train'] * train.shape[0]
         dev['set'] = ['dev'] * dev.shape[0]
         test['set'] = ['test'] * test.shape[0]
         # merge all datasets
         df = pd.concat([train, dev, test])
-        df.to_csv(path + name + '_complete.tsv', sep='\t', index=False)
+        df.to_csv(path  + "/" +  name + '_complete.tsv', sep='\t', index=False)
     # save only en_par and is_par columns to csv
 
-    train[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path + name + '.train.tsv', sep='\t', index=False, header=False)
-    dev[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path + name + '.dev.tsv', sep='\t', index=False, header=False)
-    test[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path + name + '.test.tsv', sep='\t', index=False, header=False)
+    train[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path  + "/" +  name + '.train.tsv', sep='\t', index=False, header=False)
+    dev[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path  + "/" + name + '.dev.tsv', sep='\t', index=False, header=False)
+    test[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path  + "/" +  name + '.test.tsv', sep='\t', index=False, header=False)
     
     # add token in from of en_par according to mapping
     genre_tokens = {'Prose/Lyrical': '>>lit<<','Instruction': '>>instr<<', 'Promotion': '>>promo<<', 'Opinion/Argumentation': '>>arg<<' , 'Other': '>>other<<' , 'Information/Explanation': '>>info<<', 'News': '>>news<<', 'Legal': '>>law<<', 'Forum': 
@@ -417,11 +418,11 @@ def save_datasets(train, dev, test, tgt_lang, tgt_col, path, name):
 
     # save en_par and tgt_lang_par with genre tokens
 
-    train[[f'en_{tgt_col}_tokens', f'{tgt_lang}_{tgt_col}']].to_csv(path + name + '.train.tag.tsv', sep='\t', index=False, header=False)
-    dev[[f'en_{tgt_col}_tokens', f'{tgt_lang}_{tgt_col}']].to_csv(path + name + '.dev.tag.tsv', sep='\t', index=False, header=False)
-    test[[f'en_{tgt_col}_tokens', f'{tgt_lang}_{tgt_col}']].to_csv(path + name + '.test.tag.tsv', sep='\t', index=False, header=False)
+    train[[f'en_{tgt_col}_tokens', f'{tgt_lang}_{tgt_col}']].to_csv(path  + "/" +  name + '.train.tag.tsv', sep='\t', index=False, header=False)
+    dev[[f'en_{tgt_col}_tokens', f'{tgt_lang}_{tgt_col}']].to_csv(path  + "/" +  name + '.dev.tag.tsv', sep='\t', index=False, header=False)
+    test[[f'en_{tgt_col}_tokens', f'{tgt_lang}_{tgt_col}']].to_csv(path  + "/" +  name + '.test.tag.tsv', sep='\t', index=False, header=False)
 
-    print('Saved datasets to ' + path + name + '.tsv and ' + path + name + '.tag.tsv and ' + path + name + '_complete.tsv')
+    print('Saved datasets to ' + path  + "/" +  name + '.tsv and ' + path  + "/" +  name + '.tag.tsv and ' + path  + "/" +  name + '_complete.tsv')
 
 def create_arg_parser():
     parser = argparse.ArgumentParser()
@@ -498,8 +499,8 @@ def main():
     print("Splitting the data into train, dev, test sets.")
 	# make train, dev, test sets
     train, dev, test = split_data(data,test_size=args.test_size, dev_size=args.dev_size, balance = False)
-    save_datasets(train, dev, test, args.lang_code, "par", args.data_folder, data_folder/f"MaCoCu.en-{args.lang_code}")
-    save_datasets(train.drop_duplicates(['en_doc']), dev.drop_duplicates(['en_doc']), test.drop_duplicates(['en_doc']), args.lang_code, "doc", args.data_folder, data_folder/f"MaCoCu.en-{args.lang_code}.doc")
+    save_datasets(train, dev, test, args.lang_code, "par", args.data_folder, f"MaCoCu.en-{args.lang_code}")
+    save_datasets(train.drop_duplicates(['en_doc']), dev.drop_duplicates(['en_doc']), test.drop_duplicates(['en_doc']), args.lang_code, "doc", args.data_folder, f"MaCoCu.en-{args.lang_code}.doc")
     
 
 if __name__ == "__main__":
