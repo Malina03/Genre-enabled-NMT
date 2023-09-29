@@ -494,7 +494,7 @@ def main():
         data = data.drop(columns=["Unnamed: 0"])
         data.to_csv(f"{args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", index=False) 
     else:
-         data = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", header=0)
+        data = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", header=0)
     
     print("Splitting the data into train, dev, test sets.")
 	# make train, dev, test sets
