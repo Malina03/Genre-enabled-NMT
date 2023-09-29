@@ -261,6 +261,12 @@ def satisfy_all_genre_counts(target_cnt, curr_cnt, genres, data):
             return False
     return True
 
+def satisfied_min_genre_count(target_cnt, curr_cnt, genres):
+    for genre in genres:
+        if curr_cnt[genre] < target_cnt[genre]:
+            return False
+    return True
+
 def update_genre_counts(curr_cnt, genres, data):
     """ Function to update genre counts.
     Args:
@@ -337,15 +343,25 @@ def split_data(data, test_prop= 0.1, dev_prop = 0.1, test_size = 0, dev_size = 0
     for domain in dom_genre['en_domain'].unique():
         # print(domain)
         genres = list(dom_genre[dom_genre['en_domain']==domain]['X-GENRE'])
-        if satisfy_all_genre_counts(test_target_cnt, test_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain]):
-            test_curr_cnt = update_genre_counts(test_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain])
-            test_domains.append(domain)
-        elif satisfy_all_genre_counts(dev_target_cnt, dev_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain]):
-            dev_curr_cnt = update_genre_counts(dev_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain])
-            dev_domains.append(domain)
+        if balance: 
+            if satisfy_all_genre_counts(test_target_cnt, test_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain]):
+                test_curr_cnt = update_genre_counts(test_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain])
+                test_domains.append(domain)
+            elif satisfy_all_genre_counts(dev_target_cnt, dev_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain]):
+                dev_curr_cnt = update_genre_counts(dev_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain])
+                dev_domains.append(domain)
+            else:
+                train_domains.append(domain)
         else:
-            train_domains.append(domain)
-    
+            if not satisfied_min_genre_count(test_target_cnt, test_curr_cnt, genres):
+                test_curr_cnt = update_genre_counts(test_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain])
+                test_domains.append(domain)
+            elif not satisfied_min_genre_count(dev_target_cnt, dev_curr_cnt, genres):
+                dev_curr_cnt = update_genre_counts(dev_curr_cnt, genres, dom_genre[dom_genre['en_domain'] == domain])
+                dev_domains.append(domain)
+            else:
+                train_domains.append(domain)
+                         
     check_non_zero(test_curr_cnt, dev_curr_cnt)
 
     test = data[data['en_domain'].isin(test_domains)]
@@ -368,16 +384,17 @@ def save_datasets(train, dev, test, tgt_lang, tgt_col, path, name):
         name (str): name of the files
 
     """
-    # save all columns to tsv if it doesn't exist 
-    if not os.path.exists(path + name + '_complete.tsv'):
-        # merge columns add test, dev or train to new column 'set'
-        train['set'] = ['train'] * train.shape[0]
-        dev['set'] = ['dev'] * dev.shape[0]
-        test['set'] = ['test'] * test.shape[0]
-        # merge all datasets
-        df = pd.concat([train, dev, test])
-        df.to_csv(path + name + '_complete.tsv', sep='\t', index=False)
-    # save only en_par and is_par columns to csv
+    if tgt_col == 'par':
+        # save all columns to tsv if it doesn't exist 
+        if not os.path.exists(path + name + '_complete.tsv'):
+            # merge columns add test, dev or train to new column 'set'
+            train['set'] = ['train'] * train.shape[0]
+            dev['set'] = ['dev'] * dev.shape[0]
+            test['set'] = ['test'] * test.shape[0]
+            # merge all datasets
+            df = pd.concat([train, dev, test])
+            df.to_csv(path + name + '_complete.tsv', sep='\t', index=False)
+        # save only en_par and is_par columns to csv
 
     train[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path + name + '.train.tsv', sep='\t', index=False, header=False)
     dev[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path + name + '.dev.tsv', sep='\t', index=False, header=False)
@@ -481,8 +498,8 @@ def main():
     print("Splitting the data into train, dev, test sets.")
 	# make train, dev, test sets
     train, dev, test = split_data(data,test_size=args.test_size, dev_size=args.dev_size, balance = False)
-    save_datasets(train, dev, test, args.lang_code, "par", args.data_folder, f"MaCoCu.en-{args.lang_code}")
-    save_datasets(train.drop_duplicates(['en_doc']), dev.drop_duplicates(['en_doc']), test.drop_duplicates(['en_doc']), args.lang_code, "doc", args.data_folder, f"MaCoCu.en-{args.lang_code}.doc")
+    save_datasets(train, dev, test, args.lang_code, "par", args.data_folder, data_folder/f"MaCoCu.en-{args.lang_code}")
+    save_datasets(train.drop_duplicates(['en_doc']), dev.drop_duplicates(['en_doc']), test.drop_duplicates(['en_doc']), args.lang_code, "doc", args.data_folder, data_folder/f"MaCoCu.en-{args.lang_code}.doc")
     
 
 if __name__ == "__main__":

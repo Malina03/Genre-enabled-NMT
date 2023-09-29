@@ -27,3 +27,5 @@ python -u /home1/s3412768/Genre-enabled-NMT/src/preprocess_genre.py \
     -lang $1 \
     -df $root_dir \
     &> $root_dir/preprocess.log
+
+python -u /home1/s3412768/Genre-enabled-NMT/src/analyse.py > $root_dir/analyse.log
