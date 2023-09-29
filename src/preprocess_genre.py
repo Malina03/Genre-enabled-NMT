@@ -384,17 +384,17 @@ def save_datasets(train, dev, test, tgt_lang, tgt_col, path, name):
         name (str): name of the files
 
     """
-    if tgt_col == 'par':
-        # save all columns to tsv if it doesn't exist 
-        if not os.path.exists(path + name + '_complete.tsv'):
-            # merge columns add test, dev or train to new column 'set'
-            train['set'] = ['train'] * train.shape[0]
-            dev['set'] = ['dev'] * dev.shape[0]
-            test['set'] = ['test'] * test.shape[0]
-            # merge all datasets
-            df = pd.concat([train, dev, test])
-            df.to_csv(path + name + '_complete.tsv', sep='\t', index=False)
-        # save only en_par and is_par columns to csv
+    # if tgt_col == 'par':
+    # save all columns to tsv if it doesn't exist 
+    if not os.path.exists(path + name + '_complete.tsv'):
+        # merge columns add test, dev or train to new column 'set'
+        train['set'] = ['train'] * train.shape[0]
+        dev['set'] = ['dev'] * dev.shape[0]
+        test['set'] = ['test'] * test.shape[0]
+        # merge all datasets
+        df = pd.concat([train, dev, test])
+        df.to_csv(path + name + '_complete.tsv', sep='\t', index=False)
+    # save only en_par and is_par columns to csv
 
     train[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path + name + '.train.tsv', sep='\t', index=False, header=False)
     dev[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path + name + '.dev.tsv', sep='\t', index=False, header=False)
