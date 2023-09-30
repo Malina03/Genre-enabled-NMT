@@ -31,11 +31,11 @@ if [ ! -d "$root_dir/logs/$model_type/$exp_type" ]; then
     mkdir -p $root_dir/logs/$model_type/$exp_type
 fi
 
-if $lang == 'hr'; then
+if [ $lang = 'hr' ]; then
     model="Helsinki-NLP/opus-mt-en-sla"
 else
     model="Helsinki-NLP/opus-mt-en-${language}"
-
+fi
 
 
 if [ $exp_type = 'genre_aware' ] || [ $exp_type = 'genre_aware_token' ]; then
@@ -71,6 +71,5 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --model_type $model_type \
     --model_name $model \
     --early_stopping 3 \
-    --eval_baseline \
     --num_train_epochs 30 \
     &> $log_file
