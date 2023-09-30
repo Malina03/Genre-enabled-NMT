@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=01:00:00
+#SBATCH --time=72:00:00
 #SBATCH --job-name=train
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
@@ -71,5 +71,6 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --model_type $model_type \
     --model_name $model \
     --early_stopping 3 \
+    --eval_baseline \
     --num_train_epochs 30 \
     &> $log_file

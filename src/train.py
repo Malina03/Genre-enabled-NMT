@@ -57,7 +57,7 @@ if __name__ == "__main__":
         args=training_args,
         train_dataset=train_dataset,
         eval_dataset=dev_dataset,
-        data_collator=DataCollatorForSeq2Seq(tokenizer, model=model),
+        data_collator=DataCollatorForSeq2Seq(tokenizer, model=model, pad_to_multiple_of=16),
         tokenizer=tokenizer,
         compute_metrics=partial(compute_metrics, tokenizer=tokenizer),
         callbacks=callbacks
