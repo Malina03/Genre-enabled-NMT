@@ -37,6 +37,14 @@ else
     model="Helsinki-NLP/opus-mt-en-${language}"
 fi
 
+if [ $model_type = 'from_scratch' ]; then
+    checkpoint=""
+elif [ $model_type = 'fine_tuned' ]; then
+    checkpoint=$root_dir/models/$model_type/baseline/$corpus/checkpoint-*
+else
+    echo "Invalid model type"
+    exit 1
+fi
 
 if [ $exp_type = 'genre_aware' ] || [ $exp_type = 'genre_aware_token' ]; then
     train_file="$root_dir/data/${corpus}.en-$language.train.tag.tsv"
@@ -50,10 +58,15 @@ elif [ $exp_type = 'baseline' ]; then
 elif [ $exp_type = 'doc_baseline' ]; then
     train_file="$root_dir/data/${corpus}.en-$language.doc.train.tsv"
     dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tsv"
-else   
+elif [ $exp_type = 'promo' ] || [ $exp_type = 'info' ] || [ $exp_type = 'news' ]; then
+    train_file="$root_dir/data/${corpus}.en-$language.train.$exp_type.tsv"
+    dev_file="${root_dir}/data/${corpus}.en-$language.dev.$exp_type.tsv"
+else
     echo "Invalid experiment type"
     exit 1
 fi
+
+echo "Checkpoint: $checkpoint"
 
 python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --root_dir $root_dir \
@@ -72,5 +85,6 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --model_name $model \
     --early_stopping 3 \
     --eval_baseline \
-    --num_train_epochs 30 \
+    --num_train_epochs 10 \
+    --checkpoint $checkpoint \
     &> $log_file
