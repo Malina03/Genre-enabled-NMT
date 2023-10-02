@@ -40,7 +40,7 @@ fi
 if [ $model_type = 'from_scratch' ]; then
     checkpoint=""
 elif [ $model_type = 'fine_tuned' ]; then
-    checkpoint=$root_dir/models/$model_type/baseline/$corpus/checkpoint-*
+    checkpoint=$root_dir/models/from_scratch/baseline/$corpus/checkpoint-*
 else
     echo "Invalid model type"
     exit 1
