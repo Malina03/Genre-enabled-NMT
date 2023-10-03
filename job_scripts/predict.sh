@@ -33,6 +33,7 @@ if [ $language = 'hr' ]; then
     model="Helsinki-NLP/opus-mt-en-sla"
 else
     model="Helsinki-NLP/opus-mt-en-${language}"
+fi
 
 test_file="${root_dir}/data/${test_on}"
 
