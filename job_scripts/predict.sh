@@ -37,11 +37,8 @@ fi
 
 test_file="${root_dir}/data/${test_on}"
 
-if [ $exp_type = 'baseline' ]; then
-    checkpoint=$root_dir/models/$model_type/$exp_type/$train_corpus/checkpoint-768198
-else
-    checkpoint=$root_dir/models/$model_type/$exp_type/$train_corpus/checkpoint-*
-fi
+checkpoint=$root_dir/models/$model_type/$exp_type/$train_corpus/checkpoint-*
+
 
 log_file="${root_dir}/logs/$model_type/$exp_type/eval_${test_on}.log"
 # if log directory does not exist, create it - but it really should exist
