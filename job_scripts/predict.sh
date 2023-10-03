@@ -29,7 +29,10 @@ test_on=$5 # the test file to evaluate on, assuming it is placed in root_dir/dat
 
 root_dir="/scratch/s3412768/genre_NMT/en-${language}"
 
-model="Helsinki-NLP/opus-mt-en-${language}"
+if [ $language = 'hr' ]; then
+    model="Helsinki-NLP/opus-mt-en-sla"
+else
+    model="Helsinki-NLP/opus-mt-en-${language}"
 
 test_file="${root_dir}/data/${test_on}"
 
