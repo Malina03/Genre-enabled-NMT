@@ -14,7 +14,7 @@ def get_args():
     parser.add_argument("-eval", "--eval", required=False, action="store_true", help="Whether to only evaluate the model.")
     parser.add_argument("-predict", "--predict", required=False, action="store_true", help="Whether to only predict with the model.")
     parser.add_argument("-exp_type", "--exp_type", required=False, type=str, default="fine_tune", help="Type of experiment. genre_aware, genre_aware_token, baseline, doc-.")
-    parser.add_argument("-model_type", "--model_type", required=False, type=str, default="fine_tuned", help="Type of model. Can be fine_tuned or from_scratch.")
+    parser.add_argument("-model_type", "--model_type", required=False, type=str, default="", help="Type of model. Can be fine_tuned or from_scratch.")
     parser.add_argument("-wandb", "--wandb", required=False, action="store_true", help="Whether to log the training process on wandb.")
     parser.add_argument("-eval_baseline", "--eval_baseline", required=False, action="store_true", help="Whether to evaluate the baseline model before fine-tuning.")
 
@@ -44,6 +44,7 @@ def get_args():
     parser.add_argument("-save_total_limit", "--save_total_limit", required=False, type=int, default=1, help="Maximum number of checkpoints to save.")
     parser.add_argument("-save_steps", "--save_steps", required=False, type=int, default=10000, help="Save checkpoint every X updates steps.")
     parser.add_argument("-early_stopping", "--early_stopping", required=False, type=int, default=2, help="Early stopping patience.")
+    parser.add_argument("-early_stopping_threshold", "--early_stopping_threshold", required=False, type=float, default=0.05, help="Early stopping threshold.")
     parser.add_argument("-label_smoothing", "--label_smoothing", required=False, type=float, default=0.1, help="Label smoothing.")
     parser.add_argument("-fp16", "--fp16", required=False, action="store_true", help="Whether to use fp16.")
     parser.add_argument("-adafactor", "--adafactor", required=False, action="store_true", help="Whether to use AdaFactor.")
