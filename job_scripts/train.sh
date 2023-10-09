@@ -27,7 +27,7 @@ genre=$5 # genre to fine-tune on
 
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
-log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$model_type/$exp_type/train_${corpus}.log"
+log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/$genre/train_${corpus}.log"
 # if log directory does not exist, create it
 if [ ! -d "$root_dir/logs/$exp_type/$model_type/$genre" ]; then
     mkdir -p $root_dir/logs/$exp_type/$model_type/$genre
