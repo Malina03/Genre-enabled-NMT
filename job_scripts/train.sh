@@ -41,6 +41,7 @@ fi
 
 if [ $exp_type_type = 'from_scratch' ]; then
     checkpoint=""
+    genre=""
 elif [ $exp_type = 'fine_tuned' ]; then
     checkpoint=$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-*
 else
@@ -49,20 +50,20 @@ else
 fi
 
 if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
-    train_file="$root_dir/data/${corpus}.en-$language.train.tag.tsv"
-    dev_file="${root_dir}/data/${corpus}.en-$language.dev.tag.tsv"
+    train_file="$root_dir/data/${corpus}.en-$language.train.$genre.tag.tsv"
+    dev_file="${root_dir}/data/${corpus}.en-$language.dev.$genre.tag.tsv"
 elif [ $model_type = 'doc_genre_aware' ] || [ $model_type = 'doc_genre_aware_token' ]; then
     train_file="$root_dir/data/${corpus}.en-$language.doc.train.tag.tsv"
     dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tag.tsv"
 elif [ $model_type = 'baseline' ]; then
-    train_file="$root_dir/data/${corpus}.en-$language.train.tsv"
-    dev_file="${root_dir}/data/${corpus}.en-$language.dev.tsv"
+    train_file="$root_dir/data/${corpus}.en-$language.train.$genre.tsv"
+    dev_file="${root_dir}/data/${corpus}.en-$language.dev.$genre.tsv"
 elif [ $model_type = 'doc_baseline' ]; then
     train_file="$root_dir/data/${corpus}.en-$language.doc.train.tsv"
     dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tsv"
-elif [ $genre = 'promo' ] || [ $genre = 'info' ] || [ $genre = 'news' ] || [ $genre = 'law' ] [ $genre = 'arg' ] [ $genre = 'lit' ]; then
-    train_file="$root_dir/data/${corpus}.en-$language.train.$exp_type.tsv"
-    dev_file="${root_dir}/data/${corpus}.en-$language.dev.$exp_type.tsv"
+# elif [ $genre = 'promo' ] || [ $genre = 'info' ] || [ $genre = 'news' ] || [ $genre = 'law' ] || [ $genre = 'arg' ] || [ $genre = 'lit' ]; then
+#     train_file="$root_dir/data/${corpus}.en-$language.train.$exp_type.tsv"
+#     dev_file="${root_dir}/data/${corpus}.en-$language.dev.$exp_type.tsv"
 else
     echo "Invalid experiment type"
     exit 1
