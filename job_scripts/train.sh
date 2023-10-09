@@ -21,14 +21,16 @@ source /home1/s3412768/.envs/nmt2/bin/activate
 
 corpus=$1 # corpus to fine-tune on
 language=$2 # target language
-exp_type=$3 # type of experiment ([doc_]genre_aware[_token] -genres are added as proper tokens- or [doc_]baseline)
-model_type=$4 # type of model (e.g. fine_tuned or from_scratch.)
+exp_type=$3 # type of model (e.g. fine_tuned or from_scratch.)
+model_type=$4 # type of experiment ([doc_]genre_aware[_token] -genres are added as proper tokens- or [doc_]baseline)
+genre=$5 # genre to fine-tune on 
+
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
 log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$model_type/$exp_type/train_${corpus}.log"
 # if log directory does not exist, create it
-if [ ! -d "$root_dir/logs/$model_type/$exp_type" ]; then
-    mkdir -p $root_dir/logs/$model_type/$exp_type
+if [ ! -d "$root_dir/logs/$exp_type/$model_type/$genre" ]; then
+    mkdir -p $root_dir/logs/$exp_type/$model_type/$genre
 fi
 
 if [ $language = 'hr' ]; then
@@ -37,28 +39,28 @@ else
     model="Helsinki-NLP/opus-mt-en-${language}"
 fi
 
-if [ $model_type = 'from_scratch' ]; then
+if [ $exp_type_type = 'from_scratch' ]; then
     checkpoint=""
-elif [ $model_type = 'fine_tuned' ]; then
-    checkpoint=$root_dir/models/from_scratch/baseline/$corpus/checkpoint-*
+elif [ $exp_type = 'fine_tuned' ]; then
+    checkpoint=$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-*
 else
     echo "Invalid model type"
     exit 1
 fi
 
-if [ $exp_type = 'genre_aware' ] || [ $exp_type = 'genre_aware_token' ]; then
+if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
     train_file="$root_dir/data/${corpus}.en-$language.train.tag.tsv"
     dev_file="${root_dir}/data/${corpus}.en-$language.dev.tag.tsv"
-elif [ $exp_type = 'doc_genre_aware' ] || [ $exp_type = 'doc_genre_aware_token' ]; then
+elif [ $model_type = 'doc_genre_aware' ] || [ $model_type = 'doc_genre_aware_token' ]; then
     train_file="$root_dir/data/${corpus}.en-$language.doc.train.tag.tsv"
     dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tag.tsv"
-elif [ $exp_type = 'baseline' ]; then
+elif [ $model_type = 'baseline' ]; then
     train_file="$root_dir/data/${corpus}.en-$language.train.tsv"
     dev_file="${root_dir}/data/${corpus}.en-$language.dev.tsv"
-elif [ $exp_type = 'doc_baseline' ]; then
+elif [ $model_type = 'doc_baseline' ]; then
     train_file="$root_dir/data/${corpus}.en-$language.doc.train.tsv"
     dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tsv"
-elif [ $exp_type = 'promo' ] || [ $exp_type = 'info' ] || [ $exp_type = 'news' ]; then
+elif [ $genre = 'promo' ] || [ $genre = 'info' ] || [ $genre = 'news' ] || [ $genre = 'law' ] [ $genre = 'arg' ] [ $genre = 'lit' ]; then
     train_file="$root_dir/data/${corpus}.en-$language.train.$exp_type.tsv"
     dev_file="${root_dir}/data/${corpus}.en-$language.dev.$exp_type.tsv"
 else
@@ -82,6 +84,7 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --learning_rate 1e-5 \
     --exp_type $exp_type \
     --model_type $model_type \
+    --genre $genre \
     --model_name $model \
     --early_stopping 3 \
     --eval_baseline \

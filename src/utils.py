@@ -13,8 +13,9 @@ def get_args():
     parser.add_argument("-checkpoint", "--checkpoint", required=False, type=str, help="Path to the checkpoint to fine-tune. If not provided, the model will be initialized from scratch.")
     parser.add_argument("-eval", "--eval", required=False, action="store_true", help="Whether to only evaluate the model.")
     parser.add_argument("-predict", "--predict", required=False, action="store_true", help="Whether to only predict with the model.")
-    parser.add_argument("-exp_type", "--exp_type", required=False, type=str, default="fine_tune", help="Type of experiment. genre_aware, genre_aware_token, baseline, doc-.")
-    parser.add_argument("-model_type", "--model_type", required=False, type=str, default="", help="Type of model. Can be fine_tuned or from_scratch.")
+    parser.add_argument("-exp_type", "--exp_type", required=False, type=str, default="fine_tune", help="Type of experiment.Can be fine_tuned or from_scratch.")
+    parser.add_argument("-model_type", "--model_type", required=False, type=str, default=None, help="Type of model. genre_aware, genre_aware_token, baseline, doc-")
+    parser.add_argument("-genre", "--genre", required=False, type=str, default=None, help="Genre used for fine tuning.")
     parser.add_argument("-wandb", "--wandb", required=False, action="store_true", help="Whether to log the training process on wandb.")
     parser.add_argument("-eval_baseline", "--eval_baseline", required=False, action="store_true", help="Whether to evaluate the baseline model before fine-tuning.")
 
@@ -70,7 +71,7 @@ class HFDataset(torch.utils.data.Dataset):
 
 def get_train_args(args):
     if not args.eval and not args.predict: 
-        model_save_dir = os.path.join(args.root_dir, "models", args.model_type, args.exp_type, args.train_file.split("/")[-1].split(".")[0])
+        model_save_dir = os.path.join(args.root_dir, "models", args.exp_type, args.model_type, args.genre, args.train_file.split("/")[-1].split(".")[0])
         if not os.path.exists(model_save_dir):
             os.makedirs(model_save_dir)
     else:

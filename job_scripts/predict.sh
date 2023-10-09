@@ -22,8 +22,9 @@ source /home1/s3412768/.envs/nmt2/bin/activate
 
 train_corpus=$1 # the corpus that the model was trained on
 language=$2 # the target language
-exp_type=$3 # type of experiment (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
-model_type=$4
+exp_type=$3 # type of experiment (fine_tuned or from_scratch.)
+model_type=$4 # type of model (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
+genre=$5 # the genre that the model was trained on
 test_on=$5 # the test file to evaluate on, assuming it is placed in root_dir/data
 
 
@@ -37,13 +38,13 @@ fi
 
 test_file="${root_dir}/data/${test_on}"
 
-checkpoint=$root_dir/models/$model_type/$exp_type/$train_corpus/checkpoint-*
+checkpoint=$root_dir/models/$exp_type/$model_type/$genre/$train_corpus/checkpoint-*
 
 
-log_file="${root_dir}/logs/$model_type/$exp_type/eval_${test_on}.log"
+log_file="${root_dir}/logs/$exp_type/$model_type/$genre/eval_${test_on}.log"
 # if log directory does not exist, create it - but it really should exist
-if [ ! -d "$root_dir/logs/$model_type/$exp_type/" ]; then
-    mkdir -p $root_dir/logs/$model_type/$exp_type/
+if [ ! -d "$root_dir/logs/$exp_type/$model_type/$genre/" ]; then
+    mkdir -p $root_dir/logs/$exp_type/$model_type/$genre/
 fi
 
     
@@ -58,6 +59,7 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --adafactor \
     --exp_type $exp_type \
     --model_type $model_type \
+    --genre $genre \
     --checkpoint $checkpoint \
     --model_name $model \
     --eval \

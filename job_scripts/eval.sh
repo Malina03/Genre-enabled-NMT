@@ -20,7 +20,7 @@ eval_file=$5 # File to evaluate against
 
 
 root_dir="/scratch/s3412768/genre_NMT/en-${lang}"
-out=$root_dir/eval/$model_type/$exp_type/$out_file
+out=$root_dir/eval/$exp_type/$model_type/$genre/$out_file
 eval=$root_dir/data/$eval_file
 
 ref=$eval.ref

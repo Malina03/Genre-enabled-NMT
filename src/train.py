@@ -11,14 +11,14 @@ if __name__ == "__main__":
     args = get_args()
     if args.wandb:
         # only log the training process 
-        wandb_name = f"{args.train_file.split('/')[-1].split('.')[1]}_{args.model_type}_{args.exp_type}"
+        wandb_name = f"{args.train_file.split('/')[-1].split('.')[1]}_{args.exp_type}_{args.model_type}_{args._get_args}"
         # Initialize wandb
         wandb.init(project="genre_NMT", name=wandb_name, config=args)
 
     
     # Load the data
     tokenizer = AutoTokenizer.from_pretrained(args.model_name, max_length=args.max_length, truncation=True)
-    if "genre_aware_token" in args.exp_type:
+    if "genre_aware_token" in args.model_type:
         tags = ['>>info<<', '>>promo<<', '>>news<<', '>>law<', '>>other<<', '>>arg<<', '>>instr<<', '>>lit<<', '>>forum<<']
         tokenizer.add_special_tokens({'additional_special_tokens': tags})
 
@@ -33,13 +33,13 @@ if __name__ == "__main__":
     # Load the model
     if args.checkpoint is None:
         # config = AutoConfig.from_pretrained(args.model_name)
-        if "from_scratch" in args.model_type:
+        if "from_scratch" in args.exp_type:
             print("Training from scratch")
             config = AutoConfig.from_pretrained(args.model_name)
             model = AutoModelForSeq2SeqLM.from_config(config)
         else:
             model = AutoModelForSeq2SeqLM.from_pretrained(args.model_name)
-        if "genre_aware_token" in args.exp_type:
+        if "genre_aware_token" in args.model_type:
             model.resize_token_embeddings(len(tokenizer))
     else:
         model = AutoModelForSeq2SeqLM.from_pretrained(args.checkpoint, local_files_only=True)
@@ -71,7 +71,7 @@ if __name__ == "__main__":
                 preds = preds[0]
             decode_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
             predictions = [pred.strip() for pred in decode_preds]
-            logging_dir = os.path.join(args.root_dir, "eval", args.model_type, args.exp_type)
+            logging_dir = os.path.join(args.root_dir, "eval", args.exp_type, args.model_type, args.genre)
             if not os.path.exists(logging_dir):
                 os.makedirs(logging_dir)
             eval_corpus = args.test_file.split("/")[-1].split(".")[0]
