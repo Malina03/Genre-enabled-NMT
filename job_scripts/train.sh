@@ -1,10 +1,10 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=24:00:00
+#SBATCH --time=48:00:00
 #SBATCH --job-name=train
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
-#SBATCH --mem=124G
+#SBATCH --mem=150G
 
 
 export PATH="$PATH:/home1/s3412768/.local/bin"
@@ -45,7 +45,7 @@ if [ $exp_type_type = 'from_scratch' ]; then
 elif [ $exp_type = 'fine_tuned' ]; then
     checkpoint=$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-*
 else
-    echo "Invalid model type"
+    echo "Invalid experiment type"
     exit 1
 fi
 
@@ -65,7 +65,7 @@ elif [ $model_type = 'doc_baseline' ]; then
 #     train_file="$root_dir/data/${corpus}.en-$language.train.$exp_type.tsv"
 #     dev_file="${root_dir}/data/${corpus}.en-$language.dev.$exp_type.tsv"
 else
-    echo "Invalid experiment type"
+    echo "Invalid model type"
     exit 1
 fi
 
@@ -89,6 +89,6 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --model_name $model \
     --early_stopping 3 \
     --eval_baseline \
-    --num_train_epochs 10 \
+    --num_train_epochs 20 \
     --checkpoint $checkpoint \
     &> $log_file
