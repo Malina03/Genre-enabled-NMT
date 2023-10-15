@@ -27,11 +27,6 @@ genre=$5 # genre to fine-tune on
 
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
-log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/$genre/train_${corpus}.log"
-# if log directory does not exist, create it
-
-
-
 
 if [ $language = 'hr' ]; then
     model="Helsinki-NLP/opus-mt-en-sla"
@@ -42,11 +37,13 @@ fi
 if [ $exp_type_type = 'from_scratch' ]; then
     checkpoint=""
     genre=""
+    log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}.log"
     if [ ! -d "$root_dir/logs/$exp_type/$model_type" ]; then
         mkdir -p $root_dir/logs/$exp_type/$model_type
     fi
 elif [ $exp_type = 'fine_tuned' ]; then
     checkpoint=$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-*
+    log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/$genre/train_${corpus}.log"
     if [ ! -d "$root_dir/logs/$exp_type/$model_type/$genre" ]; then
         mkdir -p $root_dir/logs/$exp_type/$model_type/$genre
     fi
