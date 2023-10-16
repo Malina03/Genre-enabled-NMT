@@ -16,7 +16,8 @@ out_file=$1 # File produced by model
 lang=$2 # Target language
 exp_type=$3 # Type of experiment (genre_aware or baseline)
 model_type=$4 # Type of model (fine_tuned or from_scratch)
-eval_file=$5 # File to evaluate against
+genre=$5 # Genre that the model was trained on
+eval_file=$6 # File to evaluate against
 
 
 root_dir="/scratch/s3412768/genre_NMT/en-${lang}"
