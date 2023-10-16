@@ -14,9 +14,9 @@ set -eu -o pipefail
 # Calculate all metrics between two files
 out_file=$1 # File produced by model
 lang=$2 # Target language
-exp_type=$3 # Type of experiment (genre_aware or baseline)
-model_type=$4 # Type of model (fine_tuned or from_scratch)
-genre=$5 # Genre that the model was trained on
+exp_type=$3 # type of experiment (fine_tuned or from_scratch.)
+model_type=$4 # type of model (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
+genre=$5 # the genre that the model was trained on
 eval_file=$6 # File to evaluate against
 
 
@@ -107,3 +107,8 @@ else
 	bert-score --lang $lang -m $model -r $ref -c $out > ${out}.eval.bertscore
 	# fi
 fi
+
+python /home1/s3412768/Genre-enabled-NMT/src/summarize.py \
+    --folder $root_dir/eval/$exp_type/$model_type/$genre/ \
+    --fname $out_file \
+	--ref_with_tags $root_dir/data/MaCoCu.en-hr.test.tag.tsv \
