@@ -12,7 +12,7 @@ source $HOME/.envs/nmt_eval/bin/activate
 set -eu -o pipefail
 
 # Calculate all metrics between two files
-out_file=$1 # File produced by model
+out_file=$1 # File produced by model ("{out_file}_predictions.txt")
 lang=$2 # Target language
 exp_type=$3 # type of experiment (fine_tuned or from_scratch.)
 model_type=$4 # type of model (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
@@ -21,7 +21,7 @@ eval_file=$6 # File to evaluate against
 
 
 root_dir="/scratch/s3412768/genre_NMT/en-${lang}"
-out=$root_dir/eval/$exp_type/$model_type/$genre/$out_file
+out=$root_dir/eval/$exp_type/$model_type/$genre/${out_file}_predictions.txt
 eval=$root_dir/data/$eval_file
 
 ref=$eval.ref
