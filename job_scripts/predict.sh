@@ -25,7 +25,7 @@ language=$2 # the target language
 exp_type=$3 # type of experiment (fine_tuned or from_scratch.)
 model_type=$4 # type of model (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
 genre=$5 # the genre that the model was trained on
-test_on=$5 # the test file to evaluate on, assuming it is placed in root_dir/data
+test_on=$6 # the test file to evaluate on, assuming it is placed in root_dir/data
 
 
 root_dir="/scratch/s3412768/genre_NMT/en-${language}"
