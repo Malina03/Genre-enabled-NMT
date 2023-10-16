@@ -34,43 +34,67 @@ else
     model="Helsinki-NLP/opus-mt-en-${language}"
 fi
 
-if [ $exp_type_type = 'from_scratch' ]; then
+if [ $exp_type = 'from_scratch' ]; then
     checkpoint=""
     genre=""
     log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}.log"
     if [ ! -d "$root_dir/logs/$exp_type/$model_type" ]; then
         mkdir -p $root_dir/logs/$exp_type/$model_type
     fi
+
+    if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
+        train_file="$root_dir/data/${corpus}.en-$language.train.tag.tsv"
+        dev_file="${root_dir}/data/${corpus}.en-$language.dev.tag.tsv"
+    elif [ $model_type = 'doc_genre_aware' ] || [ $model_type = 'doc_genre_aware_token' ]; then
+        train_file="$root_dir/data/${corpus}.en-$language.doc.train.tag.tsv"
+        dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tag.tsv"
+    elif [ $model_type = 'baseline' ]; then
+        train_file="$root_dir/data/${corpus}.en-$language.train.tsv"
+        dev_file="${root_dir}/data/${corpus}.en-$language.dev.tsv"
+    elif [ $model_type = 'doc_baseline' ]; then
+        train_file="$root_dir/data/${corpus}.en-$language.doc.train.tsv"
+        dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tsv"
+    else
+        echo "Invalid model type"
+        exit 1
+    fi
+
 elif [ $exp_type = 'fine_tuned' ]; then
     checkpoint=$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-*
     log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/$genre/train_${corpus}.log"
     if [ ! -d "$root_dir/logs/$exp_type/$model_type/$genre" ]; then
         mkdir -p $root_dir/logs/$exp_type/$model_type/$genre
     fi
+
+    if [ $genre = 'doc' ]; then
+        if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
+            train_file="$root_dir/data/${corpus}.en-$language.doc.train.tag.tsv"
+            dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tag.tsv"
+        elif [ $model_type = 'baseline' ]; then
+            train_file="$root_dir/data/${corpus}.en-$language.doc.train.tsv"
+            dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tsv"
+        else
+            echo "Invalid model type"
+            exit 1
+        fi
+    else
+        if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
+            train_file="$root_dir/data/${corpus}.en-$language.train.$genre.tag.tsv"
+            dev_file="${root_dir}/data/${corpus}.en-$language.dev.$genre.tag.tsv"
+        elif [ $model_type = 'baseline' ]; then
+            train_file="$root_dir/data/${corpus}.en-$language.train.$genre.tsv"
+            dev_file="${root_dir}/data/${corpus}.en-$language.dev.$genre.tsv"
+        else
+            echo "Invalid model type"
+            exit 1
+        fi
+    fi
 else
     echo "Invalid experiment type"
     exit 1
 fi
 
-if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
-    train_file="$root_dir/data/${corpus}.en-$language.train.$genre.tag.tsv"
-    dev_file="${root_dir}/data/${corpus}.en-$language.dev.$genre.tag.tsv"
-elif [ $model_type = 'doc_genre_aware' ] || [ $model_type = 'doc_genre_aware_token' ]; then
-    train_file="$root_dir/data/${corpus}.en-$language.doc.train.tag.tsv"
-    dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tag.tsv"
-elif [ $model_type = 'baseline' ]; then
-    train_file="$root_dir/data/${corpus}.en-$language.train.$genre.tsv"
-    dev_file="${root_dir}/data/${corpus}.en-$language.dev.$genre.tsv"
-elif [ $model_type = 'doc_baseline' ]; then
-    train_file="$root_dir/data/${corpus}.en-$language.doc.train.tsv"
-    dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tsv"
-# elif [ $genre = 'promo' ] || [ $genre = 'info' ] || [ $genre = 'news' ] || [ $genre = 'law' ] || [ $genre = 'arg' ] || [ $genre = 'lit' ]; then
-#     train_file="$root_dir/data/${corpus}.en-$language.train.$exp_type.tsv"
-#     dev_file="${root_dir}/data/${corpus}.en-$language.dev.$exp_type.tsv"
-else
-    echo "Invalid model type"
-    exit 1
-fi
+
 
 echo "Checkpoint: $checkpoint"
 
