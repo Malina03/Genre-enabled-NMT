@@ -70,4 +70,5 @@ with open(args.folder + args.fname + '_summary.txt', 'w') as w:
     w.write(str(x))
     w.write("\n\n")
     w.write(str(y.get_string(sortby="Count", reversesort=True)))
+    w.write("\n\n")
 
