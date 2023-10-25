@@ -27,7 +27,7 @@ def create_arg_parser():
 
 
 
-def predict(model, dataframe, final_file, dataframe_column="en_doc", softmax=False, batch_saves=1000):
+def predict(model, dataframe, final_file, dataframe_column="en_doc", compute_softmax=False, batch_saves=1000):
     """
         The function takes the dataframe with text in column dataframe_column, creates batches of 8,
         and applies genre predictions on batches, for faster prediction.
@@ -41,6 +41,11 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", softmax=Fal
 
     """
     labels = ["Other", "Information/Explanation", "News", "Instruction", "Opinion/Argumentation", "Forum", "Prose/Lyrical", "Legal", "Promotion"]
+
+        # Apply softmax to the raw outputs
+    def softmax(x):
+        '''Compute softmax values for each sets of scores in x.'''
+        return np.exp(x) / np.sum(np.exp(x), axis=0)
 
         # Split the dataframe into batches
         # Create batches of text
@@ -77,7 +82,7 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", softmax=Fal
             # copy first current batch to a new dataframe
             dat = dataframe.iloc[(curr_batch-batch_saves)*8:curr_batch*8]
             dat["X-GENRE"] = y_pred[(curr_batch-batch_saves)*8:curr_batch*8]
-            if softmax == True:
+            if compute_softmax == True:
                 dat["label_distribution"] = y_distr[(curr_batch-batch_saves)*8:curr_batch*8]
                 dat["chosen_category_distr"] = most_probable[(curr_batch-batch_saves)*8:curr_batch*8]
             dat.to_csv("{}_{}".format(final_file, curr_batch/batch_saves), sep="\t")
@@ -94,7 +99,7 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", softmax=Fal
         for i in current_y_pred:
             y_pred.append(i)
         
-        if softmax == True:
+        if compute_softmax == True:
             for i in current_y_distr:
                 distr = softmax(i)
                 distr_dict = {labels[i]: round(distr[i],4) for i in range(len(labels))}
@@ -115,7 +120,7 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", softmax=Fal
     # save the final batch of predictions
     dat = dataframe.iloc[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
     dat["X-GENRE"] = y_pred[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
-    if softmax == True:
+    if compute_softmax == True:
         dat["label_distribution"] = y_distr[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
         dat["mos_probable"] = most_probable[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
     dat.to_csv("{}_{}".format(final_file, int(curr_batch/batch_saves)), sep="\t")
@@ -136,7 +141,7 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", softmax=Fal
 
     return res
 
-def classify_dataset(data, tgt_column, save_file, softmax=False):
+def classify_dataset(data, tgt_column, save_file, compute_softmax=False):
     """
         The function takes the dataframe with text in column dataframe_column, creates batches of 8,
         and applies genre predictions on batches, for faster prediction.
@@ -166,18 +171,15 @@ def classify_dataset(data, tgt_column, save_file, softmax=False):
         args=model_args
     )
 
-    labelled = predict(model, data, save_file, tgt_column, softmax=softmax, batch_saves=5)
+    labelled = predict(model, data, save_file, tgt_column, compute_softmax=compute_softmax, batch_saves=5)
     # remove all columns except en_doc and X-GENRE to save memory
-    if softmax == False:
+    if compute_softmax == False:
         labelled = labelled[["en_doc", "X-GENRE"]]
     else:
         labelled = labelled[["en_doc", "X-GENRE", "label_distribution", "chosen_category_distr"]]
     return labelled
 
-    # Apply softmax to the raw outputs
-def softmax(x):
-    '''Compute softmax values for each sets of scores in x.'''
-    return np.exp(x) / np.sum(np.exp(x), axis=0)
+
 
 
 def main():
@@ -193,7 +195,7 @@ def main():
     # only save the en_doc column to save memory
     data = data[["en_doc"]]
     print("Labelling started. Using docs with length >= {}".format(args.length_threshold))
-    doc_labels = classify_dataset(data, "en_doc", data_folder/f'Macocu-{args.lang_code}-en.labelled.softmax{args.length_threshold}.csv', softmax=True)
+    doc_labels = classify_dataset(data, "en_doc", data_folder/f'Macocu-{args.lang_code}-en.labelled.softmax{args.length_threshold}.csv', compute_softmax=True)
     print(f"Labelling done. Saving the labelled data to {args.data_folder}/Macocu-{args.lang_code}-en.doc.labels.softmax.{args.length_threshold}.csv")
     # Combine the sentence level data and doc_labels
     print(f"Combining the sentence level data and doc_labels. Saving the combined data to {args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled-softmax.csv")
