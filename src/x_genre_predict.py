@@ -27,7 +27,7 @@ def create_arg_parser():
 
 
 
-def predict(model, dataframe, final_file, dataframe_column="en_doc", softmax=False):
+def predict(model, dataframe, final_file, dataframe_column="en_doc", softmax=False, batch_saves=1000):
     """
         The function takes the dataframe with text in column dataframe_column, creates batches of 8,
         and applies genre predictions on batches, for faster prediction.
@@ -71,16 +71,16 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", softmax=Fal
 
 
     for i in batches_list_new:
-        if curr_batch % 100 == 0 and curr_batch != 0:
+        if curr_batch % batch_saves == 0 and curr_batch != 0:
             print("Predicting batch {} out of {}.".format(curr_batch, batches))
             # save the dataframe with predictions every 1000 batches
             # copy first current batch to a new dataframe
-            dat = dataframe.iloc[(curr_batch-1000)*8:curr_batch*8]
-            dat["X-GENRE"] = y_pred[(curr_batch-1000)*8:curr_batch*8]
+            dat = dataframe.iloc[(curr_batch-batch_saves)*8:curr_batch*8]
+            dat["X-GENRE"] = y_pred[(curr_batch-batch_saves)*8:curr_batch*8]
             if softmax == True:
-                dat["label_distribution"] = y_distr[(curr_batch-1000)*8:curr_batch*8]
-                dat["chosen_category_distr"] = most_probable[(curr_batch-1000)*8:curr_batch*8]
-            dat.to_csv("{}_{}".format(final_file, curr_batch/1000), sep="\t")
+                dat["label_distribution"] = y_distr[(curr_batch-batch_saves)*8:curr_batch*8]
+                dat["chosen_category_distr"] = most_probable[(curr_batch-batch_saves)*8:curr_batch*8]
+            dat.to_csv("{}_{}".format(final_file, curr_batch/batch_saves), sep="\t")
             # del dat
             return dat
 
@@ -113,12 +113,12 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", softmax=Fal
         curr_batch += 1
 
     # save the final batch of predictions
-    dat = dataframe.iloc[(curr_batch-1000)*8:((curr_batch-1000)*8+len(current_y_pred))]
-    dat["X-GENRE"] = y_pred[(curr_batch-1000)*8:((curr_batch-1000)*8+len(current_y_pred))]
+    dat = dataframe.iloc[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
+    dat["X-GENRE"] = y_pred[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
     if softmax == True:
-        dat["label_distribution"] = y_distr[(curr_batch-1000)*8:((curr_batch-1000)*8+len(current_y_pred))]
-        dat["mos_probable"] = most_probable[(curr_batch-1000)*8:((curr_batch-1000)*8+len(current_y_pred))]
-    dat.to_csv("{}_{}".format(final_file, int(curr_batch/1000)), sep="\t")
+        dat["label_distribution"] = y_distr[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
+        dat["mos_probable"] = most_probable[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
+    dat.to_csv("{}_{}".format(final_file, int(curr_batch/batch_saves)), sep="\t")
     del dat
 
     prediction_time = round((time.time() - start_time)/60,2)
@@ -126,7 +126,7 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", softmax=Fal
     print("\n\nPrediction completed. It took {} minutes for {} instances - {} minutes per one instance.".format(prediction_time, dataframe.shape[0], prediction_time/dataframe.shape[0]))
 
     # load the saved predictions and add them to the dataframe
-    for i in range(1, int(curr_batch/1000)):
+    for i in range(1, int(curr_batch/batch_saves)):
         if i == 1:
             res = pd.read_csv("{}_{}".format(final_file, i), sep="\t")
         else:
@@ -166,7 +166,7 @@ def classify_dataset(data, tgt_column, save_file, softmax=False):
         args=model_args
     )
 
-    labelled = predict(model, data, save_file, tgt_column, softmax=softmax)
+    labelled = predict(model, data, save_file, tgt_column, softmax=softmax, batch_saves=5)
     # remove all columns except en_doc and X-GENRE to save memory
     if softmax == False:
         labelled = labelled[["en_doc", "X-GENRE"]]
