@@ -126,7 +126,7 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", compute_sof
 
     if end_batch == batches:
         # save the final batch of predictions
-        # if end_batch was specified as an intermediate batch, then it was saved in the loop above
+        # if end_batch was specified as an intermediate batch, then it was saved in the loop above, no need to be saved again or return partial results
         dat = dataframe.iloc[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
         dat["X-GENRE"] = y_pred[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
         if compute_softmax == True:
@@ -201,6 +201,8 @@ def main():
     '''Makes predictions on the dataset returning the full output, label distribution and most probable label.'''
     args = create_arg_parser()
     data_folder = Path(args.data_folder)
+    if args.end_batch == 0:
+        end_batch = None
     # Load the dataframe
     data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
     # only use docs with length >= args.length_threshold
@@ -210,7 +212,7 @@ def main():
     # only save the en_doc column to save memory
     data = data[["en_doc"]]
     print("Labelling started. Using docs with length >= {}".format(args.length_threshold))
-    doc_labels = classify_dataset(data, "en_doc", data_folder/f'Macocu-{args.lang_code}-en.labelled.softmax{args.length_threshold}.csv', compute_softmax=True, batch_saves=args.batch_saves, start_save=args.start_batch, end_save=args.end_batch)
+    doc_labels = classify_dataset(data, "en_doc", data_folder/f'Macocu-{args.lang_code}-en.labelled.softmax{args.length_threshold}.csv', compute_softmax=True, batch_saves=args.batch_saves, start_save=args.start_batch, end_save=end_batch)
     if args.end_save == None:
         print(f"Labelling done. Saving the labelled data to {args.data_folder}/Macocu-{args.lang_code}-en.doc.labels.softmax.{args.length_threshold}.csv")
         # Combine the sentence level data and doc_labels
