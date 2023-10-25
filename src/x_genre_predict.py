@@ -206,5 +206,5 @@ def main():
     data.to_csv(f"{args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled-softmax.csv", sep="\t", index=False) 
 
 
-    if __name__ == "__main__":
-        main()
+if __name__ == "__main__":
+    main()
