@@ -22,6 +22,7 @@ def create_arg_parser():
     parser.add_argument('-lang', '--lang_code', type=str, required=True, help='Language code of the target language')
     parser.add_argument('-len', '--length_threshold', type=int, default=25, help='Minimum length of the documents used for genre classification')
     parser.add_argument('-df', "--data_folder", type=str, default='data/', help='Folder where the data is stored')
+    parser.add_argument('-bs', "--batch_saves", type=int, default=1000, help='The number of batches to save the predictions')
     parser.add_argument('-sb', "--start_batch", type=int, default=0, help='The batch to start with')
     parser.add_argument('-eb', "--end_batch", type=int, default=0, help='The batch to end with')
     args = parser.parse_args()
