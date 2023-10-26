@@ -81,20 +81,30 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", compute_sof
     else:
         end_batch = end_save * batch_saves
 
+    batches_list_new = batches_list_new[start_save*batch_saves:end_batch*batch_saves]
+
+    print("Predicting batches {} to {} out of {}.".format(start_save, end_batch, batches))
     for i in batches_list_new:
         if curr_batch > end_batch:
             break
         if curr_batch % batch_saves == 0 and curr_batch != start_save * batch_saves:
-            print("Predicting batch {} out of {}.".format(curr_batch, batches))
+            print("Predicted batch {} out of {}.".format(curr_batch, batches))
             # save the dataframe with predictions every 1000 batches
             # copy first current batch to a new dataframe
             dat = dataframe.iloc[(curr_batch-batch_saves)*8:curr_batch*8]
-            dat["X-GENRE"] = y_pred[(curr_batch-batch_saves)*8:curr_batch*8]
+            # dat["X-GENRE"] = y_pred[(curr_batch-batch_saves)*8:curr_batch*8]
+            dat["X-GENRE"] = y_pred
             if compute_softmax == True:
-                dat["label_distribution"] = y_distr[(curr_batch-batch_saves)*8:curr_batch*8]
-                dat["chosen_category_distr"] = most_probable[(curr_batch-batch_saves)*8:curr_batch*8]
+                # dat["label_distribution"] = y_distr[(curr_batch-batch_saves)*8:curr_batch*8]
+                # dat["chosen_category_distr"] = most_probable[(curr_batch-batch_saves)*8:curr_batch*8]
+                dat["label_distribution"] = y_distr
+                dat["chosen_category_distr"] = most_probable
             dat.to_csv("{}_{}".format(final_file, curr_batch/batch_saves), sep="\t")
             del dat
+            # clear the lists to save memory
+            y_pred = []
+            y_distr = []
+            most_probable = []
 
         output = model.predict(i)
         current_y_pred = output[0]
@@ -128,12 +138,19 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", compute_sof
         # save the final batch of predictions
         # if end_batch was specified as an intermediate batch, then it was saved in the loop above, no need to be saved again or return partial results
         dat = dataframe.iloc[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
-        dat["X-GENRE"] = y_pred[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
+        # dat["X-GENRE"] = y_pred[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
+        dat["X-GENRE"] = y_pred
         if compute_softmax == True:
-            dat["label_distribution"] = y_distr[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
-            dat["mos_probable"] = most_probable[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
+            # dat["label_distribution"] = y_distr[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
+            # dat["mos_probable"] = most_probable[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
+            dat["label_distribution"] = y_distr
+            dat["chosen_category_distr"] = most_probable
         dat.to_csv("{}_{}".format(final_file, int(curr_batch/batch_saves)), sep="\t")
         del dat
+        # clear the lists to save memory
+        y_pred = []
+        y_distr = []
+        most_probable = []
 
         prediction_time = round((time.time() - start_time)/60,2)
 
