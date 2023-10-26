@@ -96,7 +96,6 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", compute_sof
             dat.to_csv("{}_{}".format(final_file, curr_batch/batch_saves), sep="\t")
             del dat
 
-
         output = model.predict(i)
         current_y_pred = output[0]
         current_y_distr = output[1]
@@ -104,8 +103,8 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", compute_sof
         current_y_distr_most_probable = []
 
                 
-        for i in current_y_pred:
-            y_pred.append(labels[i])
+        for j in current_y_pred:
+            y_pred.append(model.config.id2label[j])
         
         if compute_softmax == True:
             for i in current_y_distr:
