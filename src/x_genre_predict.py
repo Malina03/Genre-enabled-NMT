@@ -213,7 +213,7 @@ def main():
     data = data[["en_doc"]]
     print("Labelling started. Using docs with length >= {}".format(args.length_threshold))
     doc_labels = classify_dataset(data, "en_doc", data_folder/f'Macocu-{args.lang_code}-en.labelled.softmax{args.length_threshold}.csv', compute_softmax=True, batch_saves=args.batch_saves, start_save=args.start_batch, end_save=args.end_batch)
-    if args.end_save == None:
+    if args.end_batch == None:
         print(f"Labelling done. Saving the labelled data to {args.data_folder}/Macocu-{args.lang_code}-en.doc.labels.softmax.{args.length_threshold}.csv")
         # Combine the sentence level data and doc_labels
         print(f"Combining the sentence level data and doc_labels. Saving the combined data to {args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled-softmax.csv")
