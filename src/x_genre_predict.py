@@ -30,7 +30,7 @@ def create_arg_parser():
 
 
 
-def predict(model, dataframe, final_file, dataframe_column="en_doc", compute_softmax=False, batch_saves=1000, start_save=0, end_save=None):
+def predict(model, dataframe, final_file, dataframe_column="en_doc", compute_softmax=False, batch_saves=1000, start_save=0, end_save=0):
     """
         The function takes the dataframe with text in column dataframe_column, creates batches of 8,
         and applies genre predictions on batches, for faster prediction.
@@ -76,7 +76,7 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", compute_sof
 
     batches = len(batches_list_new)
     curr_batch = start_save * batch_saves
-    if end_save == None:
+    if end_save == 0:
         end_batch = batches
     else:
         end_batch = end_save * batch_saves
@@ -201,8 +201,8 @@ def main():
     '''Makes predictions on the dataset returning the full output, label distribution and most probable label.'''
     args = create_arg_parser()
     data_folder = Path(args.data_folder)
-    if args.end_batch == 0:
-        end_batch = None
+    # if args.end_batch == 0:
+    #     end_batch = None
     # Load the dataframe
     data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
     # only use docs with length >= args.length_threshold
@@ -212,7 +212,7 @@ def main():
     # only save the en_doc column to save memory
     data = data[["en_doc"]]
     print("Labelling started. Using docs with length >= {}".format(args.length_threshold))
-    doc_labels = classify_dataset(data, "en_doc", data_folder/f'Macocu-{args.lang_code}-en.labelled.softmax{args.length_threshold}.csv', compute_softmax=True, batch_saves=args.batch_saves, start_save=args.start_batch, end_save=end_batch)
+    doc_labels = classify_dataset(data, "en_doc", data_folder/f'Macocu-{args.lang_code}-en.labelled.softmax{args.length_threshold}.csv', compute_softmax=True, batch_saves=args.batch_saves, start_save=args.start_batch, end_save=args.end_batch)
     if args.end_save == None:
         print(f"Labelling done. Saving the labelled data to {args.data_folder}/Macocu-{args.lang_code}-en.doc.labels.softmax.{args.length_threshold}.csv")
         # Combine the sentence level data and doc_labels
