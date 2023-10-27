@@ -83,7 +83,7 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", compute_sof
 
     batches_list_new = batches_list_new[start_save*batch_saves:end_batch*batch_saves]
 
-    print("Predicting batches {} to {} out of {}.".format(start_save, end_batch, batches))
+    print("Predicting batches {} to {} out of {}.".format(start_save*batch_saves, end_batch, batches))
     for i in batches_list_new:
         if curr_batch > end_batch:
             break
@@ -137,8 +137,10 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", compute_sof
     if end_batch == batches:
         # save the final batch of predictions
         # if end_batch was specified as an intermediate batch, then it was saved in the loop above, no need to be saved again or return partial results
-        dat = dataframe.iloc[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
+        # dat = dataframe.iloc[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
         # dat["X-GENRE"] = y_pred[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
+        # take the last len(y_pred) rows of the dataframe
+        dat = dataframe.iloc[-len(y_pred):]
         dat["X-GENRE"] = y_pred
         if compute_softmax == True:
             # dat["label_distribution"] = y_distr[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
