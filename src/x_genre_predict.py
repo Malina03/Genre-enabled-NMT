@@ -147,7 +147,7 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", compute_sof
             # dat["mos_probable"] = most_probable[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
             dat["label_distribution"] = y_distr
             dat["chosen_category_distr"] = most_probable
-        dat.to_csv("{}_{}.0".format(final_file, int(curr_batch/batch_saves))+1, sep="\t")
+        dat.to_csv("{}_{}.0".format(final_file, str(int(curr_batch/batch_saves)+1)), sep="\t")
         del dat
         # clear the lists to save memory
         y_pred = []

@@ -4,7 +4,7 @@
 #SBATCH --job-name=train
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
-#SBATCH --mem=200G
+#SBATCH --mem=256G
 
 
 export PATH="$PATH:/home1/s3412768/.local/bin"
