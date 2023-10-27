@@ -127,7 +127,7 @@ def load_data(filename, args, tokenizer):
     if error_count > 0:
         print("Errors when loading data: ", error_count)
     # shuffle the data, unless we are predicting
-    if not args.predict:
+    if not args.predict and "doc" not in args.model_type:
         indices = np.arange(len(corpus_src))
         np.random.seed(args.seed)
         np.random.shuffle(indices)
