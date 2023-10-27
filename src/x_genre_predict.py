@@ -147,7 +147,7 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", compute_sof
             # dat["mos_probable"] = most_probable[(curr_batch-batch_saves)*8:((curr_batch-batch_saves)*8+len(current_y_pred))]
             dat["label_distribution"] = y_distr
             dat["chosen_category_distr"] = most_probable
-        dat.to_csv("{}_{}".format(final_file, int(curr_batch/batch_saves)), sep="\t")
+        dat.to_csv("{}_{}.0".format(final_file, int(curr_batch/batch_saves))+1, sep="\t")
         del dat
         # clear the lists to save memory
         y_pred = []
@@ -159,11 +159,11 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", compute_sof
         print("\n\nPrediction completed. It took {} minutes for {} instances - {} minutes per one instance.".format(prediction_time, dataframe.shape[0], prediction_time/dataframe.shape[0]))
 
         # load the saved predictions and add them to the dataframe
-        for i in range(1, int(curr_batch/batch_saves)):
+        for i in range(1, int(curr_batch/batch_saves)+2):
             if i == 1:
-                res = pd.read_csv("{}_{}".format(final_file, i), sep="\t")
+                res = pd.read_csv("{}_{}.0".format(final_file, i), sep="\t")
             else:
-                res = res.append(pd.read_csv("{}_{}".format(final_file, i), sep="\t"))
+                res = res.append(pd.read_csv("{}_{}.0".format(final_file, i), sep="\t"))
 
         res.to_csv("{}".format(final_file), sep="\t")
         return res
