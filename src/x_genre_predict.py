@@ -244,7 +244,7 @@ def main():
     #     data = data.drop(columns=["Unnamed: 0"])
     #     data.to_csv(f"{args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled-softmax.csv", sep="\t", index=False) 
 
-    doc_labels = pd.read_csv(data_folder/f"Macocu-hr-en-sent.labelled.softmax25.csv", sep="\t", header=0)
+    doc_labels = pd.read_csv(data_folder/f"Macocu-hr-en.labelled.softmax25.csv", sep="\t", header=0)
     doc_labels = doc_labels.drop(columns=["Unnamed: 0"])
     data = pd.read_csv(data_folder/f"Macocu-hr-en-doc-format-duplicates.csv", sep="\t", header=0)
     # merge doc_data and data based on en_doc
