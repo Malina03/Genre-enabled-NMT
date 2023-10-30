@@ -1,5 +1,6 @@
 import pandas as pd
 # import matplotlib.pyplot as plt
+import json 
 
 def print_genre_distribution(data):
     print("Genre distribution:")
@@ -64,6 +65,9 @@ def main():
 
     # add columns with the confidence of each label from the label distribution
     labels = ["Other", "Information/Explanation", "News", "Instruction", "Opinion/Argumentation", "Forum", "Prose/Lyrical", "Legal", "Promotion"]
+
+    # transform label distribution from string to dictionary
+    data['label_distribution'] = data['label_distribution'].apply(lambda x: json.loads(x))
 
     for i in range(0, 10):
         data['label_'+labels[i]+'_conf'] = data['label_distribution'].apply(lambda x: x[labels[i]])
