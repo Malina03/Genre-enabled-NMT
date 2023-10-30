@@ -70,7 +70,7 @@ def main():
     data['label_distribution'] = data['label_distribution'].apply(lambda x: json.loads(x.replace("'", "\"")))
 
 
-    for i in range(0, 10):
+    for i in range(0, 9):
         data['label_'+labels[i]+'_conf'] = data['label_distribution'].apply(lambda x: float(x[labels[i]]))
     
     
