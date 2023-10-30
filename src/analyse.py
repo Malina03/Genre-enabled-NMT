@@ -51,6 +51,7 @@ def main():
     print(data.groupby('X-GENRE')['chosen_category_distr'].mean())
     # median chosen category distribution per genre
     print("Median chosen category distribution per genre:")
+    print(data.groupby('X-GENRE')['chosen_category_distr'].median())
     # average chosen category distribution per genre per set
     print("Average chosen category distribution per genre per set:")
     print(data.groupby(['X-GENRE', 'set'])['chosen_category_distr'].mean())
@@ -62,15 +63,21 @@ def main():
     # number of labels of each genre with above 0.9 confidence
     print("Number of labels of each genre with above 0.9 confidence:")
     print(data[data['chosen_category_distr']>=0.9].groupby('X-GENRE')['chosen_category_distr'].count())
+    print("Percentage of labels of each genre with above 0.95 confidence:")
+    print(data[data['chosen_category_distr']>=0.9].groupby('X-GENRE')['chosen_category_distr'].count()/data.groupby('X-GENRE')['chosen_category_distr'].count())
 
     # add columns with the confidence of each label from the label distribution
     labels = ["Other", "Information/Explanation", "News", "Instruction", "Opinion/Argumentation", "Forum", "Prose/Lyrical", "Legal", "Promotion"]
 
     # transform label distribution from string to dictionary
     data['label_distribution'] = data['label_distribution'].apply(lambda x: json.loads(x.replace("'", "\"")))
+    
+    # check if the label distribution is a dictionary
+    print("Check if the label distribution is a dictionary:")
+    print(data['label_distribution'].apply(lambda x: type(x)==dict).value_counts())
+    
 
-
-    for i in range(0, 9):
+    for i in range(0, len(labels)):
         data['label_'+labels[i]+'_conf'] = data['label_distribution'].apply(lambda x: float(x[labels[i]]))
     
     
