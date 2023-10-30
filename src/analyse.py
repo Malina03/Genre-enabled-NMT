@@ -20,9 +20,10 @@ def main():
     data = pd.merge(data, labels_distr, on='en_par')
     # check if X-GENRE and X-GENRE_softmax are the same
     print("Check if X-GENRE and X-GENRE_softmax are the same:")
-    print(data[data['X-GENRE']!=data['X-GENRE_softmax']][['X-GENRE', 'X-GENRE_softmax']])
+    data['same_classification'] = data.apply(lambda x: x['X-GENRE']==x['X-GENRE_softmax'], axis=1)
+    print(data['same_classification'].value_counts())
     # remove X-GENRE_softmax if the same as X-GENRE
-    if data[data['X-GENRE']!=data['X-GENRE_softmax']][['X-GENRE', 'X-GENRE_softmax']]:
+    if data['same_classification'].value_counts()[True] == len(data):
         data = data.drop(columns=['X-GENRE_softmax'])
 
     # check if the sources are different by set
