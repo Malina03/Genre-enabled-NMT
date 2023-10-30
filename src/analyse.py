@@ -66,7 +66,7 @@ def main():
     labels = ["Other", "Information/Explanation", "News", "Instruction", "Opinion/Argumentation", "Forum", "Prose/Lyrical", "Legal", "Promotion"]
 
     for i in range(0, 10):
-        data['label_'+labels[i]+'_conf'] = data['label_distribution'].apply(lambda x: x[i])
+        data['label_'+labels[i]+'_conf'] = data['label_distribution'].apply(lambda x: x[labels[i]])
     
     # make column for 2nd most confident category by comparing the label confidences
     data['2nd_most_confident_dist'] = data.apply(lambda x: sorted([x['label_'+labels[i]+'_conf'] for i in range(0, 10)], reverse=True)[1], axis=1)
