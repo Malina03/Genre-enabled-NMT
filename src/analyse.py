@@ -15,7 +15,16 @@ def main():
     labels_distr = pd.read_csv('/scratch/s3412768/genre_NMT/en-hr/data/softmax_saves/Macocu-hr-en-sent-doc-labelled-softmax.csv', sep='\t')
     # remove all but en_par, X-GENRE, "label_distribution", "chosen_category_distr"
     labels_distr = labels_distr[['en_par', 'X-GENRE', 'label_distribution', 'chosen_category_distr']]
+    # rename X-GENRE to X_GENRE_softmax
+    labels_distr = labels_distr.rename(columns={'X-GENRE': 'X-GENRE_softmax'})
     data = pd.merge(data, labels_distr, on='en_par')
+    # check if X-GENRE and X-GENRE_softmax are the same
+    print("Check if X-GENRE and X-GENRE_softmax are the same:")
+    print(data[data['X-GENRE']!=data['X-GENRE_softmax']][['X-GENRE', 'X-GENRE_softmax']])
+    # remove X-GENRE_softmax if the same as X-GENRE
+    if data[data['X-GENRE']!=data['X-GENRE_softmax']][['X-GENRE', 'X-GENRE_softmax']]:
+        data = data.drop(columns=['X-GENRE_softmax'])
+
     # check if the sources are different by set
     dev_src = data[data['set']=='dev']['en_domain'].unique()
     test_src = data[data['set']=='test']['en_domain'].unique()
