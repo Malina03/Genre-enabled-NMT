@@ -1,5 +1,5 @@
 import pandas as pd
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import json 
 
 def print_genre_distribution(data):
@@ -12,6 +12,7 @@ def print_genre_distribution(data):
 #     plt.savefig(save_file)
 
 def main():
+    labels = ["Other", "Information/Explanation", "News", "Instruction", "Opinion/Argumentation", "Forum", "Prose/Lyrical", "Legal", "Promotion"]
     data = pd.read_csv('/scratch/s3412768/genre_NMT/en-hr/data/MaCoCu.en-hr_complete.tsv', sep='\t')
     labels_distr = pd.read_csv('/scratch/s3412768/genre_NMT/en-hr/data/softmax_saves/Macocu-hr-en-sent-doc-labelled-softmax.csv', sep='\t')
     # remove all but en_par, X-GENRE, "label_distribution", "chosen_category_distr"
@@ -59,6 +60,11 @@ def main():
     print("Median chosen category distribution per genre per set:")
     print(data.groupby(['X-GENRE', 'set'])['chosen_category_distr'].median())
 
+    # plot label distribution per genre
+    for genre in labels:
+        data[data['X-GENRE']==genre]['chosen_category_distr'].plot(kind='hist', title=genre)
+        plt.savefig('/scratch/s3412768/genre_NMT/en-hr/data/softmax_saves/label_distr_plot_'+genre+'.png')
+
     print("\n\n\n")
     # number of labels of each genre with above 0.9 confidence
     print("Number of labels of each genre with above 0.9 confidence:")
@@ -67,7 +73,7 @@ def main():
     print(data[data['chosen_category_distr']>=0.9].groupby('X-GENRE')['chosen_category_distr'].count()/data.groupby('X-GENRE')['chosen_category_distr'].count())
 
     # add columns with the confidence of each label from the label distribution
-    labels = ["Other", "Information/Explanation", "News", "Instruction", "Opinion/Argumentation", "Forum", "Prose/Lyrical", "Legal", "Promotion"]
+    
 
     # transform label distribution from string to dictionary
     data['label_distribution'] = data['label_distribution'].apply(lambda x: json.loads(x.replace("'", "\"")))
@@ -75,6 +81,7 @@ def main():
     # check if the label distribution is a dictionary
     print("Check if the label distribution is a dictionary:")
     print(data['label_distribution'].apply(lambda x: type(x)==dict).value_counts())
+
     
 
     for i in range(0, len(labels)):
@@ -82,8 +89,8 @@ def main():
     
     
     # make column for 2nd most confident category by comparing the label confidences
-    data['2nd_most_confident_dist'] = data.apply(lambda x: sorted([x['label_'+labels[i]+'_conf'] for i in range(0, 10)], reverse=True)[1], axis=1)
-    data['2nd_most_confident'] = data.apply(lambda x: labels[[x['label_'+labels[i]+'_conf'] for i in range(0, 10)].index(sorted([x['label_'+labels[i]+'_conf'] for i in range(0, 10)], reverse=True)[1])], axis=1)
+    data['2nd_most_confident_dist'] = data.apply(lambda x: sorted([x['label_'+labels[i]+'_conf'] for i in range(0, len(labels))], reverse=True)[1], axis=1)
+    data['2nd_most_confident'] = data.apply(lambda x: labels[[x['label_'+labels[i]+'_conf'] for i in range(0, len(labels))].index(sorted([x['label_'+labels[i]+'_conf'] for i in range(0, len(labels))], reverse=True)[1])], axis=1)
     # average 2nd most confident category distribution per genre
     print("Average 2nd most confident category distribution per genre:")
     print(data.groupby('X-GENRE')['2nd_most_confident_dist'].mean())
