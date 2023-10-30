@@ -12,7 +12,7 @@ def print_genre_distribution(data):
 
 def main():
     data = pd.read_csv('/scratch/s3412768/genre_NMT/en-hr/data/MaCoCu.en-hr_complete.tsv', sep='\t')
-    labels_distr = pd.read('/scratch/s3412768/genre_NMT/en-hr/data/softmax_saves/Macocu-hr-en-sent-doc-labelled-softmax.csv', sep='\t')
+    labels_distr = pd.read_csv('/scratch/s3412768/genre_NMT/en-hr/data/softmax_saves/Macocu-hr-en-sent-doc-labelled-softmax.csv', sep='\t')
     # remove all but en_par, X-GENRE, "label_distribution", "chosen_category_distr"
     labels_distr = labels_distr[['en_par', 'X-GENRE', 'label_distribution', 'chosen_category_distr']]
     data = pd.merge(data, labels_distr, on='en_par')
