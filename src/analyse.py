@@ -63,7 +63,7 @@ def main():
     # plot label distribution per genre
     for genre in labels:
         plt.figure()
-        data[data['X-GENRE']==genre]['chosen_category_distr'].plot(kind='density', title=genre)
+        data[data['X-GENRE']==genre]['chosen_category_distr'].plot(kind='hist', title=genre)
         plt.legend()
         plt.savefig('/scratch/s3412768/genre_NMT/en-hr/data/softmax_saves/label_distr_plot_'+genre.replace("/", "-")+'.png')
 
