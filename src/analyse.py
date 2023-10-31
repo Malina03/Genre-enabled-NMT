@@ -16,10 +16,10 @@ def main():
     data = pd.read_csv('/scratch/s3412768/genre_NMT/en-hr/data/MaCoCu.en-hr_complete.tsv', sep='\t')
     labels_distr = pd.read_csv('/scratch/s3412768/genre_NMT/en-hr/data/softmax_saves/Macocu-hr-en-sent-doc-labelled-softmax.csv', sep='\t')
     # remove all but en_par, X-GENRE, "label_distribution", "chosen_category_distr"
-    labels_distr = labels_distr[['en_par', 'X-GENRE', 'label_distribution', 'chosen_category_distr']]
+    labels_distr = labels_distr[['en-par-src-txt', 'X-GENRE', 'label_distribution', 'chosen_category_distr']]
     # rename X-GENRE to X_GENRE_softmax
     labels_distr = labels_distr.rename(columns={'X-GENRE': 'X-GENRE_softmax'})
-    data = pd.merge(data, labels_distr, on='en_par')
+    data = pd.merge(data, labels_distr, on='en-par-src-text')
     # check if X-GENRE and X-GENRE_softmax are the same
     print("Check if X-GENRE and X-GENRE_softmax are the same:")
     data['same_classification'] = data.apply(lambda x: x['X-GENRE']==x['X-GENRE_softmax'], axis=1)
@@ -62,7 +62,8 @@ def main():
 
     # plot label distribution per genre
     for genre in labels:
-        data[data['X-GENRE']==genre]['chosen_category_distr'].plot(kind='density', title=genre, label=genre)
+        plt.figure()
+        data[data['X-GENRE']==genre]['chosen_category_distr'].plot(kind='density', title=genre)
         plt.legend()
         plt.savefig('/scratch/s3412768/genre_NMT/en-hr/data/softmax_saves/label_distr_plot_'+genre.replace("/", "-")+'.png')
 
