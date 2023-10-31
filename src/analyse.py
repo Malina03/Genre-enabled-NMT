@@ -62,7 +62,8 @@ def main():
 
     # plot label distribution per genre
     for genre in labels:
-        data[data['X-GENRE']==genre]['chosen_category_distr'].plot(kind='hist', title=genre)
+        data[data['X-GENRE']==genre]['chosen_category_distr'].plot(kind='density', title=genre, label=genre)
+        plt.legend()
         plt.savefig('/scratch/s3412768/genre_NMT/en-hr/data/softmax_saves/label_distr_plot_'+genre.replace("/", "-")+'.png')
 
     print("\n\n\n")
@@ -101,6 +102,18 @@ def main():
     # the 2nd most likely label per genre 
     print("The 2nd most likely label per genre:")
     print(data.groupby('X-GENRE')['2nd_most_confident'].value_counts())
+
+    # plot most likely 2nd label per genre 
+
+    for genre in labels:
+        plt.figure()
+        for label in data[data['X-GENRE']==genre]['2nd_most_confident'].unique():
+            plt.bar(label, data[data['X-GENRE']==genre]['2nd_most_confident'].value_counts()[label], label=label)
+            ## add 2nd_most confident_dist average as value on top of the bar
+            plt.text(label, data[data['X-GENRE']==genre]['2nd_most_confident'].value_counts()[label], round(data[data['X-GENRE']==genre][data['2nd_most_confident']==label]['2nd_most_confident_dist'].mean(), 2), ha='center', va='bottom')
+        # add legend
+        plt.legend()
+        plt.savefig('/scratch/s3412768/genre_NMT/en-hr/data/softmax_saves/2nd_most_confident_'+genre.replace("/", "-")+'.png')
 
     print("\n\n\n")
 
