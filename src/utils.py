@@ -79,19 +79,37 @@ def train_tokenizer(args, tokenizer_batch=1000):
     old_tokenizer = AutoTokenizer.from_pretrained(args.model_name)
     # print special tokens of old tokenizer
     print("Special tokens: ", old_tokenizer.special_tokens_map)
+    #print old tokenizer special tokens ids
+    print("Special tokens ids: ", old_tokenizer.all_special_ids)
     # train src tokenizer
-    spm.SentencePieceTrainer.train(input=args.train_file + '.src', model_prefix=save_path + 'source', vocab_size=old_tokenizer.vocab_size/2, 
+    spm.SentencePieceTrainer.train(input=args.train_file + '.src', model_prefix=save_path + '/source', vocab_size=old_tokenizer.vocab_size/2, 
                                    pad_id=old_tokenizer.pad_token_id, unk_id=old_tokenizer.unk_token_id,
                                    eos_id=old_tokenizer.eos_token_id, pad_piece = old_tokenizer.pad_token, 
                                    unk_piece=old_tokenizer.unk_token, eos_piece=old_tokenizer.eos_token,
                                    user_defined_symbols=tags if 'genre_aware_token' in args.model_type else None,
                                    model_type='bpe')
     # train tgt tokenizer
-    spm.SentencePieceTrainer.train(input=args.train_file + '.ref', model_prefix=save_path + 'target', vocab_size=old_tokenizer.vocab_size/2,
+    spm.SentencePieceTrainer.train(input=args.train_file + '.ref', model_prefix=save_path + '/target', vocab_size=old_tokenizer.vocab_size/2,
                                    pad_id=old_tokenizer.pad_token_id, unk_id=old_tokenizer.unk_token_id,
                                    eos_id=old_tokenizer.eos_token_id, pad_piece = old_tokenizer.pad_token, 
                                    unk_piece=old_tokenizer.unk_token, eos_piece=old_tokenizer.eos_token,
                                    model_type='bpe')
+    # get vocab of src tokenizer
+    src_tokenizer = spm.SentencePieceProcessor()
+    src_tokenizer.Load(save_path + 'source.model')
+    src_vocab = src_tokenizer.vocab()
+    # get vocab of tgt tokenizer
+    tgt_tokenizer = spm.SentencePieceProcessor()
+    tgt_tokenizer.Load(save_path + 'target.model')
+    tgt_vocab = tgt_tokenizer.vocab()
+    # combine the vocabularies
+    vocab = {}
+    for i in range(len(src_vocab)):
+        vocab[src_tokenizer.IdToPiece(i)] = i
+    for i in range(len(tgt_vocab)):
+        vocab[tgt_tokenizer.IdToPiece(i)] = i + len(src_vocab)
+    # make tokenizer from pretrained using the new vocab and models
+
 
     exit()
     print("Tokenizer saved at: ", save_path)
