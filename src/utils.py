@@ -1,5 +1,5 @@
 import argparse
-from transformers import Seq2SeqTrainingArguments
+from transformers import Seq2SeqTrainingArguments, AutoTokenizer
 import numpy as np
 from sacrebleu.metrics import BLEU, CHRF, TER
 import os
@@ -10,6 +10,9 @@ def get_args():
     parser.add_argument("-root_dir", "--root_dir", required=True, type=str, help="Root directory.")
     # parser.add_argument("-logging_dir", "--logging_dir", required=False, type=str, default="...", help="Logging directory.")
     # parser.add_argument("-model_save_dir", "--model_save_dir", required=True, type=str, help="Path to the output directory where the model will be saved.")
+    parser.add_argument("-tokenizer_path", "--tokenizer_path", required=False, type=str, help="Path to the tokenizer to use. If specified during tokenizer training, the tokenizer will be saved there. Otherwise tokenizers are savedd in the model directory.")
+    parser.add_argument("-train_tokenizer", "--train_tokenizer", required=False, action="store_true", help="Whether to train the tokenizer on the train dataset.")
+    parser.add_argument("-use_costum_tokenizer", "--use_costum_tokenizer", required=False, action="store_true", help="Whether to use a costum tokenizer.")
     parser.add_argument("-checkpoint", "--checkpoint", required=False, type=str, help="Path to the checkpoint to fine-tune. If not provided, the model will be initialized from scratch.")
     parser.add_argument("-eval", "--eval", required=False, action="store_true", help="Whether to only evaluate the model.")
     parser.add_argument("-predict", "--predict", required=False, action="store_true", help="Whether to only predict with the model.")
@@ -68,7 +71,20 @@ class HFDataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.decoder_input_ids)
 
-def load_tokenizer_data(filename, tokenizer_batch=1000):
+
+def train_tokenizer(args, tokenizer_batch=1000):
+    tags = ['<info>', '<promo>', '<news>', '<law>', '<other>', '<arg>', '<instr>', '<lit>', '<forum>']
+    data = load_tokenizer_data(args.train_file)
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name, max_len=args.max_length, truncation=True, padding=True)
+    tokenizer.train_from_iterator(batch_generator(data, tokenizer_batch), vocab_size=tokenizer.vocab_size, new_special_tokens=tags if 'genre_aware_token' in args.model_type else None)
+    save_path = args.tokenizer_path if args.tokenizer_path else os.path.join(args.root_dir, "models", args.exp_type, args.model_type, "tokenizer")
+    tokenizer.save_pretrained(save_path)
+    print("Tokenizer saved at: ", save_path)
+    print("Vocab size: ", tokenizer.vocab_size)
+    print("Special tokens: ", tokenizer.special_tokens_map)
+    return tokenizer
+
+def load_tokenizer_data(filename):
     # make a generator to load the data in batches
     corpus_src = []
     corpus_tgt = []
@@ -86,14 +102,11 @@ def load_tokenizer_data(filename, tokenizer_batch=1000):
         print("Errors when loading data: ", error_count)
     #combine the data
     corpus = corpus_src + corpus_tgt
-    #shuffle the data
-    indices = np.arange(len(corpus))
-    np.random.seed(1)
-    np.random.shuffle(indices)
-    corpus = np.array(corpus)[indices]
-    # make data lists again
-    corpus = corpus.tolist()
+    return corpus
 
+def batch_generator(corpus, batch_size):
+    for i in range(0, len(corpus), batch_size):
+        yield corpus[i:i+batch_size]
 
 def get_train_args(args):
     if not args.eval and not args.predict: 
