@@ -77,6 +77,7 @@ def train_tokenizer(args, tokenizer_batch=1000):
     data = load_tokenizer_data(args.train_file)
     tokenizer = AutoTokenizer.from_pretrained(args.model_name, max_len=args.max_length, truncation=True, padding=True)
     print("Tokenizer is fast tokenizer: ", tokenizer.is_fast)
+    print("Tokenizer config: ", tokenizer.tokenizer_config)
     tokenizer.train_from_iterator(batch_generator(data, tokenizer_batch), vocab_size=tokenizer.vocab_size, new_special_tokens=tags if 'genre_aware_token' in args.model_type else None)
     save_path = args.tokenizer_path if args.tokenizer_path else os.path.join(args.root_dir, "models", args.exp_type, args.model_type, "tokenizer")
     tokenizer.save_pretrained(save_path)
