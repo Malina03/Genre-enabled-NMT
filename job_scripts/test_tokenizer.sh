@@ -116,7 +116,5 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --early_stopping 3 \
     --eval_baseline \
     --num_train_epochs 20 \
-    --checkpoint $checkpoint \
     --train_tokenizer \
-    --genre $genre \
     &> $log_file
