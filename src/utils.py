@@ -82,18 +82,16 @@ def train_tokenizer(args, tokenizer_batch=1000):
     # train src tokenizer
     spm.SentencePieceTrainer.train(input=args.train_file + '.src', model_prefix=save_path + 'source', vocab_size=old_tokenizer.vocab_size/2, 
                                    pad_id=old_tokenizer.pad_token_id, unk_id=old_tokenizer.unk_token_id,
-                                   bos_id=old_tokenizer.bos_token_id, eos_id=old_tokenizer.eos_token_id, 
-                                   pad_piece = old_tokenizer.pad_token, unk_piece=old_tokenizer.unk_token, 
-                                   bos_piece=old_tokenizer.bos_token, eos_piece=old_tokenizer.eos_token,
+                                   eos_id=old_tokenizer.eos_token_id, pad_piece = old_tokenizer.pad_token, 
+                                   unk_piece=old_tokenizer.unk_token, eos_piece=old_tokenizer.eos_token,
                                    user_defined_symbols=tags if 'genre_aware_token' in args.model_type else None,
                                    model_type='bpe')
     # train tgt tokenizer
     spm.SentencePieceTrainer.train(input=args.train_file + '.ref', model_prefix=save_path + 'target', vocab_size=old_tokenizer.vocab_size/2,
-                                    pad_id=old_tokenizer.pad_token_id, unk_id=old_tokenizer.unk_token_id,
-                                    bos_id=old_tokenizer.bos_token_id, eos_id=old_tokenizer.eos_token_id,
-                                    pad_piece=old_tokenizer.pad_token, unk_piece=old_tokenizer.unk_token,
-                                    bos_piece=old_tokenizer.bos_token, eos_piece=old_tokenizer.eos_token,
-                                    model_type='bpe')
+                                   pad_id=old_tokenizer.pad_token_id, unk_id=old_tokenizer.unk_token_id,
+                                   eos_id=old_tokenizer.eos_token_id, pad_piece = old_tokenizer.pad_token, 
+                                   unk_piece=old_tokenizer.unk_token, eos_piece=old_tokenizer.eos_token,
+                                   model_type='bpe')
 
     exit()
     print("Tokenizer saved at: ", save_path)
