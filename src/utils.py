@@ -4,7 +4,7 @@ import numpy as np
 from sacrebleu.metrics import BLEU, CHRF, TER
 import os
 import torch
-import SentencePiece as spm
+import sentencepiece as spm
 
 def get_args():
     parser = argparse.ArgumentParser()
