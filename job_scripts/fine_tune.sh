@@ -1,7 +1,7 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=36:00:00
-#SBATCH --job-name=train_fs
+#SBATCH --time=72:00:00
+#SBATCH --job-name=train
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
 #SBATCH --mem=164G
@@ -22,8 +22,8 @@ source /home1/s3412768/.envs/nmt2/bin/activate
 corpus=$1 # corpus to fine-tune on
 language=$2 # target language
 exp_type=$3 # type of model (e.g. fine_tuned or from_scratch.)
-model_type=$4 # type of experiment ([doc_]genre_aware[_token] -genres are added as proper tokens- or [doc_]baseline, tok_baseline, tok_genre_aware, tok_genre_aware_token)
-# genre=$5 # genre to fine-tune on 
+model_type=$4 # type of experiment ([doc_]genre_aware[_token] -genres are added as proper tokens- or [doc_]baseline)
+genre=$5 # genre to fine-tune on 
 
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
@@ -58,6 +58,37 @@ if [ $exp_type = 'from_scratch' ]; then
         echo "Invalid model type"
         exit 1
     fi
+
+elif [ $exp_type = 'fine_tuned' ]; then
+    checkpoint=$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-*
+    log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/$genre/train_${corpus}.log"
+    if [ ! -d "$root_dir/logs/$exp_type/$model_type/$genre" ]; then
+        mkdir -p $root_dir/logs/$exp_type/$model_type/$genre
+    fi
+
+    if [ $genre = 'doc' ]; then
+        if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
+            train_file="$root_dir/data/${corpus}.en-$language.doc.train.tag.tsv"
+            dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tag.tsv"
+        elif [ $model_type = 'baseline' ]; then
+            train_file="$root_dir/data/${corpus}.en-$language.doc.train.tsv"
+            dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tsv"
+        else
+            echo "Invalid model type"
+            exit 1
+        fi
+    else
+        if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
+            train_file="$root_dir/data/${corpus}.en-$language.train.$genre.tag.tsv"
+            dev_file="${root_dir}/data/${corpus}.en-$language.dev.$genre.tag.tsv"
+        elif [ $model_type = 'baseline' ]; then
+            train_file="$root_dir/data/${corpus}.en-$language.train.$genre.tsv"
+            dev_file="${root_dir}/data/${corpus}.en-$language.dev.$genre.tsv"
+        else
+            echo "Invalid model type"
+            exit 1
+        fi
+    fi
 else
     echo "Invalid experiment type"
     exit 1
@@ -81,8 +112,10 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --learning_rate 1e-5 \
     --exp_type $exp_type \
     --model_type $model_type \
+    --genre $genre \
     --model_name $model \
     --early_stopping 3 \
+    --eval_baseline \
     --num_train_epochs 20 \
-    --train_tokenizer \
+    --checkpoint $checkpoint \
     &> $log_file
