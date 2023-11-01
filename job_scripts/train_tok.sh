@@ -22,7 +22,7 @@ source /home1/s3412768/.envs/nmt2/bin/activate
 corpus=$1 # corpus to fine-tune on
 language=$2 # target language
 exp_type=$3 # type of model (e.g. fine_tuned or from_scratch.)
-model_type=$4 # type of experiment ([doc_]genre_aware[_token] -genres are added as proper tokens- or [doc_]baseline)
+model_type=$4 # type of experiment (tok_baseline, tok_genre_aware, tok_genre_aware_token)
 # genre=$5 # genre to fine-tune on 
 
 
@@ -63,8 +63,8 @@ else
     exit 1
 fi
 
-
-
+## modify model type
+model_type="tok_${model_type}"
 echo "Checkpoint: $checkpoint"
 
 python /home1/s3412768/Genre-enabled-NMT/src/train.py \
@@ -84,4 +84,5 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --model_name $model \
     --early_stopping 3 \
     --num_train_epochs 20 \
+    --train_tokenizer \
     &> $log_file
