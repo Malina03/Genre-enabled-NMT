@@ -23,7 +23,7 @@ corpus=$1 # corpus to fine-tune on
 language=$2 # target language
 exp_type=$3 # type of model (e.g. fine_tuned or from_scratch.)
 model_type=$4 # type of experiment ([doc_]genre_aware[_token] -genres are added as proper tokens- or [doc_]baseline)
-genre=$5 # genre to fine-tune on 
+# genre=$5 # genre to fine-tune on 
 
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
@@ -37,7 +37,7 @@ fi
 if [ $exp_type = 'from_scratch' ]; then
     checkpoint=""
     genre=""
-    log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}.log"
+    log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/test_tokenizer_${corpus}.log"
     if [ ! -d "$root_dir/logs/$exp_type/$model_type" ]; then
         mkdir -p $root_dir/logs/$exp_type/$model_type
     fi
@@ -112,7 +112,6 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --learning_rate 1e-5 \
     --exp_type $exp_type \
     --model_type $model_type \
-    --genre $genre \
     --model_name $model \
     --early_stopping 3 \
     --eval_baseline \
