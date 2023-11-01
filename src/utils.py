@@ -1,5 +1,5 @@
 import argparse
-from transformers import Seq2SeqTrainingArguments, AutoTokenizer
+from transformers import Seq2SeqTrainingArguments, AutoTokenizer, MarianTokenizer
 import numpy as np
 from sacrebleu.metrics import BLEU, CHRF, TER
 import os
@@ -78,10 +78,10 @@ def train_tokenizer(args, tokenizer_batch=1000):
     tags = ['<info>', '<promo>', '<news>', '<law>', '<other>', '<arg>', '<instr>', '<lit>', '<forum>']
     save_path = args.tokenizer_path if args.tokenizer_path else os.path.join(args.root_dir, "models", args.exp_type, args.model_type, "tokenizer")
     old_tokenizer = AutoTokenizer.from_pretrained(args.model_name)
-    # print special tokens of old tokenizer
-    print("Special tokens: ", old_tokenizer.special_tokens_map)
-    #print old tokenizer special tokens ids
-    print("Special tokens ids: ", old_tokenizer.all_special_ids)
+    # # print special tokens of old tokenizer
+    # print("Special tokens: ", old_tokenizer.special_tokens_map)
+    # #print old tokenizer special tokens ids
+    # print("Special tokens ids: ", old_tokenizer.all_special_ids)
     # train src tokenizer
     spm.SentencePieceTrainer.train(input=args.train_file + '.src', model_prefix=save_path + '/source', vocab_size=old_tokenizer.vocab_size/2, 
                                    pad_id=0, pad_piece = '<pad>',
@@ -99,11 +99,11 @@ def train_tokenizer(args, tokenizer_batch=1000):
                                    model_type='bpe')
     # get vocab of src tokenizer
     src_tokenizer = spm.SentencePieceProcessor()
-    src_tokenizer.Load(save_path + 'source.model')
+    src_tokenizer.Load(save_path + '/source.model')
     src_vocab = src_tokenizer.vocab()
     # get vocab of tgt tokenizer
     tgt_tokenizer = spm.SentencePieceProcessor()
-    tgt_tokenizer.Load(save_path + 'target.model')
+    tgt_tokenizer.Load(save_path + '/target.model')
     tgt_vocab = tgt_tokenizer.vocab()
     # combine the vocabularies
     vocab = {}
@@ -115,14 +115,15 @@ def train_tokenizer(args, tokenizer_batch=1000):
     # save the vocab
     with open(save_path + '/vocab.json', 'w') as f:
         json.dump(vocab, f)
-    # make tokenizer from pretrained using the new vocab and models
-    # tokenizer = MarianTokenizer(
 
-    exit()
+    # make tokenizer from pretrained using the new vocab and models
+    tokenizer = MarianTokenizer(vocab=save_path + '/vocab.json', source_spm=save_path + '/source.model', target_spm=save_path + '/target.model')
+    # save the tokenizer
+    tokenizer.save_pretrained(save_path)
     print("Tokenizer saved at: ", save_path)
-    print("Vocab size: ", old_tokenizer.vocab_size)
-    print("Special tokens: ", old_tokenizer.special_tokens_map)
-    return old_tokenizer
+    print("Vocab size: ", tokenizer.vocab_size)
+    print("Special tokens: ", tokenizer.special_tokens_map)
+    return tokenizer
 
 def load_tokenizer_data(filename):
     # make a generator to load the data in batches
