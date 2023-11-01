@@ -115,8 +115,8 @@ def train_tokenizer(args, tokenizer_batch=1000):
         if tgt_vocab[i] not in vocab.keys():
             vocab[tgt_vocab[i]] = i + len(src_vocab)
     # save the vocab
-    with open(save_path + '/vocab.json', 'w') as f:
-        json.dump(vocab, f)
+    with open(save_path + '/vocab.json', 'w', encoding='utf-8') as f:
+        json.dump(vocab, f, ensure_ascii=False)
 
     # make tokenizer from pretrained using the new vocab and models
     tokenizer = MarianTokenizer(vocab=save_path + '/vocab.json', source_spm=save_path + '/source.model', target_spm=save_path + '/target.model')
