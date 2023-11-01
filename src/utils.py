@@ -5,6 +5,7 @@ from sacrebleu.metrics import BLEU, CHRF, TER
 import os
 import torch
 import sentencepiece as spm
+import json
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -83,18 +84,18 @@ def train_tokenizer(args, tokenizer_batch=1000):
     print("Special tokens ids: ", old_tokenizer.all_special_ids)
     # train src tokenizer
     spm.SentencePieceTrainer.train(input=args.train_file + '.src', model_prefix=save_path + '/source', vocab_size=old_tokenizer.vocab_size/2, 
-                                   pad_id=old_tokenizer.pad_token_id, unk_id=old_tokenizer.unk_token_id,
-                                   eos_id=old_tokenizer.eos_token_id, pad_piece = old_tokenizer.pad_token, 
-                                   unk_piece=old_tokenizer.unk_token, eos_piece=old_tokenizer.eos_token,
-                                   bos_id=2, bos_piece='<s>',
+                                   pad_id=0, pad_piece = '<pad>',
+                                   unk_id=1, unk_piece='<unk>',
+                                   bos_id=2, bos_piece='<s>',  
+                                   eos_id=3, eos_piece='</s>',
                                    user_defined_symbols=tags if 'genre_aware_token' in args.model_type else None,
                                    model_type='bpe')
     # train tgt tokenizer
     spm.SentencePieceTrainer.train(input=args.train_file + '.ref', model_prefix=save_path + '/target', vocab_size=old_tokenizer.vocab_size/2,
-                                   pad_id=old_tokenizer.pad_token_id, unk_id=old_tokenizer.unk_token_id,
-                                   eos_id=old_tokenizer.eos_token_id, pad_piece = old_tokenizer.pad_token, 
-                                   bos_id=2, bos_piece='<s>',
-                                   unk_piece=old_tokenizer.unk_token, eos_piece=old_tokenizer.eos_token,
+                                   pad_id=0, pad_piece = '<pad>',
+                                   unk_id=1, unk_piece='<unk>',
+                                   bos_id=2, bos_piece='<s>',  
+                                   eos_id=3, eos_piece='</s>',
                                    model_type='bpe')
     # get vocab of src tokenizer
     src_tokenizer = spm.SentencePieceProcessor()
@@ -109,9 +110,13 @@ def train_tokenizer(args, tokenizer_batch=1000):
     for i in range(len(src_vocab)):
         vocab[src_tokenizer.IdToPiece(i)] = i
     for i in range(len(tgt_vocab)):
-        vocab[tgt_tokenizer.IdToPiece(i)] = i + len(src_vocab)
+        if tgt_tokenizer.IdToPiece(i) not in vocab.keys():
+            vocab[tgt_tokenizer.IdToPiece(i)] = i + len(src_vocab)
+    # save the vocab
+    with open(save_path + '/vocab.json', 'w') as f:
+        json.dump(vocab, f)
     # make tokenizer from pretrained using the new vocab and models
-
+    # tokenizer = MarianTokenizer(
 
     exit()
     print("Tokenizer saved at: ", save_path)
