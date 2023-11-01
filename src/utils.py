@@ -73,6 +73,12 @@ class HFDataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.decoder_input_ids)
 
+def read_vocab(filename):
+    vocab = []
+    with open (filename, 'r', encoding="utf-8") as f:
+        for line in f:
+            vocab.append(line.strip().split('\t')[0])
+    return vocab
 
 def train_tokenizer(args, tokenizer_batch=1000):
     tags = ['<info>', '<promo>', '<news>', '<law>', '<other>', '<arg>', '<instr>', '<lit>', '<forum>']
@@ -89,29 +95,25 @@ def train_tokenizer(args, tokenizer_batch=1000):
                                    bos_id=2, bos_piece='<s>',  
                                    eos_id=3, eos_piece='</s>',
                                    user_defined_symbols=tags if 'genre_aware_token' in args.model_type else None,
-                                   model_type='bpe')
+                                   model_type='bpe', vocabulary_output_piece_score=False)
     # train tgt tokenizer
     spm.SentencePieceTrainer.train(input=args.train_file + '.ref', model_prefix=save_path + '/target', vocab_size=old_tokenizer.vocab_size/2,
                                    pad_id=0, pad_piece = '<pad>',
                                    unk_id=1, unk_piece='<unk>',
                                    bos_id=2, bos_piece='<s>',  
                                    eos_id=3, eos_piece='</s>',
-                                   model_type='bpe')
+                                   model_type='bpe', vocabulary_output_piece_score=False)
     # get vocab of src tokenizer
-    src_tokenizer = spm.SentencePieceProcessor()
-    src_tokenizer.Load(save_path + '/source.model')
-    src_vocab = src_tokenizer.vocab()
+    src_vocab = read_vocab(save_path + '/source.vocab')
     # get vocab of tgt tokenizer
-    tgt_tokenizer = spm.SentencePieceProcessor()
-    tgt_tokenizer.Load(save_path + '/target.model')
-    tgt_vocab = tgt_tokenizer.vocab()
+    tgt_vocab = read_vocab(save_path + '/target.vocab')
     # combine the vocabularies
     vocab = {}
     for i in range(len(src_vocab)):
-        vocab[src_tokenizer.IdToPiece(i)] = i
+        vocab[src_vocab[i]] = i
     for i in range(len(tgt_vocab)):
-        if tgt_tokenizer.IdToPiece(i) not in vocab.keys():
-            vocab[tgt_tokenizer.IdToPiece(i)] = i + len(src_vocab)
+        if tgt_vocab[i] not in vocab.keys():
+            vocab[tgt_vocab[i]] = i + len(src_vocab)
     # save the vocab
     with open(save_path + '/vocab.json', 'w') as f:
         json.dump(vocab, f)
