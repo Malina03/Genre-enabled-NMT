@@ -11,7 +11,10 @@ if __name__ == "__main__":
     args = get_args()
     if args.wandb:
         # only log the training process 
-        wandb_name = f"{args.train_file.split('/')[-1].split('.')[1]}_{args.exp_type}_{args.model_type}_{args.genre}"
+        if args.genre:
+            wandb_name = f"{args.train_file.split('/')[-1].split('.')[1]}_{args.exp_type}_{args.model_type}_{args.genre}"
+        else:
+            wandb_name = f"{args.train_file.split('/')[-1].split('.')[1]}_{args.exp_type}_{args.model_type}"
         # Initialize wandb
         wandb.init(project="genre_NMT", name=wandb_name, config=args)
 
@@ -82,7 +85,10 @@ if __name__ == "__main__":
                 preds = preds[0]
             decode_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
             predictions = [pred.strip() for pred in decode_preds]
-            logging_dir = os.path.join(args.root_dir, "eval", args.exp_type, args.model_type, args.genre)
+            if args.genre:
+                logging_dir = os.path.join(args.root_dir, "eval", args.exp_type, args.model_type, args.genre)
+            else:
+                logging_dir = os.path.join(args.root_dir, "eval", args.exp_type, args.model_type)
             if not os.path.exists(logging_dir):
                 os.makedirs(logging_dir)
             eval_corpus = args.test_file.split("/")[-1].split(".")[0]
