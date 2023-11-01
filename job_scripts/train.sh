@@ -1,10 +1,10 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=01:00:00
+#SBATCH --time=72:00:00
 #SBATCH --job-name=train
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
-#SBATCH --mem=256G
+#SBATCH --mem=164G
 
 
 export PATH="$PATH:/home1/s3412768/.local/bin"
