@@ -23,7 +23,7 @@ corpus=$1 # corpus to fine-tune on
 language=$2 # target language
 exp_type=$3 # type of model (e.g. fine_tuned or from_scratch.)
 model_type=$4 # type of experiment ([doc_]genre_aware[_token] -genres are added as proper tokens- or [doc_]baseline)
-# genre=$5 # genre to fine-tune on 
+genre=$5 # genre to fine-tune on 
 
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
@@ -118,4 +118,5 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --num_train_epochs 20 \
     --checkpoint $checkpoint \
     --train_tokenizer \
+    --genre $genre \
     &> $log_file
