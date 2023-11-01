@@ -11,15 +11,21 @@ if __name__ == "__main__":
     args = get_args()
     if args.wandb:
         # only log the training process 
-        wandb_name = f"{args.train_file.split('/')[-1].split('.')[1]}_{args.exp_type}_{args.model_type}_{args._get_args}"
+        wandb_name = f"{args.train_file.split('/')[-1].split('.')[1]}_{args.exp_type}_{args.model_type}_{args.genre}"
         # Initialize wandb
         wandb.init(project="genre_NMT", name=wandb_name, config=args)
 
     
     # Load the data
     tokenizer = AutoTokenizer.from_pretrained(args.model_name, max_length=args.max_length, truncation=True)
+    # if args.train_tokenizer:
+    #     # train the tokenizer from scratch
+    #     tokenizer_dataset = load_tokenizer_data(args.train_file, tokenizer_batch=1000)
+    #     tokenizer.train_from_iterator(tokenizer_dataset, vocab_size=tokenizer.vocab_size)
+
     if "genre_aware_token" in args.model_type:
-        tags = ['>>info<<', '>>promo<<', '>>news<<', '>>law<', '>>other<<', '>>arg<<', '>>instr<<', '>>lit<<', '>>forum<<']
+        # tags = ['>>info<<', '>>promo<<', '>>news<<', '>>law<', '>>other<<', '>>arg<<', '>>instr<<', '>>lit<<', '>>forum<<']
+        tags = ['<info>', '<promo>', '<news>', '<law>', '<other>', '<arg>', '<instr>', '<lit>', '<forum>']
         tokenizer.add_special_tokens({'additional_special_tokens': tags})
 
 

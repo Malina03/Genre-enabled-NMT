@@ -68,6 +68,32 @@ class HFDataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.decoder_input_ids)
 
+def load_tokenizer_data(filename, tokenizer_batch=1000):
+    # make a generator to load the data in batches
+    corpus_src = []
+    corpus_tgt = []
+    error_count = 0
+    with open(filename, 'r', encoding="utf-8") as f:
+        for line in f:
+            try:
+                src, tgt = line.strip().split('\t')
+                corpus_src.append(src)
+                corpus_tgt.append(tgt)
+            except:
+                error_count += 1
+                continue
+    if error_count > 0:
+        print("Errors when loading data: ", error_count)
+    #combine the data
+    corpus = corpus_src + corpus_tgt
+    #shuffle the data
+    indices = np.arange(len(corpus))
+    np.random.seed(1)
+    np.random.shuffle(indices)
+    corpus = np.array(corpus)[indices]
+    # make data lists again
+    corpus = corpus.tolist()
+
 
 def get_train_args(args):
     if not args.eval and not args.predict: 

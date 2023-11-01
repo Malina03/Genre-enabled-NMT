@@ -421,8 +421,9 @@ def save_datasets(train, dev, test, tgt_lang, tgt_col, path, name):
     test[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path  + "/" +  name + '.test.tsv', sep='\t', index=False, header=False)
     
     # add token in from of en_par according to mapping
-    genre_tokens = {'Prose/Lyrical': '>>lit<<','Instruction': '>>instr<<', 'Promotion': '>>promo<<', 'Opinion/Argumentation': '>>arg<<' , 'Other': '>>other<<' , 'Information/Explanation': '>>info<<', 'News': '>>news<<', 'Legal': '>>law<<', 'Forum': 
-                    '>>forum<<'}
+    # genre_tokens = {'Prose/Lyrical': '>>lit<<','Instruction': '>>instr<<', 'Promotion': '>>promo<<', 'Opinion/Argumentation': '>>arg<<' , 'Other': '>>other<<' , 'Information/Explanation': '>>info<<', 'News': '>>news<<', 'Legal': '>>law<<', 'Forum': 
+                    # '>>forum<<'}
+    genre_tokens = {'Prose/Lyrical': '<lit>','Instruction': '<instr>', 'Promotion': '<promo>', 'Opinion/Argumentation': '<arg>' , 'Other': '<other>' , 'Information/Explanation': '<info>', 'News': '<news>', 'Legal': '<law>', 'Forum': '<forum>'}
 
     # make column "tokens" with genre tokens 
     train['tokens'] = train['X-GENRE'].replace(genre_tokens)
