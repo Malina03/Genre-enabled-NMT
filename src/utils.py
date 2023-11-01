@@ -89,7 +89,7 @@ def train_tokenizer(args, tokenizer_batch=1000):
     # #print old tokenizer special tokens ids
     # print("Special tokens ids: ", old_tokenizer.all_special_ids)
     # train src tokenizer
-    spm.SentencePieceTrainer.train(input=args.train_file + '.src', model_prefix=save_path + '/source', vocab_size=old_tokenizer.vocab_size/2, 
+    spm.SentencePieceTrainer.train(input=args.train_file + '.src', model_prefix=save_path + '/source', vocab_size=old_tokenizer.vocab_size, 
                                    pad_id=0, pad_piece = '<pad>',
                                    unk_id=1, unk_piece='<unk>',
                                    bos_id=2, bos_piece='<s>',  
@@ -97,7 +97,7 @@ def train_tokenizer(args, tokenizer_batch=1000):
                                    user_defined_symbols=tags if 'genre_aware_token' in args.model_type else None,
                                    model_type='bpe', vocabulary_output_piece_score=False)
     # train tgt tokenizer
-    spm.SentencePieceTrainer.train(input=args.train_file + '.ref', model_prefix=save_path + '/target', vocab_size=old_tokenizer.vocab_size/2,
+    spm.SentencePieceTrainer.train(input=args.train_file + '.ref', model_prefix=save_path + '/target', vocab_size=old_tokenizer.vocab_size,
                                    pad_id=0, pad_piece = '<pad>',
                                    unk_id=1, unk_piece='<unk>',
                                    bos_id=2, bos_piece='<s>',  
@@ -107,13 +107,21 @@ def train_tokenizer(args, tokenizer_batch=1000):
     src_vocab = read_vocab(save_path + '/source.vocab')
     # get vocab of tgt tokenizer
     tgt_vocab = read_vocab(save_path + '/target.vocab')
-    # combine the vocabularies
-    vocab = {}
+    # combine the vocabularies intercalating the tokens
+    combined = []
     for i in range(len(src_vocab)):
-        vocab[src_vocab[i]] = i
-    for i in range(len(tgt_vocab)):
-        if tgt_vocab[i] not in vocab.keys():
-            vocab[tgt_vocab[i]] = i + len(src_vocab)
+        combined.append(src_vocab[i])
+        combined.append(tgt_vocab[i])
+    # remove duplicates
+    combined = list(set(combined))
+    # remove pad token
+    combined.remove('<pad>')
+    combined = combined[:old_tokenizer.vocab_size-1]
+    # make a dict with token ids as values and tokens as keys
+    vocab = {}
+    for i in range(len(combined)):
+        vocab[combined[i]] = i
+    vocab['<pad>'] = old_tokenizer.pad_token_id
     # save the vocab
     with open(save_path + '/vocab.json', 'w', encoding='utf-8') as f:
         json.dump(vocab, f, ensure_ascii=False)
