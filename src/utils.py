@@ -4,6 +4,7 @@ import numpy as np
 from sacrebleu.metrics import BLEU, CHRF, TER
 import os
 import torch
+import SentencePiece as spm
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -74,17 +75,29 @@ class HFDataset(torch.utils.data.Dataset):
 
 def train_tokenizer(args, tokenizer_batch=1000):
     tags = ['<info>', '<promo>', '<news>', '<law>', '<other>', '<arg>', '<instr>', '<lit>', '<forum>']
-    data = load_tokenizer_data(args.train_file)
-    tokenizer = AutoTokenizer.from_pretrained(args.model_name, max_len=args.max_length, truncation=True, padding=True)
-    print("Tokenizer is fast tokenizer: ", tokenizer.is_fast)
-    print("Tokenizer config: ", tokenizer.tokenizer_config)
-    tokenizer.train_from_iterator(batch_generator(data, tokenizer_batch), vocab_size=tokenizer.vocab_size, new_special_tokens=tags if 'genre_aware_token' in args.model_type else None)
     save_path = args.tokenizer_path if args.tokenizer_path else os.path.join(args.root_dir, "models", args.exp_type, args.model_type, "tokenizer")
-    tokenizer.save_pretrained(save_path)
+    old_tokenizer = AutoTokenizer.from_pretrained(args.model_name, max_len=args.max_length, truncation=True, padding=True)
+    # train src tokenizer
+    spm.SentencePieceTrainer.train(input=args.train_file + '.src', model_prefix=save_path + 'source', vocab_size=old_tokenizer.vocab_size/2, 
+                                   pad_id=old_tokenizer.pad_token_id, unk_id=old_tokenizer.unk_token_id,
+                                   bos_id=old_tokenizer.bos_token_id, eos_id=old_tokenizer.eos_token_id, 
+                                   pad_piece = old_tokenizer.pad_token, unk_piece=old_tokenizer.unk_token, 
+                                   bos_piece=old_tokenizer.bos_token, eos_piece=old_tokenizer.eos_token,
+                                   user_defined_symbols=tags if 'genre_aware_token' in args.model_type else None,
+                                   model_type='bpe')
+    # train tgt tokenizer
+    spm.SentencePieceTrainer.train(input=args.train_file + '.ref', model_prefix=save_path + 'target', vocab_size=old_tokenizer.vocab_size/2,
+                                    pad_id=old_tokenizer.pad_token_id, unk_id=old_tokenizer.unk_token_id,
+                                    bos_id=old_tokenizer.bos_token_id, eos_id=old_tokenizer.eos_token_id,
+                                    pad_piece=old_tokenizer.pad_token, unk_piece=old_tokenizer.unk_token,
+                                    bos_piece=old_tokenizer.bos_token, eos_piece=old_tokenizer.eos_token,
+                                    model_type='bpe')
+
+    exit()
     print("Tokenizer saved at: ", save_path)
-    print("Vocab size: ", tokenizer.vocab_size)
-    print("Special tokens: ", tokenizer.special_tokens_map)
-    return tokenizer
+    print("Vocab size: ", old_tokenizer.vocab_size)
+    print("Special tokens: ", old_tokenizer.special_tokens_map)
+    return old_tokenizer
 
 def load_tokenizer_data(filename):
     # make a generator to load the data in batches
@@ -179,7 +192,7 @@ def load_data(filename, args, tokenizer):
         corpus_tgt = corpus_tgt.tolist()
     # tokenize the data
     model_inputs = tokenizer(corpus_src, max_length=args.max_length, truncation=True)
-    encoded_tgt = tokenizer(text_target=corpus_tgt, max_length=args.max_length, truncation=True)
+    encoded_tgt = tokenizer(text=corpus_tgt, max_length=args.max_length, truncation=True)
     return HFDataset(model_inputs, encoded_tgt["input_ids"])
             
 
