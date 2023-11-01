@@ -76,7 +76,9 @@ class HFDataset(torch.utils.data.Dataset):
 def train_tokenizer(args, tokenizer_batch=1000):
     tags = ['<info>', '<promo>', '<news>', '<law>', '<other>', '<arg>', '<instr>', '<lit>', '<forum>']
     save_path = args.tokenizer_path if args.tokenizer_path else os.path.join(args.root_dir, "models", args.exp_type, args.model_type, "tokenizer")
-    old_tokenizer = AutoTokenizer.from_pretrained(args.model_name, max_len=args.max_length, truncation=True, padding=True)
+    old_tokenizer = AutoTokenizer.from_pretrained(args.model_name)
+    # print special tokens of old tokenizer
+    print("Special tokens: ", old_tokenizer.special_tokens_map)
     # train src tokenizer
     spm.SentencePieceTrainer.train(input=args.train_file + '.src', model_prefix=save_path + 'source', vocab_size=old_tokenizer.vocab_size/2, 
                                    pad_id=old_tokenizer.pad_token_id, unk_id=old_tokenizer.unk_token_id,
