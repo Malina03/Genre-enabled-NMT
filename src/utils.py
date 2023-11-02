@@ -198,7 +198,7 @@ def get_train_args(args):
         label_smoothing_factor=args.label_smoothing,
         fp16=args.fp16,
         gradient_checkpointing=args.gradient_checkpointing,
-        adafactor=args.adafactor,
+        optim="adafactor" if args.adafactor else "adam",
         report_to="wandb" if args.wandb else "none",
         predict_with_generate=True,
         logging_first_step=True,
