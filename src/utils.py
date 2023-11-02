@@ -83,6 +83,8 @@ def read_vocab(filename):
 def train_tokenizer(args, tokenizer_batch=1000):
     tags = ['<info>', '<promo>', '<news>', '<law>', '<other>', '<arg>', '<instr>', '<lit>', '<forum>']
     save_path = args.tokenizer_path if args.tokenizer_path else os.path.join(args.root_dir, "models", args.exp_type, args.model_type, "tokenizer")
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
     old_tokenizer = AutoTokenizer.from_pretrained(args.model_name)
     # # print special tokens of old tokenizer
     # print("Special tokens: ", old_tokenizer.special_tokens_map)
