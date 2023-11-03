@@ -23,6 +23,9 @@ def main():
     # check if X-GENRE and X-GENRE_softmax are the same
     print("Check if X-GENRE and X-GENRE_softmax are the same:")
     data['same_classification'] = data.apply(lambda x: x['X-GENRE']==x['X-GENRE_softmax'], axis=1)
+    #print to a file en_par hr_par en_doc hr_doc X-GENRE X-GENRE_softmax same_classification of same_classification = False
+    data[data['same_classification']==False][['en_par', 'hr_par', 'en_doc', 'hr_doc', 'X-GENRE', 'X-GENRE_softmax', 'label_distribution']].to_csv('/scratch/s3412768/genre_NMT/en-hr/data/softmax_saves/different_classification.csv', sep='\t')
+
     print(data['same_classification'].value_counts())
     # remove X-GENRE_softmax if the same as X-GENRE
     if data['same_classification'].value_counts()[True] == len(data):
