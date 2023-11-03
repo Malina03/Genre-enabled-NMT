@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=36:00:00
+#SBATCH --time=72:00:00
 #SBATCH --job-name=train_tok
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
