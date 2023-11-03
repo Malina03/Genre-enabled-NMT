@@ -20,6 +20,14 @@ def main():
     # rename X-GENRE to X_GENRE_softmax
     labels_distr = labels_distr.rename(columns={'X-GENRE': 'X-GENRE_softmax'})
     data = pd.merge(data, labels_distr, on='en-par-src-text')
+
+    for i in range(0, len(labels)):
+        data['label_'+labels[i]+'_conf'] = data['label_distribution'].apply(lambda x: float(x[labels[i]]))
+    # change X-GENRE_softmax values to the most confident label
+    data['X-GENRE_softmax'] = data.apply(lambda x: labels[[x['label_'+labels[i]+'_conf'] for i in range(0, len(labels))].index(max([x['label_'+labels[i]+'_conf'] for i in range(0, len(labels))]))], axis=1)
+    # cahnge chosen_category_distr to the confidence of the chosen category
+    data['chosen_category_distr'] = data.apply(lambda x: x['label_'+x['X-GENRE_softmax']+'_conf'], axis=1)
+
     # check if X-GENRE and X-GENRE_softmax are the same
     print("Check if X-GENRE and X-GENRE_softmax are the same:")
     data['same_classification'] = data.apply(lambda x: x['X-GENRE']==x['X-GENRE_softmax'], axis=1)
@@ -67,6 +75,9 @@ def main():
     for genre in labels:
         plt.figure()
         data[data['X-GENRE']==genre]['chosen_category_distr'].plot(kind='hist', title=genre)
+        ## add average and median lines to the plot
+        plt.axvline(data[data['X-GENRE']==genre]['chosen_category_distr'].mean(), color='m', linestyle='dashed', linewidth=1)
+        plt.axvline(data[data['X-GENRE']==genre]['chosen_category_distr'].median(), color='r', linestyle='dashed', linewidth=1)
         plt.legend()
         plt.savefig('/scratch/s3412768/genre_NMT/en-hr/data/softmax_saves/label_distr_plot_'+genre.replace("/", "-")+'.png')
 
@@ -87,10 +98,6 @@ def main():
     print("Check if the label distribution is a dictionary:")
     print(data['label_distribution'].apply(lambda x: type(x)==dict).value_counts())
 
-    
-
-    for i in range(0, len(labels)):
-        data['label_'+labels[i]+'_conf'] = data['label_distribution'].apply(lambda x: float(x[labels[i]]))
     
     
     # make column for 2nd most confident category by comparing the label confidences
