@@ -20,7 +20,14 @@ def main():
     # rename X-GENRE to X_GENRE_softmax
     labels_distr = labels_distr.rename(columns={'X-GENRE': 'X-GENRE_softmax'})
     data = pd.merge(data, labels_distr, on='en-par-src-text')
-
+    
+    # transform label distribution from string to dictionary
+    data['label_distribution'] = data['label_distribution'].apply(lambda x: json.loads(x.replace("'", "\"")))
+    
+    # check if the label distribution is a dictionary
+    print("Check if the label distribution is a dictionary:")
+    print(data['label_distribution'].apply(lambda x: type(x)==dict).value_counts())
+    # add columns with the confidence of each label from the label distribution
     for i in range(0, len(labels)):
         data['label_'+labels[i]+'_conf'] = data['label_distribution'].apply(lambda x: float(x[labels[i]]))
     # change X-GENRE_softmax values to the most confident label
@@ -87,17 +94,6 @@ def main():
     print(data[data['chosen_category_distr']>=0.9].groupby('X-GENRE')['chosen_category_distr'].count())
     print("Percentage of labels of each genre with above 0.95 confidence:")
     print(data[data['chosen_category_distr']>=0.9].groupby('X-GENRE')['chosen_category_distr'].count()/data.groupby('X-GENRE')['chosen_category_distr'].count())
-
-    # add columns with the confidence of each label from the label distribution
-    
-
-    # transform label distribution from string to dictionary
-    data['label_distribution'] = data['label_distribution'].apply(lambda x: json.loads(x.replace("'", "\"")))
-    
-    # check if the label distribution is a dictionary
-    print("Check if the label distribution is a dictionary:")
-    print(data['label_distribution'].apply(lambda x: type(x)==dict).value_counts())
-
     
     
     # make column for 2nd most confident category by comparing the label confidences
