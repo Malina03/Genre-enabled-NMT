@@ -1,7 +1,7 @@
 '''Fine-tune a pre-trained model from Huggingface on a new dataset.'''
 
 from transformers import AutoTokenizer, EarlyStoppingCallback, AutoModelForSeq2SeqLM, Seq2SeqTrainer, DataCollatorForSeq2Seq, AutoConfig
-from utils import get_args, get_train_args, load_data, compute_metrics, train_tokenizer
+from utils import get_args, get_train_args, load_data, compute_metrics, train_tokenizer, update_model_config
 import wandb
 from functools import partial
 import os
@@ -50,11 +50,12 @@ if __name__ == "__main__":
             config = AutoConfig.from_pretrained(args.model_name)
             model = AutoModelForSeq2SeqLM.from_config(config)
             if train_tokenizer:
-                model.resize_token_embeddings(len(tokenizer))
+                model.resize_token_embeddings(len(tokenizer), pad_to_multiple_of=16)
+                config = update_model_config(config, tokenizer, args)
         else:
             model = AutoModelForSeq2SeqLM.from_pretrained(args.model_name)
         if "genre_aware_token" in args.model_type:
-            model.resize_token_embeddings(len(tokenizer))
+            model.resize_token_embeddings(len(tokenizer), pad_to_multiple_of=16)
     else:
         model = AutoModelForSeq2SeqLM.from_pretrained(args.checkpoint, local_files_only=True)
 

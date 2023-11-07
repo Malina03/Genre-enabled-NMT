@@ -80,7 +80,13 @@ def read_vocab(filename):
             vocab.append(line.strip().split('\t')[0])
     return vocab
 
-def train_tokenizer(args, tokenizer_batch=1000):
+
+def save_vocab_as_json(filename):
+    vocab = read_vocab_dict(filename)
+    with open(filename + '.json', 'r', encoding='utf-8') as f:
+        json.dump(vocab, f, ensure_ascii=False)
+
+def train_tokenizer(args):
     tags = ['<info>', '<promo>', '<news>', '<law>', '<other>', '<arg>', '<instr>', '<lit>', '<forum>']
     save_path = args.tokenizer_path if args.tokenizer_path else os.path.join(args.root_dir, "models", args.exp_type, args.model_type, "tokenizer")
     if not os.path.exists(save_path):
@@ -97,39 +103,21 @@ def train_tokenizer(args, tokenizer_batch=1000):
                                    bos_id=2, bos_piece='<s>',  
                                    eos_id=3, eos_piece='</s>',
                                    user_defined_symbols=tags if 'genre_aware_token' in args.model_type else None,
-                                   model_type='bpe', vocabulary_output_piece_score=False)
+                                   model_type='bpe')
     # train tgt tokenizer
     spm.SentencePieceTrainer.train(input=args.train_file + '.ref', model_prefix=save_path + '/target', vocab_size=old_tokenizer.vocab_size,
                                    pad_id=0, pad_piece = '<pad>',
                                    unk_id=1, unk_piece='<unk>',
                                    bos_id=2, bos_piece='<s>',  
                                    eos_id=3, eos_piece='</s>',
-                                   model_type='bpe', vocabulary_output_piece_score=False)
-    # get vocab of src tokenizer
-    src_vocab = read_vocab(save_path + '/source.vocab')
-    # get vocab of tgt tokenizer
-    tgt_vocab = read_vocab(save_path + '/target.vocab')
-    # combine the vocabularies intercalating the tokens
-    combined = []
-    for i in range(len(src_vocab)):
-        combined.append(src_vocab[i])
-        combined.append(tgt_vocab[i])
-    # remove duplicates
-    combined = list(set(combined))
-    # remove pad token
-    combined.remove('<pad>')
-    combined = combined[:old_tokenizer.vocab_size-1]
-    # make a dict with token ids as values and tokens as keys
-    vocab = {}
-    for i in range(len(combined)):
-        vocab[combined[i]] = i
-    vocab['<pad>'] = old_tokenizer.pad_token_id
-    # save the vocab
-    with open(save_path + '/vocab.json', 'w', encoding='utf-8') as f:
-        json.dump(vocab, f, ensure_ascii=False)
+                                   model_type='bpe')
+    
+    # convert the vocabs to json files and fix token ids
+    save_vocab_as_json(save_path + '/source.vocab')
+    save_vocab_as_json(save_path + '/target.vocab')
 
     # make tokenizer from pretrained using the new vocab and models
-    tokenizer = MarianTokenizer(vocab=save_path + '/vocab.json', source_spm=save_path + '/source.model', target_spm=save_path + '/target.model')
+    tokenizer = MarianTokenizer(vocab=save_path + '/source.vocab.json', source_spm=save_path + '/source.model', target_spm=save_path + '/target.model', target_vocab_file=save_path + '/target.vocab.json', model_max_length=old_tokenizer.model_max_length, bos_token='<s>', eos_token='</s>', pad_token='<pad>', unk_token='<unk>', additional_special_tokens=tags if 'genre_aware_token' in args.model_type else None)
     # save the tokenizer
     tokenizer.save_pretrained(save_path)
     print("Tokenizer saved at: ", save_path)
@@ -137,25 +125,31 @@ def train_tokenizer(args, tokenizer_batch=1000):
     print("Special tokens: ", tokenizer.special_tokens_map)
     return tokenizer
 
-def load_tokenizer_data(filename):
-    # make a generator to load the data in batches
-    corpus_src = []
-    corpus_tgt = []
-    error_count = 0
-    with open(filename, 'r', encoding="utf-8") as f:
+
+
+def update_model_config(config, tokenizer, args):
+    # update the config of the model to match the new tokenizer
+    config._name_or_path = config._name_or_path + '/' + args.exp_type + '/' + args.model_type + '/' + 'new_tokenizer' if args.train_tokenizer else 'old_tokenizer'
+    config.vocab_size = tokenizer.vocab_size
+    config.pad_token_id = tokenizer.pad_token_id
+    config.bos_token_id = tokenizer.bos_token_id
+    config.eos_token_id = tokenizer.eos_token_id
+    config.unk_token_id = tokenizer.unk_token_id
+    config.decoder_start_token_id = tokenizer.pad_token_id
+    config.decoder_vocab_size = tokenizer.vocab_size
+    config.extra_pos_embeddings = tokenizer.vocab_size - config.decoder_start_token_id
+    config.forced_eos_token_id = tokenizer.pad_token_id
+    return config
+
+
+def read_vocab_dict(filename):
+    vocab = {}
+    n=0
+    with open (filename, 'r', encoding="utf-8") as f:
         for line in f:
-            try:
-                src, tgt = line.strip().split('\t')
-                corpus_src.append(src)
-                corpus_tgt.append(tgt)
-            except:
-                error_count += 1
-                continue
-    if error_count > 0:
-        print("Errors when loading data: ", error_count)
-    #combine the data
-    corpus = corpus_src + corpus_tgt
-    return corpus
+            vocab[line.strip().split('\t')[0]] = n
+            n += 1
+    return vocab
 
 def batch_generator(corpus, batch_size):
     for i in range(0, len(corpus), batch_size):
