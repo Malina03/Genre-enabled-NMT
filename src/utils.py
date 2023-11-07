@@ -83,7 +83,7 @@ def read_vocab(filename):
 
 def save_vocab_as_json(filename):
     vocab = read_vocab_dict(filename)
-    with open(filename + '.json', 'r', encoding='utf-8') as f:
+    with open(filename + '.json', 'w', encoding='utf-8') as f:
         json.dump(vocab, f, ensure_ascii=False)
 
 def train_tokenizer(args):
