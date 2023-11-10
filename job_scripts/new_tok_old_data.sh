@@ -34,6 +34,9 @@ else
     model="Helsinki-NLP/opus-mt-en-${language}"
 fi
 
+## modify model type
+model_type="tok_od_${model_type}"
+echo "Checkpoint: $checkpoint"
 
 log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}.log"
 if [ ! -d "$root_dir/logs/$exp_type/$model_type" ]; then
@@ -44,10 +47,6 @@ fi
 train_file="$root_dir/data/old_tokens/${corpus}.en-$language.train.tag.tsv"
 dev_file="${root_dir}/data/old_tokens/${corpus}.en-$language.dev.tag.tsv"
    
-
-## modify model type
-model_type="tok_${model_type}"
-echo "Checkpoint: $checkpoint"
 
 python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --root_dir $root_dir \

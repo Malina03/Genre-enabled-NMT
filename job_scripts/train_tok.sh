@@ -37,11 +37,6 @@ fi
 if [ $exp_type = 'from_scratch' ]; then
     checkpoint=""
     genre=""
-    log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}.log"
-    if [ ! -d "$root_dir/logs/$exp_type/$model_type" ]; then
-        mkdir -p $root_dir/logs/$exp_type/$model_type
-    fi
-
     if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
         train_file="$root_dir/data/${corpus}.en-$language.train.tag.tsv"
         dev_file="${root_dir}/data/${corpus}.en-$language.dev.tag.tsv"
@@ -66,6 +61,10 @@ fi
 ## modify model type
 model_type="tok_${model_type}"
 echo "Checkpoint: $checkpoint"
+log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}.log"
+if [ ! -d "$root_dir/logs/$exp_type/$model_type" ]; then
+    mkdir -p $root_dir/logs/$exp_type/$model_type
+fi
 
 python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --root_dir $root_dir \

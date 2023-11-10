@@ -34,20 +34,6 @@ else
     model="Helsinki-NLP/opus-mt-en-${language}"
 fi
 
-## modify model type
-model_type="tok_${model_type}"
-checkpoint_dir="$root_dir/models/from_scratch/$model_type/"
-
-checkpoint=$checkpoint_dir/$corpus/checkpoint-*
-tokenizer_dir="$checkpoint_dir/tokenizer"
-
-echo "Checkpoint: $checkpoint"
-echo "Tokenizer: $tokenizer_dir"
-
-log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}_2.log"
-if [ ! -d "$root_dir/logs/$exp_type/$model_type" ]; then
-    mkdir -p $root_dir/logs/$exp_type/$model_type
-fi
 
 if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
     train_file="$root_dir/data/${corpus}.en-$language.train.tag.tsv"
@@ -64,6 +50,21 @@ elif [ $model_type = 'doc_baseline' ]; then
 else
     echo "Invalid model type"
     exit 1
+fi
+
+## modify model type
+model_type="tok_${model_type}"
+checkpoint_dir="$root_dir/models/from_scratch/$model_type/"
+
+checkpoint=$checkpoint_dir/$corpus/checkpoint-*
+tokenizer_dir="$checkpoint_dir/tokenizer"
+
+echo "Checkpoint: $checkpoint"
+echo "Tokenizer: $tokenizer_dir"
+
+log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}_2.log"
+if [ ! -d "$root_dir/logs/$exp_type/$model_type" ]; then
+    mkdir -p $root_dir/logs/$exp_type/$model_type
 fi
 
 
@@ -84,7 +85,7 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --exp_type $exp_type \
     --model_type $model_type \
     --model_name $model \
-    --early_stopping 3 \
+    --early_stopping 10 \
     --num_train_epochs 20 \
     --use_costum_tokenizer \
     --tokenizer_path $tokenizer_dir \
