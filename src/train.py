@@ -30,8 +30,10 @@ if __name__ == "__main__":
     else:
         tokenizer = AutoTokenizer.from_pretrained(args.model_name)
         if "genre_aware_token" in args.model_type:
-            # tags = ['>>info<<', '>>promo<<', '>>news<<', '>>law<', '>>other<<', '>>arg<<', '>>instr<<', '>>lit<<', '>>forum<<']
-            tags = ['<info>', '<promo>', '<news>', '<law>', '<other>', '<arg>', '<instr>', '<lit>', '<forum>']
+            if args.old_tokens:
+                tags = ['>>info<<', '>>promo<<', '>>news<<', '>>law<', '>>other<<', '>>arg<<', '>>instr<<', '>>lit<<', '>>forum<<']
+            else:
+                tags = ['<info>', '<promo>', '<news>', '<law>', '<other>', '<arg>', '<instr>', '<lit>', '<forum>']
             tokenizer.add_special_tokens({'additional_special_tokens': tags})
 
 
@@ -62,6 +64,7 @@ if __name__ == "__main__":
     # Set the training arguments
     training_args = get_train_args(args)
 
+  
     callbacks = [
         EarlyStoppingCallback(early_stopping_patience=args.early_stopping, early_stopping_threshold=args.early_stopping_threshold)
     ]

@@ -12,7 +12,7 @@ def get_args():
     parser.add_argument("-root_dir", "--root_dir", required=True, type=str, help="Root directory.")
     # parser.add_argument("-logging_dir", "--logging_dir", required=False, type=str, default="...", help="Logging directory.")
     # parser.add_argument("-model_save_dir", "--model_save_dir", required=True, type=str, help="Path to the output directory where the model will be saved.")
-    parser.add_argument("-tokenizer_path", "--tokenizer_path", required=False, type=str, help="Path to the tokenizer to use. If specified during tokenizer training, the tokenizer will be saved there. Otherwise tokenizers are savedd in the model directory.")
+    parser.add_argument("-tokenizer_path", "--tokenizer_path", required=False, type=str, help="Path to the tokenizer to use. If specified during tokenizer training, the tokenizer will be saved there. Otherwise tokenizers are saved in the model directory.")
     parser.add_argument("-train_tokenizer", "--train_tokenizer", required=False, action="store_true", help="Whether to train the tokenizer on the train dataset.")
     parser.add_argument("-use_costum_tokenizer", "--use_costum_tokenizer", required=False, action="store_true", help="Whether to use a costum tokenizer.")
     parser.add_argument("-checkpoint", "--checkpoint", required=False, type=str, help="Path to the checkpoint to fine-tune. If not provided, the model will be initialized from scratch.")
@@ -30,7 +30,8 @@ def get_args():
 
     parser.add_argument("-model_name", "--model_name", required=True, type=str, help="Name of the model to fine-tune. Must be a model from Huggingface.")
     parser.add_argument("-max_length", "--max_length", required=False, type=int, default=512, help="Maximum length of the input sequence.")
-   
+    parser.add_argument("-old_tokens", "--old_tokens", required=False, action="store_true", help="Whether to use the old tokens format >>promo<<, instaed of the new format <promo>. Check that the appropriate rootdir is given!")
+    
     parser.add_argument("-seed", "--seed", required=False, type=int, default=1, help="Random seed.")
     parser.add_argument("-num_train_epochs", "--num_train_epochs", required=False, type=int, default=10, help="Number of training epochs.")
     parser.add_argument("-batch_size", "--batch_size", required=False, type=int, default=16, help="Batch size.")
@@ -87,7 +88,10 @@ def save_vocab_as_json(filename):
         json.dump(vocab, f, ensure_ascii=False)
 
 def train_tokenizer(args):
-    tags = ['<info>', '<promo>', '<news>', '<law>', '<other>', '<arg>', '<instr>', '<lit>', '<forum>']
+    if args.old_tokens:
+        tags = ['>>info<<', '>>promo<<', '>>news<<', '>>law<<', '>>other<<', '>>arg<<', '>>instr<<', '>>lit<<', '>>forum<<']
+    else:
+        tags = ['<info>', '<promo>', '<news>', '<law>', '<other>', '<arg>', '<instr>', '<lit>', '<forum>']
     save_path = args.tokenizer_path if args.tokenizer_path else os.path.join(args.root_dir, "models", args.exp_type, args.model_type, "tokenizer")
     if not os.path.exists(save_path):
         os.makedirs(save_path)
