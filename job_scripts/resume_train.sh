@@ -86,7 +86,7 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --model_type $model_type \
     --model_name $model \
     --early_stopping 10 \
-    --num_train_epochs 20 \
+    --num_train_epochs 10 \
     --use_costum_tokenizer \
     --tokenizer_path $tokenizer_dir \
     --checkpoint $checkpoint \
