@@ -83,15 +83,13 @@ set -eu -o pipefail
 
 # Calculate all metrics between two files
 eval_file=$test_on
-out_file=$test_on | cut -d '.' -f1
-oldIFS="$IFS"
-IFS='.'
-read -a split_name <<< "$test_on"
-out_file=${split_name[0]}
-IFS="$oldIFS"
+out_file="$(cut -d'.' -f1 <<<"$test_on")"
 
 out=$root_dir/eval/$exp_type/$model_type/${out_file}_predictions.txt
 eval=$root_dir/data/$eval_file
+
+echo "Output file: $out"
+echo "Eval file: $eval"
 
 ref=${eval}.ref
 src=${eval}.src
