@@ -87,7 +87,7 @@ if __name__ == "__main__":
             preds = output.predictions
             if isinstance(preds, tuple):
                 preds = preds[0]
-            decode_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
+            decode_preds = tokenizer.batch_decode(preds, skip_special_tokens=True, clean_up_tokenization_spaces=True)
             predictions = [pred.strip() for pred in decode_preds]
             if args.genre:
                 logging_dir = os.path.join(args.root_dir, "eval", args.exp_type, args.model_type, args.genre)

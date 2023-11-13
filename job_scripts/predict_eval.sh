@@ -52,37 +52,37 @@ if [ ! -d "$root_dir/logs/$exp_type/$model_type/" ]; then
 fi
 
     
-# python /home1/s3412768/Genre-enabled-NMT/src/train.py \
-#     --root_dir $root_dir \
-#     --train_file $test_file \
-#     --dev_file $test_file \
-#     --test_file $test_file\
-#     --gradient_accumulation_steps 2 \
-#     --batch_size 16 \
-#     --gradient_checkpointing \
-#     --adafactor \
-#     --exp_type $exp_type \
-#     --model_type $model_type \
-#     --checkpoint $checkpoint \
-#     --model_name $model \
-#     --tokenizer_path $tokenizer_dir \
-#     --use_costum_tokenizer \
-#     --eval \
-#     --predict \
-#     &> $log_file 
+python /home1/s3412768/Genre-enabled-NMT/src/train.py \
+    --root_dir $root_dir \
+    --train_file $test_file \
+    --dev_file $test_file \
+    --test_file $test_file\
+    --gradient_accumulation_steps 2 \
+    --batch_size 16 \
+    --gradient_checkpointing \
+    --adafactor \
+    --exp_type $exp_type \
+    --model_type $model_type \
+    --checkpoint $checkpoint \
+    --model_name $model \
+    --tokenizer_path $tokenizer_dir \
+    --use_costum_tokenizer \
+    --eval \
+    --predict \
+    &> $log_file 
     
 
-# # deactivate the env used for predictions
-# deactivate
-# # remove the module used for predictions and load the new one
-# module purge
-# module load TensorFlow/2.11.0-foss-2022a-CUDA-11.7.0
-# source $HOME/.envs/nmt_eval/bin/activate
-# set -eu -o pipefail
+# deactivate the env used for predictions
+deactivate
+# remove the module used for predictions and load the new one
+module purge
+module load TensorFlow/2.11.0-foss-2022a-CUDA-11.7.0
+source $HOME/.envs/nmt_eval/bin/activate
+set -eu -o pipefail
 
 
 # Calculate all metrics between two files
-# out_file=$test_on | cut -d '.' -f1
+out_file=$test_on | cut -d '.' -f1
 IFS='.'
 read -a split_name <<< "$test_on"
 out_file=${split_name[0]}
