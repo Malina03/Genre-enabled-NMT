@@ -63,7 +63,6 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --adafactor \
     --exp_type $exp_type \
     --model_type $model_type \
-    --genre $genre \
     --checkpoint $checkpoint \
     --model_name $model \
     --tokenizer_path $tokenizer_dir \
