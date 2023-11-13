@@ -54,7 +54,7 @@ if [ ! -d "$root_dir/logs/$exp_type/$model_type/" ]; then
     mkdir -p $root_dir/logs/$exp_type/$model_type/
 fi
 
-if [ $use_tok = 'yes' ] || [ $use_old_data = 'no']; then
+if [ $use_tok == 'yes' ] || [ $use_old_data == 'no' ]; then
     checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
     tokenizer_dir="$root_dir/models/from_scratch/$model_type/tokenizer"
     echo "Checkpoint: $checkpoint"
