@@ -26,6 +26,9 @@ exp_type=$2 # type of experiment (fine_tuned or from_scratch.)
 model_type=$3 # type of model (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
 # genre=$5 # the genre that the model was trained on
 test_on=$4 # the test file to evaluate on, assuming it is placed in root_dir/data
+use_tok=$5 # yes or no
+use_old_data=$6 # yes or no
+
 
 
 root_dir="/scratch/s3412768/genre_NMT/en-${language}"
@@ -38,11 +41,11 @@ fi
 
 test_file="${root_dir}/data/${test_on}"
 
-checkpoint=$root_dir/models/$exp_type/$model_type/$train_corpus/checkpoint-*
-tokenizer_dir="$root_dir/models/from_scratch/$model_type/tokenizer"
+# checkpoint=$root_dir/models/$exp_type/$model_type/$train_corpus/checkpoint-*
+# tokenizer_dir="$root_dir/models/from_scratch/$model_type/tokenizer"
 
-echo "Checkpoint: $checkpoint"
-echo "Tokenizer: $tokenizer_dir"
+# echo "Checkpoint: $checkpoint"
+# echo "Tokenizer: $tokenizer_dir"
 
 
 log_file="${root_dir}/logs/$exp_type/$model_type/eval_${test_on}.log"
@@ -51,25 +54,107 @@ if [ ! -d "$root_dir/logs/$exp_type/$model_type/" ]; then
     mkdir -p $root_dir/logs/$exp_type/$model_type/
 fi
 
+if [ $use_tok = 'yes' ] || [ $use_old_data = 'no']; then
+    checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
+    tokenizer_dir="$root_dir/models/from_scratch/$model_type/tokenizer"
+    echo "Checkpoint: $checkpoint"
+    echo "Tokenizer: $tokenizer_dir"
+  
+    python /home1/s3412768/Genre-enabled-NMT/src/train.py \
+        --root_dir $root_dir \
+        --train_file $test_file \
+        --dev_file $test_file \
+        --test_file $test_file\
+        --gradient_accumulation_steps 2 \
+        --batch_size 16 \
+        --gradient_checkpointing \
+        --adafactor \
+        --exp_type $exp_type \
+        --model_type $model_type \
+        --checkpoint $checkpoint \
+        --model_name $model \
+        --tokenizer_path $tokenizer_dir \
+        --use_costum_tokenizer \
+        --eval \
+        --predict \
+        &> $log_file 
+
+elif [ $use_tokenizer == 'no' ] || [ $use_old_data == 'no' ]; then
+    checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
+    echo "Checkpoint: $checkpoint"
+    echo "Tokenizer: $tokenizer_dir"
+  
+    python /home1/s3412768/Genre-enabled-NMT/src/train.py \
+        --root_dir $root_dir \
+        --train_file $test_file \
+        --dev_file $test_file \
+        --test_file $test_file\
+        --gradient_accumulation_steps 2 \
+        --batch_size 16 \
+        --gradient_checkpointing \
+        --adafactor \
+        --exp_type $exp_type \
+        --model_type $model_type \
+        --checkpoint $checkpoint \
+        --model_name $model \
+        --eval \
+        --predict \
+        &> $log_file 
+
+elif [ $use_tokenizer == 'yes' ] || [ $use_old_data == 'yes' ]; then
+    checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
+    tokenizer_dir="$root_dir/models/from_scratch/$model_type/tokenizer"
+    test_file="${root_dir}/data/old_tokens/${test_on}"
+    echo "Checkpoint: $checkpoint"
+    echo "Tokenizer: $tokenizer_dir"
+      
+    python /home1/s3412768/Genre-enabled-NMT/src/train.py \
+        --root_dir $root_dir \
+        --train_file $test_file \
+        --dev_file $test_file \
+        --test_file $test_file\
+        --gradient_accumulation_steps 2 \
+        --batch_size 16 \
+        --gradient_checkpointing \
+        --adafactor \
+        --exp_type $exp_type \
+        --model_type $model_type \
+        --checkpoint $checkpoint \
+        --model_name $model \
+        --tokenizer_path $tokenizer_dir \
+        --use_costum_tokenizer \
+        --old_tokens \
+        --eval \
+        --predict \
+        &> $log_file 
     
-python /home1/s3412768/Genre-enabled-NMT/src/train.py \
-    --root_dir $root_dir \
-    --train_file $test_file \
-    --dev_file $test_file \
-    --test_file $test_file\
-    --gradient_accumulation_steps 2 \
-    --batch_size 16 \
-    --gradient_checkpointing \
-    --adafactor \
-    --exp_type $exp_type \
-    --model_type $model_type \
-    --checkpoint $checkpoint \
-    --model_name $model \
-    --tokenizer_path $tokenizer_dir \
-    --use_costum_tokenizer \
-    --eval \
-    --predict \
-    &> $log_file 
+elif [ $use_tokenizer == 'no' ] || [ $use_old_data == 'yes' ]; then
+    checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
+    test_file="${root_dir}/data/old_tokens/${test_on}"
+    echo "Checkpoint: $checkpoint"
+    
+    python /home1/s3412768/Genre-enabled-NMT/src/train.py \
+        --root_dir $root_dir \
+        --train_file $test_file \
+        --dev_file $test_file \
+        --test_file $test_file\
+        --gradient_accumulation_steps 2 \
+        --batch_size 16 \
+        --gradient_checkpointing \
+        --adafactor \
+        --exp_type $exp_type \
+        --model_type $model_type \
+        --checkpoint $checkpoint \
+        --model_name $model \
+        --old_tokens \
+        --eval \
+        --predict \
+        &> $log_file
+
+else
+    echo "Invalid input"
+    exit 1
+fi
     
 
 # deactivate the env used for predictions
@@ -86,7 +171,12 @@ eval_file=$test_on
 out_file="$(cut -d'.' -f1 <<<"$test_on")"
 
 out=$root_dir/eval/$exp_type/$model_type/${out_file}_predictions.txt
-eval=$root_dir/data/$eval_file
+if [ $use_old_data == 'yes' ]; then
+    eval_file="$root_dir/data/old_tokens/${eval_file}"
+else
+    eval_file="$root_dir/data/${eval_file}"
+fi
+
 
 echo "Output file: $out"
 echo "Eval file: $eval"
