@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=01:00:00
+#SBATCH --time=02:00:00
 #SBATCH --job-name=pred
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
@@ -85,7 +85,7 @@ if [ $use_tok == 'yes' ] || [ $use_old_data == 'no' ]; then
 elif [ $use_tokenizer == 'no' ] || [ $use_old_data == 'no' ]; then
     checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
     echo "Checkpoint: $checkpoint"
-    echo "Tokenizer: $tokenizer_dir"
+    # echo "Tokenizer: $tokenizer_dir"
     python /home1/s3412768/Genre-enabled-NMT/src/train.py \
         --root_dir $root_dir \
         --train_file $test_file \
