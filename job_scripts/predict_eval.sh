@@ -84,9 +84,11 @@ set -eu -o pipefail
 # Calculate all metrics between two files
 eval_file=$test_on
 out_file=$test_on | cut -d '.' -f1
+oldIFS="$IFS"
 IFS='.'
 read -a split_name <<< "$test_on"
 out_file=${split_name[0]}
+IFS="$oldIFS"
 
 out=$root_dir/eval/$exp_type/$model_type/${out_file}_predictions.txt
 eval=$root_dir/data/$eval_file
@@ -100,7 +102,6 @@ if [[ ! -f $ref ]]; then
     # First check if the file exists in the data folder
     if [[ -f $eval ]]; then
         # If so, extract the reference column
-        IFS='\t'
         cut -f2 $eval > "$ref"
     else
         echo "File $eval not found"
@@ -112,7 +113,6 @@ if [[ ! -f $src ]]; then
     # First check if the file exists in the data folder
     if [[ -f $eval ]]; then
         # If so, extract the source column
-        IFS='\t'
         cut -f1 $eval > "$src"
     else
         echo "File $eval not found"
@@ -132,14 +132,14 @@ else
 	# 	echo "Eval file already exists, skip BLEU and friends"
 	# else
 	# First put everything in 1 file
-	sacrebleu $out -i $ref -m bleu ter chrf --chrf-word-order 2 > ${out}.eval.sacre
+	sacrebleu $out -i $ref -m bleu ter chrf --chrf-word-order 2 > "${out}.eval.sacre"
 	# Add chrf++ to the previous file
-	sacrebleu $out -i $ref -m chrf --chrf-word-order 2 >> ${out}.eval.sacre
+	sacrebleu $out -i $ref -m chrf --chrf-word-order 2 >> "${out}.eval.sacre"
 	# Write only scores to individual files
-	sacrebleu $out -i $ref -m bleu -b > ${out}.eval.bleu
-	sacrebleu $out -i $ref -m ter -b > ${out}.eval.ter
-	sacrebleu $out -i $ref -m chrf -b > ${out}.eval.chrf
-	sacrebleu $out -i $ref -m chrf --chrf-word-order 2 -b > ${out}.eval.chrfpp
+	sacrebleu $out -i $ref -m bleu -b > "${out}.eval.bleu"
+	sacrebleu $out -i $ref -m ter -b > "${out}.eval.ter"
+	sacrebleu $out -i $ref -m chrf -b > "${out}.eval.chrf"
+	sacrebleu $out -i $ref -m chrf --chrf-word-order 2 -b > "${out}.eval.chrfpp"
 	# fi	
 
 	# Calculate BLEURT (pretty slow)
@@ -156,7 +156,7 @@ else
 	# if [[ -f "${out}.eval.comet" ]]; then
 	# 	echo "Eval file already exists, skip COMET"
 	# else
-	comet-score -s $src -t $out -r $ref > ${out}.eval.comet
+	comet-score -s $src -t $out -r $ref > "${out}.eval.comet"
 	# fi
 
 	## BERT-score
@@ -173,7 +173,7 @@ else
 	# if [[ -f "${out}.eval.bertscore" ]]; then
 	# 	echo "Eval file already exists, skip bert-score"
 	# else
-	bert-score --lang $lang -m $model -r $ref -c $out > ${out}.eval.bertscore
+	bert-score --lang $lang -m $model -r $ref -c $out > "${out}.eval.bertscore"
 	# fi
 fi
 
