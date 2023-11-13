@@ -30,6 +30,11 @@ use_tok=$5 # yes or no
 use_old_data=$6 # yes or no
 
 
+echo "Use tokenizer: $use_tok"
+echo "Use old data: $use_old_data"
+echo "Test on: $test_on"
+echo "Model type: $model_type"
+echo "Experiment type: $exp_type"
 
 root_dir="/scratch/s3412768/genre_NMT/en-${language}"
 
