@@ -39,6 +39,10 @@ fi
 test_file="${root_dir}/data/${test_on}"
 
 checkpoint=$root_dir/models/$exp_type/$model_type/$train_corpus/checkpoint-*
+tokenizer_dir="$root_dir/models/from_scratch/$model_type/tokenizer"
+
+echo "Checkpoint: $checkpoint"
+echo "Tokenizer: $tokenizer_dir"
 
 
 log_file="${root_dir}/logs/$exp_type/$model_type/eval_${test_on}.log"
@@ -62,6 +66,8 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --genre $genre \
     --checkpoint $checkpoint \
     --model_name $model \
+    --tokenizer_path $tokenizer_dir \
+    --use_costum_tokenizer \
     --eval \
     --predict \
     &> $log_file 
