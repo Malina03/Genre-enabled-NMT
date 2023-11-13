@@ -23,7 +23,7 @@ corpus=$1 # corpus to fine-tune on
 language=$2 # target language
 exp_type=$3 # type of model (e.g. fine_tuned or from_scratch.)
 model_type=$4 # type of experiment (tok_baseline, tok_genre_aware, tok_genre_aware_token)
-# genre=$5 # genre to fine-tune on 
+genres=$5 # genre to fine-tune on 
 
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
@@ -38,11 +38,11 @@ if [ $exp_type = 'from_scratch' ]; then
     checkpoint=""
     genre=""
     if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
-        train_file="$root_dir/data/${corpus}.en-$language.train.tag.tsv"
-        dev_file="${root_dir}/data/${corpus}.en-$language.dev.tag.tsv"
+        train_file="$root_dir/data/${corpus}.en-$language.train.$genres.tag.tsv"
+        dev_file="${root_dir}/data/${corpus}.en-$language.dev.$genres.tag.tsv"
     elif [ $model_type = 'baseline' ]; then
-        train_file="$root_dir/data/${corpus}.en-$language.train.tsv"
-        dev_file="${root_dir}/data/${corpus}.en-$language.dev.tsv"
+        train_file="$root_dir/data/${corpus}.en-$language.train.$genres.tsv"
+        dev_file="${root_dir}/data/${corpus}.en-$language.dev.$genres.tsv"
     else
         echo "Invalid model type"
         exit 1
@@ -53,8 +53,8 @@ else
 fi
 
 ## modify model type
-model_type="tok_${model_type}"
-echo "Checkpoint: $checkpoint"
+model_type="tok_${genres}_${model_type}"
+# echo "Checkpoint: $checkpoint"
 log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}.log"
 if [ ! -d "$root_dir/logs/$exp_type/$model_type" ]; then
     mkdir -p $root_dir/logs/$exp_type/$model_type
@@ -75,7 +75,7 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --exp_type $exp_type \
     --model_type $model_type \
     --model_name $model \
-    --early_stopping 3 \
+    --early_stopping 5 \
     --num_train_epochs 20 \
     --train_tokenizer \
     &> $log_file
