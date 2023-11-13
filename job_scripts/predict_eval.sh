@@ -52,24 +52,24 @@ if [ ! -d "$root_dir/logs/$exp_type/$model_type/" ]; then
 fi
 
     
-# python /home1/s3412768/Genre-enabled-NMT/src/train.py \
-#     --root_dir $root_dir \
-#     --train_file $test_file \
-#     --dev_file $test_file \
-#     --test_file $test_file\
-#     --gradient_accumulation_steps 2 \
-#     --batch_size 16 \
-#     --gradient_checkpointing \
-#     --adafactor \
-#     --exp_type $exp_type \
-#     --model_type $model_type \
-#     --checkpoint $checkpoint \
-#     --model_name $model \
-#     --tokenizer_path $tokenizer_dir \
-#     --use_costum_tokenizer \
-#     --eval \
-#     --predict \
-#     &> $log_file 
+python /home1/s3412768/Genre-enabled-NMT/src/train.py \
+    --root_dir $root_dir \
+    --train_file $test_file \
+    --dev_file $test_file \
+    --test_file $test_file\
+    --gradient_accumulation_steps 2 \
+    --batch_size 16 \
+    --gradient_checkpointing \
+    --adafactor \
+    --exp_type $exp_type \
+    --model_type $model_type \
+    --checkpoint $checkpoint \
+    --model_name $model \
+    --tokenizer_path $tokenizer_dir \
+    --use_costum_tokenizer \
+    --eval \
+    --predict \
+    &> $log_file 
     
 
 # deactivate the env used for predictions
