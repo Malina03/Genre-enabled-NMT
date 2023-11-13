@@ -91,8 +91,8 @@ eval_file=$test_on
 out=$root_dir/eval/$exp_type/$model_type/${out_file}_predictions.txt
 eval=$root_dir/data/$eval_file
 
-ref=$eval.ref
-src=$eval.src
+ref=${eval}.ref
+src=${eval}.src
 
 # check if ref and src files exist and create them if not
 if [[ ! -f $ref ]]; then
