@@ -111,7 +111,7 @@ if [[ ! -f $src ]]; then
     # First check if the file exists in the data folder
     if [[ -f $eval ]]; then
         # If so, extract the source column
-        cut $'\t' -f1 $eval > "$src"
+        cut -d $'\t'-f1 $eval > "$src"
     else
         echo "File $eval not found"
     fi
