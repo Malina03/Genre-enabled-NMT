@@ -171,10 +171,11 @@ eval_file=$test_on
 out_file="$(cut -d'.' -f1 <<<"$test_on")"
 
 out=$root_dir/eval/$exp_type/$model_type/${out_file}_predictions.txt
+
 if [ $use_old_data == 'yes' ]; then
-    eval_file="$root_dir/data/old_tokens/${eval_file}"
+    eval="$root_dir/data/old_tokens/${eval_file}"
 else
-    eval_file="$root_dir/data/${eval_file}"
+    eval="$root_dir/data/${eval_file}"
 fi
 
 
