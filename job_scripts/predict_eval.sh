@@ -100,7 +100,7 @@ if [[ ! -f $ref ]]; then
     # First check if the file exists in the data folder
     if [[ -f $eval ]]; then
         # If so, extract the reference column
-        cut -f2 $eval > "$ref"
+        cut -d $'\t' -f2 $eval > "$ref"
     else
         echo "File $eval not found"
     fi
@@ -111,7 +111,7 @@ if [[ ! -f $src ]]; then
     # First check if the file exists in the data folder
     if [[ -f $eval ]]; then
         # If so, extract the source column
-        cut -f1 $eval > "$src"
+        cut $'\t' -f1 $eval > "$src"
     else
         echo "File $eval not found"
     fi
