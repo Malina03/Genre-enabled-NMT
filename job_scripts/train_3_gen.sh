@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=24:00:00
+#SBATCH --time=72:00:00
 #SBATCH --job-name=train_tok
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
@@ -34,37 +34,31 @@ else
     model="Helsinki-NLP/opus-mt-en-${language}"
 fi
 
-
-if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
-    train_file="$root_dir/data/${corpus}.en-$language.train.tag.tsv"
-    dev_file="${root_dir}/data/${corpus}.en-$language.dev.tag.tsv"
-elif [ $model_type = 'doc_genre_aware' ] || [ $model_type = 'doc_genre_aware_token' ]; then
-    train_file="$root_dir/data/${corpus}.en-$language.doc.train.tag.tsv"
-    dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tag.tsv"
-elif [ $model_type = 'baseline' ]; then
-    train_file="$root_dir/data/${corpus}.en-$language.train.tsv"
-    dev_file="${root_dir}/data/${corpus}.en-$language.dev.tsv"
-elif [ $model_type = 'doc_baseline' ]; then
-    train_file="$root_dir/data/${corpus}.en-$language.doc.train.tsv"
-    dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tsv"
+if [ $exp_type = 'from_scratch' ]; then
+    checkpoint=""
+    genre=""
+    if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
+        train_file="$root_dir/data/${corpus}.en-$language.train.tag.tsv"
+        dev_file="${root_dir}/data/${corpus}.en-$language.dev.tag.tsv"
+    elif [ $model_type = 'baseline' ]; then
+        train_file="$root_dir/data/${corpus}.en-$language.train.tsv"
+        dev_file="${root_dir}/data/${corpus}.en-$language.dev.tsv"
+    else
+        echo "Invalid model type"
+        exit 1
+    fi
 else
-    echo "Invalid model type"
+    echo "Invalid experiment type"
     exit 1
 fi
 
-
-checkpoint_dir="$root_dir/models/from_scratch/$model_type/"
-checkpoint=$checkpoint_dir/$corpus/checkpoint-*
-# tokenizer_dir="$checkpoint_dir/tokenizer"
-
+## modify model type
+model_type="tok_${model_type}"
 echo "Checkpoint: $checkpoint"
-# echo "Tokenizer: $tokenizer_dir"
-
-log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}_2.log"
+log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}.log"
 if [ ! -d "$root_dir/logs/$exp_type/$model_type" ]; then
     mkdir -p $root_dir/logs/$exp_type/$model_type
 fi
-
 
 python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --root_dir $root_dir \
@@ -81,7 +75,7 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --exp_type $exp_type \
     --model_type $model_type \
     --model_name $model \
-    --early_stopping 10 \
-    --num_train_epochs 10 \
-    --checkpoint $checkpoint \
+    --early_stopping 3 \
+    --num_train_epochs 20 \
+    --train_tokenizer \
     &> $log_file
