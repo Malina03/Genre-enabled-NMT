@@ -82,7 +82,7 @@ if [ $use_tok == 'yes' ] && [ $use_old_data == 'no' ]; then
         --eval \
         --predict \
         &> $log_file 
-elif [ $use_tokenizer == 'no' ] && [ $use_old_data == 'no' ]; then
+elif [ $use_tok == 'no' ] && [ $use_old_data == 'no' ]; then
     checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
     echo "Checkpoint: $checkpoint"
     # echo "Tokenizer: $tokenizer_dir"
@@ -102,7 +102,7 @@ elif [ $use_tokenizer == 'no' ] && [ $use_old_data == 'no' ]; then
         --eval \
         --predict \
         &> $log_file 
-elif [ $use_tokenizer == 'yes' ] && [ $use_old_data == 'yes' ]; then
+elif [ $use_tok == 'yes' ] && [ $use_old_data == 'yes' ]; then
     checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
     tokenizer_dir="$root_dir/models/from_scratch/$model_type/tokenizer"
     test_file="${root_dir}/data/old_tokens/${test_on}"
@@ -127,7 +127,7 @@ elif [ $use_tokenizer == 'yes' ] && [ $use_old_data == 'yes' ]; then
         --eval \
         --predict \
         &> $log_file 
-elif [ $use_tokenizer == 'no' ] && [ $use_old_data == 'yes' ]; then
+elif [ $use_tok == 'no' ] && [ $use_old_data == 'yes' ]; then
     checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
     test_file="${root_dir}/data/old_tokens/${test_on}"
     echo "Checkpoint: $checkpoint"
