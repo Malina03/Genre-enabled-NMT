@@ -231,7 +231,7 @@ def load_data(filename, args, tokenizer):
         corpus_tgt = corpus_tgt.tolist()
     # tokenize the data
     model_inputs = tokenizer(corpus_src, max_length=args.max_length, truncation=True)
-    encoded_tgt = tokenizer(text=corpus_tgt, max_length=args.max_length, truncation=True)
+    encoded_tgt = tokenizer(text_target=corpus_tgt, max_length=args.max_length, truncation=True)
     return HFDataset(model_inputs, encoded_tgt["input_ids"])
             
 

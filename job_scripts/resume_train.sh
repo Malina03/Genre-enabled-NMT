@@ -23,6 +23,7 @@ corpus=$1 # corpus to fine-tune on
 language=$2 # target language
 exp_type=$3 # type of model (e.g. fine_tuned or from_scratch.)
 model_type=$4 # type of experiment (tok_baseline, tok_genre_aware, tok_genre_aware_token)
+epochs=$5 # number of epohcs to train for
 # genre=$5 # genre to fine-tune on 
 
 
@@ -86,7 +87,7 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --model_type $model_type \
     --model_name $model \
     --early_stopping 10 \
-    --num_train_epochs 10 \
+    --num_train_epochs $epochs \
     --use_costum_tokenizer \
     --tokenizer_path $tokenizer_dir \
     --checkpoint $checkpoint \

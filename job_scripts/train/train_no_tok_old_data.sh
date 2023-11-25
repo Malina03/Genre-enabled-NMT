@@ -1,7 +1,7 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=72:00:00
-#SBATCH --job-name=tok_old_data
+#SBATCH --time=24:00:00
+#SBATCH --job-name=old_data
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
 #SBATCH --mem=50G
@@ -35,14 +35,13 @@ else
 fi
 
 ## modify model type
-model_type="tok_od_${model_type}"
+model_type="od_${model_type}"
 echo "Checkpoint: $checkpoint"
 
 log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}.log"
 if [ ! -d "$root_dir/logs/$exp_type/$model_type" ]; then
     mkdir -p $root_dir/logs/$exp_type/$model_type
 fi
-
 
 train_file="$root_dir/data/old_tokens/${corpus}.en-$language.train.tag.tsv"
 dev_file="${root_dir}/data/old_tokens/${corpus}.en-$language.dev.tag.tsv"
@@ -65,6 +64,5 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --model_name $model \
     --early_stopping 10 \
     --num_train_epochs 20 \
-    --train_tokenizer \
     --old_tokens \
     &> $log_file
