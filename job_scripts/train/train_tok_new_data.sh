@@ -81,7 +81,7 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --exp_type $exp_type \
     --model_type $model_type \
     --model_name $model \
-    --early_stopping 3 \
-    --num_train_epochs 20 \
+    --early_stopping 10 \
+    --num_train_epochs 15 \
     --train_tokenizer \
     &> $log_file

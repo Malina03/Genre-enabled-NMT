@@ -64,7 +64,7 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --model_type $model_type \
     --model_name $model \
     --early_stopping 10 \
-    --num_train_epochs 20 \
+    --num_train_epochs 15 \
     --train_tokenizer \
     --old_tokens \
     &> $log_file
