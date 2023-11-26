@@ -20,7 +20,7 @@ export CUDA_VISIBLE_DEVICES=0
 #load environment
 source /home1/s3412768/.envs/nmt2/bin/activate
 
-train_corpus=MaCoCu
+corpus=MaCoCu
 language=$1 # the target language
 exp_type=$2 # type of experiment (fine_tuned or from_scratch.)
 model_type=$3 # type of model (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
@@ -44,18 +44,6 @@ else
     model="Helsinki-NLP/opus-mt-en-${language}"
 fi
 
-
-log_file="${root_dir}/logs/$exp_type/$model_type/train_${corpus}_2.log"
-# if log directory does not exist, create it - but it really should exist
-if [ ! -d "$root_dir/logs/$exp_type/$model_type/" ]; then
-    mkdir -p $root_dir/logs/$exp_type/$model_type/
-fi
-
-echo "Log file: $log_file"
-
-checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
-
-echo "Checkpoint: $checkpoint"
 
 if [ $use_old_data == 'yes' ]; then
     train_file="$root_dir/data/old_tokens/${corpus}.en-$language.train.tag.tsv"
@@ -81,6 +69,26 @@ else
     echo "Invalid use_old_data input"
     exit 1
 fi
+
+if [ $use_old_data == 'yes' ]; then
+    model_type="od_${model_type}"
+fi
+
+if [ $use_tok == 'yes' ]; then
+    model_type="tok_${model_type}"
+fi
+
+log_file="${root_dir}/logs/$exp_type/$model_type/train_${corpus}_2.log"
+# if log directory does not exist, create it - but it really should exist
+if [ ! -d "$root_dir/logs/$exp_type/$model_type/" ]; then
+    mkdir -p $root_dir/logs/$exp_type/$model_type/
+fi
+
+echo "Log file: $log_file"
+
+checkpoint=$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-*
+
+echo "Checkpoint: $checkpoint"
 
 if [ $use_tok == 'yes' ]; then 
     tokenizer_dir="$root_dir/models/from_scratch/$model_type/tokenizer"
