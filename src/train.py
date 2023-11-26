@@ -30,7 +30,7 @@ if __name__ == "__main__":
     else:
         tokenizer = AutoTokenizer.from_pretrained(args.model_name)
         if "genre_aware_token" in args.model_type:
-            if args.old_tokens:
+            if args.old_tokens or "old_tokens" in args.train_file:
                 tags = ['>>info<<', '>>promo<<', '>>news<<', '>>law<', '>>other<<', '>>arg<<', '>>instr<<', '>>lit<<', '>>forum<<']
             else:
                 tags = ['<info>', '<promo>', '<news>', '<law>', '<other>', '<arg>', '<instr>', '<lit>', '<forum>']

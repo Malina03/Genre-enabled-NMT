@@ -88,7 +88,7 @@ def save_vocab_as_json(filename):
         json.dump(vocab, f, ensure_ascii=False)
 
 def train_tokenizer(args):
-    if args.old_tokens:
+    if args.old_tokens or "old_tokens" in args.train_file:
         tags = ['>>info<<', '>>promo<<', '>>news<<', '>>law<<', '>>other<<', '>>arg<<', '>>instr<<', '>>lit<<', '>>forum<<']
     else:
         tags = ['<info>', '<promo>', '<news>', '<law>', '<other>', '<arg>', '<instr>', '<lit>', '<forum>']
