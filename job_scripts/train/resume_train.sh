@@ -104,6 +104,7 @@ if [ $use_tok == 'yes' ]; then
         --tokenizer_path $tokenizer_dir \
         --use_costum_tokenizer \
         --num_train_epochs $epochs \
+        --early_stopping 10 \
         &> $log_file 
 elif [ $use_tok == 'no' ]; then
     python /home1/s3412768/Genre-enabled-NMT/src/train.py \
@@ -123,6 +124,7 @@ elif [ $use_tok == 'no' ]; then
         --checkpoint $checkpoint \
         --model_name $model \
         --num_train_epochs $epochs \
+        --early_stopping 10 \
         &> $log_file 
 else
     echo "Invalid use_tok input"
