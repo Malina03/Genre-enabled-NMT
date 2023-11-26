@@ -23,9 +23,11 @@ def make_multiple_genre_dataset(language, sets, genres):
         # add column names to the dataframe
         dat.columns = ['en_doc', f'{language}_doc']
         # get the indices of the lines that start with the genre tag
-        genre_indices = dat[dat['en_doc'].str.startswith(f'>>{genres[0]}<<')].index.tolist()
+        # genre_indices = dat[dat['en_doc'].str.startswith(f'>>{genres[0]}<<')].index.tolist()
+        genre_indices = dat[dat['en_doc'].str.startswith(f'<{genres[0]}>')].index.tolist()
         for genre in genres[1:]:
-            genre_indices += dat[dat['en_doc'].str.startswith(f'>>{genre}<<')].index.tolist()
+            # genre_indices += dat[dat['en_doc'].str.startswith(f'>>{genre}<<')].index.tolist()
+            genre_indices += dat[dat['en_doc'].str.startswith(f'<{genre}>')].index.tolist()
         # write to tsv only the lines with each genre
         dat.iloc[genre_indices].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.{"_".join(genres)}.tag.tsv', sep='\t', index=False, header=False)
         del dat 
