@@ -56,7 +56,7 @@ fi
 ## modify model type
 model_type="tok_${genres}_${model_type}"
 
-# checkpoint=$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-*
+checkpoint=$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-*
 echo "Checkpoint: $checkpoint"
 
 log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}.log"
@@ -77,22 +77,27 @@ if [ ! -f "$train_file.ref" ]; then
 fi
 
 
+tokenizer_dir="$root_dir/models/from_scratch/$model_type/tokenizer"
+echo "Tokenizer: $tokenizer_dir"
+
 python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --root_dir $root_dir \
     --train_file $train_file \
     --dev_file $dev_file \
-    --wandb \
     --gradient_accumulation_steps 2 \
     --batch_size 16 \
-    --gradient_checkpointing \
-    --adafactor \
     --save_strategy epoch \
     --evaluation_strategy epoch \
     --learning_rate 1e-5 \
+    --gradient_checkpointing \
+    --adafactor \
+    --wandb \
     --exp_type $exp_type \
     --model_type $model_type \
+    --checkpoint $checkpoint \
     --model_name $model \
-    --early_stopping 5 \
+    --tokenizer_path $tokenizer_dir \
+    --use_costum_tokenizer \
     --num_train_epochs 20 \
-    --train_tokenizer \
-    &> $log_file
+    --early_stopping 20 \
+    &> $log_file 
