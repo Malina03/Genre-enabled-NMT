@@ -231,11 +231,15 @@ def load_data(filename, args, tokenizer):
         corpus_tgt = corpus_tgt.tolist()
     # tokenize the data
     model_inputs = tokenizer(corpus_src, max_length=args.max_length, truncation=True)
-    encoded_tgt = tokenizer(text_target=corpus_tgt, max_length=args.max_length, truncation=True)
+    if args.use_costum_tokenizer or args.train_tokenizer:
+        # encode target as src text because the costum tokenizer uses the same vocab for src and tgt
+        encoded_tgt = tokenizer(corpus_tgt, max_length=args.max_length, truncation=True)
+    else:
+        encoded_tgt = tokenizer(text_target=corpus_tgt, max_length=args.max_length, truncation=True)
     return HFDataset(model_inputs, encoded_tgt["input_ids"])
             
 
-def compute_metrics(eval_preds, tokenizer):
+def compute_metrics(eval_preds, tokenizer, args):
     preds, labels = eval_preds
 
     if isinstance(preds, tuple):
@@ -248,6 +252,11 @@ def compute_metrics(eval_preds, tokenizer):
 
     decode_preds = [preds.strip() for preds in decode_preds]
     decode_labels = [label.strip() for label in decode_labels]
+
+    if args.use_costum_tokenizer or args.train_tokenizer:
+        # clean up the SentencePiece tokenization
+        decode_preds = [pred.replace("▁", " ") for pred in decode_preds]
+        decode_labels = [label.replace("▁", " ") for label in decode_labels]
 
     results = {}
     chrf = CHRF()

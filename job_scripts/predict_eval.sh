@@ -30,6 +30,16 @@ use_tok=$5 # yes or no
 use_old_data=$6 # yes or no
 
 
+
+if [ $use_old_data == 'yes' ]; then
+    model_type="od_${model_type}"
+fi
+
+if [ $use_tok == 'yes' ]; then
+    model_type="tok_${model_type}"
+fi
+
+
 echo "Use tokenizer: $use_tok"
 echo "Use old data: $use_old_data"
 echo "Test on: $test_on"
@@ -52,13 +62,6 @@ test_file="${root_dir}/data/${test_on}"
 # echo "Checkpoint: $checkpoint"
 # echo "Tokenizer: $tokenizer_dir"
 
-if [ $use_old_data == 'yes' ]; then
-    model_type="od_${model_type}"
-fi
-
-if [ $use_tok == 'yes' ]; then
-    model_type="tok_${model_type}"
-fi
 
 log_file="${root_dir}/logs/$exp_type/$model_type/eval_${test_on}.log"
 # if log directory does not exist, create it - but it really should exist

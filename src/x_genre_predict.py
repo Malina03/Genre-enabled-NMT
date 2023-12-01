@@ -119,7 +119,7 @@ def predict(model, dataframe, final_file, dataframe_column="en_doc", compute_sof
         if compute_softmax == True:
             for i in current_y_distr:
                 distr = softmax(i)
-                distr_dict = {labels[i]: round(distr[i],4) for i in range(len(labels))}
+                distr_dict = {labels[j]: round(distr[j],4) for j in range(len(labels))}
                 current_y_distr_softmax.append(distr_dict)
                 # Also add the information for the softmax of the most probable category ("certainty")
                 distr_sorted = np.sort(distr)

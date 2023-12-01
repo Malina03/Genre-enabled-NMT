@@ -77,7 +77,7 @@ if __name__ == "__main__":
         eval_dataset=dev_dataset,
         data_collator=DataCollatorForSeq2Seq(tokenizer, model=model, pad_to_multiple_of=16),
         tokenizer=tokenizer,
-        compute_metrics=partial(compute_metrics, tokenizer=tokenizer),
+        compute_metrics=partial(compute_metrics, tokenizer=tokenizer, args=args),
         callbacks=callbacks
     )
 
@@ -89,6 +89,9 @@ if __name__ == "__main__":
                 preds = preds[0]
             decode_preds = tokenizer.batch_decode(preds, skip_special_tokens=True, clean_up_tokenization_spaces=True)
             predictions = [pred.strip() for pred in decode_preds]
+            if args.use_costum_tokenizer or args.train_tokenizer:
+                # clean up the SentencePiece tokenization
+                predictions = [pred.replace("▁", " ") for pred in predictions]
             if args.genre:
                 logging_dir = os.path.join(args.root_dir, "eval", args.exp_type, args.model_type, args.genre)
             else:
