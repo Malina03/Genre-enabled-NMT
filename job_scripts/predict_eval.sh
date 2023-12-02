@@ -28,6 +28,7 @@ model_type=$3 # type of model (genre_aware, genre_aware_token -genres are added 
 test_on=$4 # the test file to evaluate on, assuming it is placed in root_dir/data
 use_tok=$5 # yes or no
 use_old_data=$6 # yes or no
+seed=$7 # the seed used for training
 
 
 
@@ -39,6 +40,9 @@ if [ $use_tok == 'yes' ]; then
     model_type="tok_${model_type}"
 fi
 
+if [ $seed != 'none' ]; then
+    model_type="${model_type}_${seed}"
+fi
 
 echo "Use tokenizer: $use_tok"
 echo "Use old data: $use_old_data"
