@@ -88,10 +88,11 @@ if __name__ == "__main__":
             if isinstance(preds, tuple):
                 preds = preds[0]
             decode_preds = tokenizer.batch_decode(preds, skip_special_tokens=True, clean_up_tokenization_spaces=True)
-            predictions = [pred.strip() for pred in decode_preds]
             if args.use_costum_tokenizer or args.train_tokenizer:
                 # clean up the SentencePiece tokenization
-                predictions = [pred.replace("▁", " ") for pred in predictions]
+                decode_preds = [pred.replace("▁", " ") for pred in decode_preds]
+                # remove leading and trailing spaces
+            predictions = [pred.strip() for pred in decode_preds]
             if args.genre:
                 logging_dir = os.path.join(args.root_dir, "eval", args.exp_type, args.model_type, args.genre)
             else:

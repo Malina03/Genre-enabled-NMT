@@ -250,13 +250,13 @@ def compute_metrics(eval_preds, tokenizer, args):
     labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
     decode_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
 
-    decode_preds = [preds.strip() for preds in decode_preds]
-    decode_labels = [label.strip() for label in decode_labels]
-
     if args.use_costum_tokenizer or args.train_tokenizer:
         # clean up the SentencePiece tokenization
         decode_preds = [pred.replace("▁", " ") for pred in decode_preds]
         decode_labels = [label.replace("▁", " ") for label in decode_labels]
+    
+    decode_preds = [preds.strip() for preds in decode_preds]
+    decode_labels = [label.strip() for label in decode_labels]
 
     results = {}
     chrf = CHRF()
