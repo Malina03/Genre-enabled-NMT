@@ -117,6 +117,7 @@ if [ $use_tok == 'yes' ]; then
         --use_costum_tokenizer \
         --num_train_epochs $epochs \
         --early_stopping 10 \
+        --seed $SLURM_ARRAY_TASK_ID \
         &> $log_file 
 elif [ $use_tok == 'no' ]; then
     python /home1/s3412768/Genre-enabled-NMT/src/train.py \
@@ -137,6 +138,7 @@ elif [ $use_tok == 'no' ]; then
         --model_name $model \
         --num_train_epochs $epochs \
         --early_stopping 10 \
+        --seed $SLURM_ARRAY_TASK_ID \
         &> $log_file 
 else
     echo "Invalid use_tok input"
