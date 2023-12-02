@@ -5,6 +5,7 @@
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
 #SBATCH --mem=50G
+#SBATCH --array=1-3
 
 
 export PATH="$PATH:/home1/s3412768/.local/bin"
@@ -77,6 +78,9 @@ fi
 if [ $use_tok == 'yes' ]; then
     model_type="tok_${model_type}"
 fi
+
+# add seed to model type
+model_type="${model_type}_${SLURM_ARRAY_TASK_ID}"
 
 log_file="${root_dir}/logs/$exp_type/$model_type/train_${corpus}_2.log"
 # if log directory does not exist, create it - but it really should exist
