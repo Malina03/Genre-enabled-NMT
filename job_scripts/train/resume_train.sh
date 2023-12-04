@@ -1,11 +1,11 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=24:00:00
+#SBATCH --time=36:00:00
 #SBATCH --job-name=res
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
 #SBATCH --mem=50G
-#SBATCH --array=2-3
+
 
 
 export PATH="$PATH:/home1/s3412768/.local/bin"
@@ -29,7 +29,9 @@ model_type=$3 # type of model (genre_aware, genre_aware_token -genres are added 
 use_tok=$4 # yes or no
 use_old_data=$5 # yes or no
 epochs=$6 # number of epochs to train for
+seed=$7
 
+# seed=${SLURM_ARRAY_TASK_ID}
 
 echo "Use tokenizer: $use_tok"
 echo "Use old data: $use_old_data"
@@ -80,9 +82,10 @@ if [ $use_tok == 'yes' ]; then
 fi
 
 # add seed to model type
-model_type="${model_type}_${SLURM_ARRAY_TASK_ID}"
+model_type="${model_type}_${seed}"
 
-log_file="${root_dir}/logs/$exp_type/$model_type/train_${corpus}_2.log"
+# log_file="${root_dir}/logs/$exp_type/$model_type/train_${corpus}_2.log"
+log_file="${root_dir}/logs/$exp_type/$model_type/train_${corpus}_3.log"
 # if log directory does not exist, create it - but it really should exist
 if [ ! -d "$root_dir/logs/$exp_type/$model_type/" ]; then
     mkdir -p $root_dir/logs/$exp_type/$model_type/
@@ -117,7 +120,7 @@ if [ $use_tok == 'yes' ]; then
         --use_costum_tokenizer \
         --num_train_epochs $epochs \
         --early_stopping 10 \
-        --seed $SLURM_ARRAY_TASK_ID \
+        --seed $seed \
         &> $log_file 
 elif [ $use_tok == 'no' ]; then
     python /home1/s3412768/Genre-enabled-NMT/src/train.py \
@@ -138,7 +141,7 @@ elif [ $use_tok == 'no' ]; then
         --model_name $model \
         --num_train_epochs $epochs \
         --early_stopping 10 \
-        --seed $SLURM_ARRAY_TASK_ID \
+        --seed $seed \
         &> $log_file 
 else
     echo "Invalid use_tok input"
