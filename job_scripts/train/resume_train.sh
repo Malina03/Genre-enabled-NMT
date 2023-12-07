@@ -85,7 +85,7 @@ fi
 model_type="${model_type}_${seed}"
 
 # log_file="${root_dir}/logs/$exp_type/$model_type/train_${corpus}_2.log"
-log_file="${root_dir}/logs/$exp_type/$model_type/train_${corpus}_3.log"
+log_file="${root_dir}/logs/$exp_type/$model_type/train_${corpus}_4.log"
 # if log directory does not exist, create it - but it really should exist
 if [ ! -d "$root_dir/logs/$exp_type/$model_type/" ]; then
     mkdir -p $root_dir/logs/$exp_type/$model_type/
