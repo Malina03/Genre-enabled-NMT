@@ -1,11 +1,11 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=24:00:00
+#SBATCH --time=00:10:00
 #SBATCH --job-name=train_seeds
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
 #SBATCH --mem=50G
-#SBATCH --array=1-3
+#SBATCH --array=1
 
 export PATH="$PATH:/home1/s3412768/.local/bin"
 
