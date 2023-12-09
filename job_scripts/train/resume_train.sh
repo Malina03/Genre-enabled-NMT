@@ -94,12 +94,14 @@ fi
 echo "Log file: $log_file"
 
 
-if [ $model_type == 'tok_genre_aware_token_1' ] || [ $model_type == 'tok_genre_aware_token_2' ] || [ $model_type == 'tok_genre_aware_token_3' ] || [ $model_type == 'tok_genre_aware_3' ] || [ $model_type == 'tok_genre_aware_2' ]; then
-    checkpoint="$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-40431"
-elif [ $model_type == 'tok_genre_aware_1' ] || [ $model_type == 'tok_baseline_3' ]; then
-    checkpoint="$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-80863"
-elif [ $model_type == 'tok_baseline_1' ] || [ $model_type == 'tok_baseline_2' ] || [ $model_type == 'genre_aware_token_3' ]; then
+if [ $model_type == 'tok_genre_aware_token_1' ] || [ $model_type == 'tok_genre_aware_token_2' ]; then
+    checkpoint="$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-20215"
+elif [ $model_type == 'tok_genre_aware_2' ] || [ $model_type == 'tok_genre_aware_3' ] || [ $model_type == 'tok_genre_aware_token_3' ] || [ $model_type == 'tok_baseline_2' ]; then
     checkpoint="$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-161726"
+elif [ $model_type == 'tok_baseline_1' ] || [ $model_type == 'genre_aware_token_3' ]; then 
+    checkpoint="$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-121294"
+elif [ $model_type == 'tok_baseline_3' ] || [$model_type == 'tok_genre_aware_1' ]; then
+    checkpoint="$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-40431"
 else
     echo "Invalid model type for the checkpoints"
     exit 1
