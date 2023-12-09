@@ -98,7 +98,7 @@ if [ $model_type == 'tok_genre_aware_token_1' ] || [ $model_type == 'tok_genre_a
     checkpoint="$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-40431"
 elif [ $model_type == 'tok_genre_aware_1' ] || [ $model_type == 'tok_baseline_3' ]; then
     checkpoint="$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-80863"
-elif [ $model_type == 'tok_baseline_1' ] || [ $model_type == 'tok_baseline_2' ] || [ $model_type == 'genre_aware_token_3']; then
+elif [ $model_type == 'tok_baseline_1' ] || [ $model_type == 'tok_baseline_2' ] || [ $model_type == 'genre_aware_token_3' ]; then
     checkpoint="$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-161726"
 else
     echo "Invalid model type for the checkpoints"
