@@ -100,6 +100,15 @@ echo "Checkpoint: $checkpoint"
 if [ $use_tok == 'yes' ]; then 
     tokenizer_dir="$root_dir/models/from_scratch/$model_type/tokenizer"
     echo "Tokenizer: $tokenizer_dir"
+    echo "model_type: $model_type"
+    echo "model: $model"
+    echo "checkpoint: $checkpoint"
+    echo "exp_type: $exp_type"
+    echo "root_dir: $root_dir"
+    echo "train_file: $train_file"
+    echo "dev_file: $dev_file"
+    echo "epochs: $epochs"
+    echo "seed: $seed"
     python /home1/s3412768/Genre-enabled-NMT/src/train.py \
         --root_dir $root_dir \
         --train_file $train_file \
