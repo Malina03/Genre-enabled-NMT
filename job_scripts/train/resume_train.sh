@@ -93,7 +93,7 @@ fi
 
 echo "Log file: $log_file"
 
-checkpoint=$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-*
+checkpoint="$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-*"
 
 echo "Checkpoint: $checkpoint"
 
@@ -109,9 +109,9 @@ if [ $use_tok == 'yes' ]; then
         --batch_size 16 \
         --gradient_checkpointing \
         --adafactor \
-        --save_strategy epoch \
-        --evaluation_strategy epoch \
-        --learning_rate 1e-5 \
+        --save_strategy "epoch" \
+        --evaluation_strategy "epoch" \
+        --learning_rate 0.00001 \
         --exp_type $exp_type \
         --model_type $model_type \
         --model_name $model \
@@ -129,9 +129,9 @@ elif [ $use_tok == 'no' ]; then
         --dev_file $dev_file \
         --gradient_accumulation_steps 2 \
         --batch_size 16 \
-        --save_strategy epoch \
-        --evaluation_strategy epoch \
-        --learning_rate 1e-5 \
+        --save_strategy "epoch" \
+        --evaluation_strategy "epoch" \
+        --learning_rate 0.00001 \
         --gradient_checkpointing \
         --adafactor \
         --wandb \
