@@ -104,22 +104,22 @@ if [ $use_tok == 'yes' ]; then
         --root_dir $root_dir \
         --train_file $train_file \
         --dev_file $dev_file \
+        --wandb \
         --gradient_accumulation_steps 2 \
         --batch_size 16 \
+        --gradient_checkpointing \
+        --adafactor \
         --save_strategy epoch \
         --evaluation_strategy epoch \
         --learning_rate 1e-5 \
-        --gradient_checkpointing \
-        --adafactor \
-        --wandb \
         --exp_type $exp_type \
         --model_type $model_type \
-        --checkpoint $checkpoint \
         --model_name $model \
-        --tokenizer_path $tokenizer_dir \
-        --use_costum_tokenizer \
-        --num_train_epochs $epochs \
+        --checkpoint $checkpoint \
         --early_stopping 10 \
+        --num_train_epochs $epochs \
+        --use_costum_tokenizer \
+        --tokenizer_path $tokenizer_dir \
         --seed $seed \
         &> $log_file 
 elif [ $use_tok == 'no' ]; then
@@ -137,8 +137,8 @@ elif [ $use_tok == 'no' ]; then
         --wandb \
         --exp_type $exp_type \
         --model_type $model_type \
-        --checkpoint $checkpoint \
         --model_name $model \
+        --checkpoint $checkpoint \
         --num_train_epochs $epochs \
         --early_stopping 10 \
         --seed $seed \
