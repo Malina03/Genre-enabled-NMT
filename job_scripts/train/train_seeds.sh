@@ -29,6 +29,12 @@ use_tok=$5 # yes or no
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
 
+echo "corpus: $corpus"
+echo "language: $language"
+echo "exp_type: $exp_type"
+echo "model_type: $model_type"
+echo "use_tok: $use_tok"
+
 if [ $language = 'hr' ]; then
     model="Helsinki-NLP/opus-mt-en-sla"
 else
@@ -36,8 +42,6 @@ else
 fi
 
 if [ $exp_type = 'from_scratch' ]; then
-    checkpoint=""
-    genre=""
     if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
         train_file="$root_dir/data/${corpus}.en-$language.train.tag.tsv"
         dev_file="${root_dir}/data/${corpus}.en-$language.dev.tag.tsv"
@@ -59,6 +63,10 @@ else
     exit 1
 fi
 
+
+echo "train file: $train_file"
+echo "dev file: $dev_file"
+
 ## modify model type
 if [ $use_tok == 'yes' ]; then
     model_type="tok_${model_type}"
@@ -69,6 +77,8 @@ log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/tr
 if [ ! -d "$root_dir/logs/$exp_type/$model_type" ]; then
     mkdir -p $root_dir/logs/$exp_type/$model_type
 fi
+
+echo "log file: $log_file"
 
 if [ $use_tok == 'yes' ]; then
     python /home1/s3412768/Genre-enabled-NMT/src/train.py \
