@@ -26,8 +26,10 @@ if __name__ == "__main__":
         tokenizer = train_tokenizer(args)
         print("Tokenizer trained.")
     elif args.use_costum_tokenizer:
+        print("Using costum tokenizer from:", args.tokenizer_path)
         tokenizer = AutoTokenizer.from_pretrained(args.tokenizer_path, local_files_only=True)
     else:
+        print("Using pretrained-tokenizer from:", args.model_name)
         tokenizer = AutoTokenizer.from_pretrained(args.model_name)
         if "genre_aware_token" in args.model_type:
             if args.old_tokens or "old_tokens" in args.train_file:
@@ -35,6 +37,7 @@ if __name__ == "__main__":
             else:
                 tags = ['<info>', '<promo>', '<news>', '<law>', '<other>', '<arg>', '<instr>', '<lit>', '<forum>']
             tokenizer.add_special_tokens({'additional_special_tokens': tags})
+            print("Added genre tokens to tokenizer")
 
 
     train_dataset = load_data(args.train_file, args, tokenizer=tokenizer)
@@ -51,10 +54,11 @@ if __name__ == "__main__":
             print("Training from scratch")
             config = AutoConfig.from_pretrained(args.model_name)
             model = AutoModelForSeq2SeqLM.from_config(config)
-            if train_tokenizer:
+            if args.train_tokenizer:
                 model.resize_token_embeddings(len(tokenizer))
                 config = update_model_config(config, tokenizer, args)
         else:
+            # load the pretrained model to fine-tune it
             model = AutoModelForSeq2SeqLM.from_pretrained(args.model_name)
         if "genre_aware_token" in args.model_type:
             model.resize_token_embeddings(len(tokenizer))

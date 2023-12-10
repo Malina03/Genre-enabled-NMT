@@ -1,4 +1,25 @@
 import pandas as pd
+import os 
+
+'''Several functions to make genre-specific datasets and balance their sizes, 
+    from the MaCoCu corpus (processed using the pipeline in the preprocessing file).'''
+
+def change_genre_tokens():
+    data_folder = "/scratch/s3412768/genre_NMT/en-hr/data/"
+
+    # get all files in data_folder/old_tokens
+
+    files = os.listdir(data_folder + "old_tokens/")
+
+    for f in files:
+        # read in the file
+        df = pd.read_csv(data_folder + "old_tokens/" + f, sep="\t", header=None, names=["source", "target"])
+        # replace >> with < and << with >
+        df["source"] = df["source"].str.replace(">>", "<")
+        df["source"] = df["source"].str.replace("<<", ">")
+        # write the file
+        df.to_csv(data_folder + f, sep="\t", header=None, index=False)
+
 
 
 def make_single_genre_dataset(language, sets, genre):
@@ -36,8 +57,47 @@ def make_multiple_genre_dataset(language, sets, genres):
         dat_no_tags.iloc[genre_indices].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.{"_".join(genres)}.tsv', sep='\t', index=False, header=False)
         del dat_no_tags
 
+
+def make_balanced_datasets(language, genres):
+    sets = ['train', 'dev']
+    genre_tokens = {'Prose/Lyrical': '<lit>','Instruction': '<instr>', 'Promotion': '<promo>', 'Opinion/Argumentation': '<arg>' , 'Other': '<other>' , 'Information/Explanation': '<info>', 'News': '<news>', 'Legal': '<law>', 'Forum': '<forum>'}
+
+    all_data = pd.read_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}_complete.tsv', sep='\t', header=0)
+    # only keep en_doc, hr_doc, X-genre and set columns
+    all_data = all_data[['en_par', f'{language}_par', 'set', 'X-GENRE']]
+    # remove test set
+    all_data = all_data[all_data['set'] != 'test']
+    only_req_genres = all_data[all_data['X-GENRE'].isin(genres)]
+    remaining_genres = all_data[~all_data['X-GENRE'].isin(genres)]
+    # get the minimum number of lines per genre per set to dictionary
+    min_examples = only_req_genres.groupby(['set', 'X-GENRE'])['en_par'].count().groupby('set').min().to_dict()
+    for s in sets:
+        for g in genres:
+            # randomly sample the required number of lines per set and genre
+            sampled = only_req_genres[only_req_genres['set'] == s][only_req_genres['X-GENRE'] == g].sample(n=min_examples[s])
+            # save en_par and hr_par to tsv
+            sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.{g}.balanced.tsv', sep='\t', index=False, header=False, quoting=3)
+            # write to tsv adding the genre tag in the beginning of each en_par
+            sampled['en_par'] = genre_tokens[g] + ' ' + sampled['en_par'].astype(str)
+            sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.{g}.balanced.tag.tsv', sep='\t', index=False, header=False, quoting=3)
+            del sampled
+    # randomly sample the required number of lines from the remaining genres data 
+    for s in sets:
+        sampled = remaining_genres[remaining_genres['set'] == s].sample(n=min_examples[s])
+        # print to a file the number of lines per genre
+        sampled.groupby('X-GENRE')['en_par'].count().to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.random.balanced.counts.log', sep='\t', index=True, header=True)
+        # save en_par and hr_par to tsv
+        sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.random.balanced.tsv', sep='\t', index=False, header=False, quoting=3)
+        # write to tsv adding the genre tag in the beginning of each en_par
+        sampled['en_par'] = genre_tokens['Other'] + ' ' + sampled['en_par'].astype(str)
+        sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.random.balanced.tag.tsv', sep='\t', index=False, header=False, quoting=3)
+        del sampled
+                                                                                                       
+
+
 def main():
-    make_multiple_genre_dataset('hr', ['train', 'dev'], ['law', 'news', 'lit'])
+    # make_multiple_genre_dataset('hr', ['train', 'dev'], ['law', 'news', 'lit'])
+    make_balanced_datasets('hr', ['law', 'news', 'arg', 'promo'])
     
 if __name__ == "__main__":
     main()
