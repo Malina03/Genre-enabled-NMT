@@ -249,7 +249,7 @@ else
 	# if [[ -f "${out}.eval.bleurt" ]]; then
 	# 	echo "Eval file already exists, skip BLEURT"
 	# else
-	srun python -m bleurt.score_files -candidate_file=${out} -reference_file=${ref} -bleurt_checkpoint $HOME/bleurt/BLEURT-20 -scores_file=${out}.eval.bleurt
+	#srun python -m bleurt.score_files -candidate_file=${out} -reference_file=${ref} -bleurt_checkpoint $HOME/bleurt/BLEURT-20 -scores_file=${out}.eval.bleurt
 	# fi
 
 	# COMET (might not work so well for Maltese, as it is not in XLM-R)
@@ -262,18 +262,18 @@ else
 	## BERT-score
 	# First select the model based on the language
 	# Highest scoring multi-lingual model (Maltese not in there)
-	if [[ $lang = "mt" ]]; then
-		# This model is 15G, can take quite a while to download
-		model="google/mt5-xl" 
-	else
-		model="xlm-roberta-large" 
-	fi
-
-	# Now run the scoring
-	# if [[ -f "${out}.eval.bertscore" ]]; then
-	# 	echo "Eval file already exists, skip bert-score"
+	# if [[ $lang = "mt" ]]; then
+	# 	# This model is 15G, can take quite a while to download
+	# 	model="google/mt5-xl" 
 	# else
-	bert-score --lang $lang -m $model -r $ref -c $out > "${out}.eval.bertscore"
+	# 	model="xlm-roberta-large" 
+	# fi
+
+	# # Now run the scoring
+	# # if [[ -f "${out}.eval.bertscore" ]]; then
+	# # 	echo "Eval file already exists, skip bert-score"
+	# # else
+	# bert-score --lang $lang -m $model -r $ref -c $out > "${out}.eval.bertscore"
 	# fi
 fi
 
