@@ -15,7 +15,7 @@ scores = {}
 # print(eval_files)
 
 for f in eval_files:
-    print(f.split('/')[8])
+    # print(f.split('/')[8])
     f_name = f.split('/')[8].split('_')[0]
     model = f.split('/')[7]
     # make a dictionary with scores by model and test file
@@ -31,10 +31,11 @@ for f in eval_files:
 
 # make a dataframe with the scores
 df = pd.DataFrame()
-df.columns = ['model', 'test_file', 'bleu', 'comet']
+
 for model in scores:
     for f_name in scores[model]:
         row = [model, f_name, scores[model][f_name]['bleu'], scores[model][f_name]['comet']]
         df.append(row)
+df.columns = ['model', 'test_file', 'bleu', 'comet']
 # save as csv file in /scratch/s3412768/genre_NMT/en-hr/results/
 df.to_csv('/scratch/s3412768/genre_NMT/en-hr/results/eval_scores.csv', sep='\t', index=False, header=True)
