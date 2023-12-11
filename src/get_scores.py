@@ -11,7 +11,8 @@ for root, dirs, files in os.walk(root_dir):
             eval_files.append(os.path.join(root, file))
 
 # get the scores from the files
-scores = {}
+bleu_df = pd.DataFrame(columns=['model', 'test_file', 'bleu'])
+comet_df = pd.DataFrame(columns=['model', 'test_file', 'comet'])
 # print(eval_files)
 
 for f in eval_files:
@@ -19,33 +20,19 @@ for f in eval_files:
     f_name = f.split('/')[8].split('_')[0]
     model = f.split('/')[7]
     # make a dictionary with scores by model and test file
-    if model not in scores:
-        scores[model] = {}
-    scores[model][f_name] = {}
+    
     if 'bleu' in f and 'bleurt' not in f:
-        print(f)
-        print(f_name)
-        print(model)
+       
         bleu = float(open(f, "r").readlines()[0].strip('\n'))
-        scores[model][f_name]['bleu'] = bleu
-        print(bleu)
+        bleu_df = bleu_df.append({'model': model, 'test_file': f_name, 'bleu': bleu}, ignore_index=True)
     elif 'comet' in f:
         comet = [float(l.split(" ")[-1].strip()) for l in open(f, "r").readlines()]
-        scores[model][f_name]['comet'] = comet
-
+        comet_df = comet_df.append({'model': model, 'test_file': f_name, 'comet': comet}, ignore_index=True)
 # print(scores)
 # make a dataframe with the scores
-df = pd.DataFrame()
 
-for model in scores:
-    for f_name in scores[model]:
-        # if value is missing, add NaN
-        if 'bleu' not in scores[model][f_name]:
-            scores[model][f_name]['bleu'] = float('NaN')
-        if 'comet' not in scores[model][f_name]:
-            scores[model][f_name]['comet'] = float('NaN')
-        row = [model, f_name, scores[model][f_name]['bleu'], scores[model][f_name]['comet']]
-        df.append(row)
-# df.columns = ['model', 'test_file', 'bleu', 'comet']
-# save as csv file in /scratch/s3412768/genre_NMT/en-hr/results/
-df.to_csv('/scratch/s3412768/genre_NMT/en-hr/results/eval_scores.csv', sep='\t', index=False, header=True)
+# merge the two dataframes by model and test file
+df = pd.merge(bleu_df, comet_df, on=['model', 'test_file'], how='outer')
+
+# save the dataframe to a csv file
+df.to_csv('/scratch/s3412768/genre_NMT/en-hr/results/eval_scores.csv', index=False)
