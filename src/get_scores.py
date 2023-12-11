@@ -24,6 +24,8 @@ for f in eval_files:
     scores[model][f_name] = {}
     if 'bleu' in f and 'bleurt' not in f:
         print(f)
+        print(f_name)
+        print(model)
         bleu = float(open(f, "r").readlines()[0].strip('\n'))
         scores[model][f_name]['bleu'] = bleu
     elif 'comet' in f:
