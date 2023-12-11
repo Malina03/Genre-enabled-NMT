@@ -28,23 +28,24 @@ model_type=$3 # type of model (genre_aware, genre_aware_token -genres are added 
 # genre=$5 # the genre that the model was trained on
 test_on=$4 # the test file to evaluate on, assuming it is placed in root_dir/data
 use_tok=$5 # yes or no
-use_old_data=$6 # yes or no
-
 
 
 seed=$SLURM_ARRAY_TASK_ID
 
-if [ $use_old_data == 'yes' ]; then
-    model_type="od_${model_type}"
-fi
+# if [ $use_old_data == 'yes' ]; then
+#     model_type="od_${model_type}"
+# fi
 
 if [ $use_tok == 'yes' ]; then
     model_type="tok_${model_type}"
 fi
 
-if [ $seed != 'none' ]; then
+if [ $seed == 1 ] && [ $model_type == 'baseline' ]; then
+    model_type="${model_type}"
+else
     model_type="${model_type}_${seed}"
 fi
+
 
 echo "Use tokenizer: $use_tok"
 echo "Use old data: $use_old_data"
@@ -75,8 +76,15 @@ if [ ! -d "$root_dir/logs/$exp_type/$model_type/" ]; then
     mkdir -p $root_dir/logs/$exp_type/$model_type/
 fi
 
-if [ $use_tok == 'yes' ] && [ $use_old_data == 'no' ]; then
+if [ $model_type == 'genre_aware_2' ] || [ $model_type == 'genre_aware_3' ] || [ $model_type == 'baseline_2' ]; then
+    checkpoint="$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-121294"
+else
     checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
+fi
+echo "Checkpoint: $checkpoint"
+
+if [ $use_tok == 'yes' ]; then
+   
     tokenizer_dir="$root_dir/models/from_scratch/$model_type/tokenizer"
     echo "Checkpoint: $checkpoint"
     echo "Tokenizer: $tokenizer_dir"
@@ -98,10 +106,7 @@ if [ $use_tok == 'yes' ] && [ $use_old_data == 'no' ]; then
         --eval \
         --predict \
         &> $log_file 
-elif [ $use_tok == 'no' ] && [ $use_old_data == 'no' ]; then
-    checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
-    echo "Checkpoint: $checkpoint"
-    # echo "Tokenizer: $tokenizer_dir"
+elif [ $use_tok == 'no' ]; then
     python /home1/s3412768/Genre-enabled-NMT/src/train.py \
         --root_dir $root_dir \
         --train_file $test_file \
@@ -118,54 +123,8 @@ elif [ $use_tok == 'no' ] && [ $use_old_data == 'no' ]; then
         --eval \
         --predict \
         &> $log_file 
-elif [ $use_tok == 'yes' ] && [ $use_old_data == 'yes' ]; then
-    checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
-    tokenizer_dir="$root_dir/models/from_scratch/$model_type/tokenizer"
-    test_file="${root_dir}/data/old_tokens/${test_on}"
-    echo "Checkpoint: $checkpoint"
-    echo "Tokenizer: $tokenizer_dir"  
-    python /home1/s3412768/Genre-enabled-NMT/src/train.py \
-        --root_dir $root_dir \
-        --train_file $test_file \
-        --dev_file $test_file \
-        --test_file $test_file\
-        --gradient_accumulation_steps 2 \
-        --batch_size 16 \
-        --gradient_checkpointing \
-        --adafactor \
-        --exp_type $exp_type \
-        --model_type $model_type \
-        --checkpoint $checkpoint \
-        --model_name $model \
-        --tokenizer_path $tokenizer_dir \
-        --use_costum_tokenizer \
-        --old_tokens \
-        --eval \
-        --predict \
-        &> $log_file 
-elif [ $use_tok == 'no' ] && [ $use_old_data == 'yes' ]; then
-    checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
-    test_file="${root_dir}/data/old_tokens/${test_on}"
-    echo "Checkpoint: $checkpoint"
-    python /home1/s3412768/Genre-enabled-NMT/src/train.py \
-        --root_dir $root_dir \
-        --train_file $test_file \
-        --dev_file $test_file \
-        --test_file $test_file\
-        --gradient_accumulation_steps 2 \
-        --batch_size 16 \
-        --gradient_checkpointing \
-        --adafactor \
-        --exp_type $exp_type \
-        --model_type $model_type \
-        --checkpoint $checkpoint \
-        --model_name $model \
-        --old_tokens \
-        --eval \
-        --predict \
-        &> $log_file
-else
-    echo "Invalid input"
+else    
+    echo "Use_tok should be yes or no"
     exit 1
 fi
     
