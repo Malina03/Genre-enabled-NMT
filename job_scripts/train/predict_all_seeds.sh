@@ -34,10 +34,10 @@ seed=$SLURM_ARRAY_TASK_ID
 
 if [ $m_type == 'baseline' ]; then
     # test_files=("MaCoCu.en-hr.test.tsv" "floresdev.en-hr.test.tsv" "floresdevtest.en-hr.test.tsv" "wmttest2022.en-hr.test.tsv")
-    test_files=("wmttest2022.en-hr.test.tsv")
+    test_files=("floresdevtest.en-hr.test.tsv")
 elif [ $m_type == 'genre_aware' ] || [ $m_type == 'genre_aware_token' ]; then
     # test_files=("MaCoCu.en-hr.test.tag.tsv" "floresdev.en-hr.test.tag.tsv" "floresdevtest.en-hr.test.tag.tsv" "wmttest2022.en-hr.test.tag.tsv")
-    test_files=("wmttest2022.en-hr.test.tag.tsv")
+    test_files=("floresdevtest.en-hr.test.tag.tsv")
 else
     echo "Invalid model type"
     exit 1
