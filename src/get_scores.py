@@ -23,13 +23,14 @@ for f in eval_files:
         scores[model] = {}
     scores[model][f_name] = {}
     if 'bleu' in f and 'bleurt' not in f:
+        print(f)
         bleu = float(open(f, "r").readlines()[0].strip('\n'))
         scores[model][f_name]['bleu'] = bleu
     elif 'comet' in f:
         comet = [float(l.split(" ")[-1].strip()) for l in open(f, "r").readlines()]
         scores[model][f_name]['comet'] = comet
 
-print(scores)
+# print(scores)
 # make a dataframe with the scores
 df = pd.DataFrame()
 
