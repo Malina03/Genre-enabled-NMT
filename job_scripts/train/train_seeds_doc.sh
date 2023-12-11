@@ -88,7 +88,7 @@ if [ $use_tok = 'yes' ]; then
         --model_name $model \
         --early_stopping 10 \
         --num_train_epochs 15 \
-        --use_custom_tokenizer \
+        --use_costum_tokenizer \
         --tokenizer_path $tokenizer_path \
         --seed $SLURM_ARRAY_TASK_ID \
         &> $log_file
