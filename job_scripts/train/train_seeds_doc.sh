@@ -1,7 +1,7 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
 #SBATCH --time=24:00:00
-#SBATCH --job-name=train_seeds
+#SBATCH --job-name=tsd
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=a100:1
 #SBATCH --mem=50G
@@ -36,10 +36,10 @@ else
 fi
 
 
-if [ $model_type = 'doc_genre_aware' ] || [ $model_type = 'doc_genre_aware_token' ]; then
+if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
     train_file="$root_dir/data/${corpus}.en-$language.doc.train.tag.tsv"
     dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tag.tsv"
-elif [ $model_type = 'doc_baseline' ]; then
+elif [ $model_type = 'baseline' ]; then
     train_file="$root_dir/data/${corpus}.en-$language.doc.train.tsv"
     dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tsv"
 else
