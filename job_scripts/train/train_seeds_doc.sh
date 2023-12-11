@@ -23,7 +23,7 @@ corpus="MaCoCu"
 language=$1 # target language
 exp_type=$2 # type of model (e.g. fine_tuned or from_scratch.)
 model_type=$3 # type of experiment (baseline, genre_aware, genre_aware_token)
-use_tok=$5 # yes or no
+use_tok=$4 # yes or no
 # genre=$5 # genre to fine-tune on 
 
 
