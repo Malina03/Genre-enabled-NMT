@@ -24,7 +24,7 @@ source /home1/s3412768/.envs/nmt2/bin/activate
 train_corpus=MaCoCu
 language=$1 # the target language
 exp_type=$2 # type of experiment (fine_tuned or from_scratch.)
-model_type=$3 # type of model (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
+m_type=$3 # type of model (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
 # genre=$5 # the genre that the model was trained on
 # test_on=$4 # the test file to evaluate on, assuming it is placed in root_dir/data
 use_tok=$4 # yes or no
@@ -32,10 +32,10 @@ use_tok=$4 # yes or no
 
 seed=$SLURM_ARRAY_TASK_ID
 
-if [ $model_type == 'baseline' ]; then
+if [ $m_type == 'baseline' ]; then
     # test_files=("MaCoCu.en-hr.test.tsv" "floresdev.en-hr.test.tsv" "floresdevtest.en-hr.test.tsv" "wmttest.en-hr.test.tsv")
     test_files=("floresdev.en-hr.test.tsv" "floresdevtest.en-hr.test.tsv" "wmttest.en-hr.test.tsv")
-elif [ $model_type == 'genre_aware' ] || [ $model_type == 'genre_aware_token' ]; then
+elif [ $m_type == 'genre_aware' ] || [ $m_type == 'genre_aware_token' ]; then
     # test_files=("MaCoCu.en-hr.test.tag.tsv" "floresdev.en-hr.test.tag.tsv" "floresdevtest.en-hr.test.tag.tsv" "wmttest.en-hr.test.tag.tsv")
     test_files=("floresdev.en-hr.test.tag.tsv" "floresdevtest.en-hr.test.tag.tsv" "wmttest.en-hr.test.tag.tsv")
 else
@@ -44,7 +44,7 @@ else
 fi
 
 for test_on in "${test_files[@]}"; do
-
+    model_type=$m_type
     #
     if [ $use_tok == 'yes' ]; then
         model_type="tok_${model_type}"
