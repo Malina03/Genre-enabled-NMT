@@ -34,6 +34,11 @@ df = pd.DataFrame()
 
 for model in scores:
     for f_name in scores[model]:
+        # if value is missing, add NaN
+        if 'bleu' not in scores[model][f_name]:
+            scores[model][f_name]['bleu'] = float('NaN')
+        if 'comet' not in scores[model][f_name]:
+            scores[model][f_name]['comet'] = float('NaN')
         row = [model, f_name, scores[model][f_name]['bleu'], scores[model][f_name]['comet']]
         df.append(row)
 df.columns = ['model', 'test_file', 'bleu', 'comet']
