@@ -5,6 +5,7 @@
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
 #SBATCH --mem=20G
+#SBATCH --array=1-3
 
 
 export PATH="$PATH:/home1/s3412768/.local/bin"
@@ -28,9 +29,10 @@ model_type=$3 # type of model (genre_aware, genre_aware_token -genres are added 
 test_on=$4 # the test file to evaluate on, assuming it is placed in root_dir/data
 use_tok=$5 # yes or no
 use_old_data=$6 # yes or no
-seed=$7 # the seed used for training
 
 
+
+seed=$SLURM_ARRAY_TASK_ID
 
 if [ $use_old_data == 'yes' ]; then
     model_type="od_${model_type}"
