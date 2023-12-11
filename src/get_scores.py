@@ -12,19 +12,20 @@ for root, dirs, files in os.walk(root_dir):
 
 # get the scores from the files
 scores = {}
+
 for f in files:
-    if 'bleu' in f:
-        bleu = float(open(f, "r").readlines()[0].strip('\n'))
-    else:
-        comet = [float(l.split(" ")[-1].strip()) for l in open(f, "r").readlines()]
     f_name = f.split('/')[-1].split('_')[0]
     model = f.split('/')[-2]
     # make a dictionary with scores by model and test file
     if model not in scores:
         scores[model] = {}
     scores[model][f_name] = {}
-    scores[model][f_name]['bleu'] = bleu
-    scores[model][f_name]['comet'] = comet
+    if 'bleu' in f:
+        bleu = float(open(f, "r").readlines()[0].strip('\n'))
+        scores[model][f_name]['bleu'] = bleu
+    elif 'comet' in f:
+        comet = [float(l.split(" ")[-1].strip()) for l in open(f, "r").readlines()]
+        scores[model][f_name]['comet'] = comet
 
 # make a dataframe with the scores
 df = pd.DataFrame()
