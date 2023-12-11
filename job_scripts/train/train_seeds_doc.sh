@@ -52,7 +52,7 @@ echo "train file: $train_file"
 echo "dev file: $dev_file"
 
 # use matching tokenizer from sentence level model
-if [ $use_tok == 'yes' ]; then
+if [ $use_tok = 'yes' ]; then
     tokenizer_path="/scratch/s3412768/genre_NMT/en-$language/models/tok_${model_type}_${SLURM_ARRAY_TASK_ID}/tokenizer"
     echo "tokenizer path: $tokenizer_path"
     model_type="tok_${model_type}"
@@ -70,7 +70,7 @@ echo "log file: $log_file"
 echo "model type: $model_type"
 echo "model: $model"
 
-if [ $use_tok == 'yes' ]; then
+if [ $use_tok = 'yes' ]; then
     python /home1/s3412768/Genre-enabled-NMT/src/train.py \
         --root_dir $root_dir \
         --train_file $train_file \
