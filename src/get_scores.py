@@ -12,6 +12,7 @@ for root, dirs, files in os.walk(root_dir):
 
 # get the scores from the files
 scores = {}
+print(eval_files)
 
 for f in files:
     f_name = f.split('/')[7].split('_')[0]
