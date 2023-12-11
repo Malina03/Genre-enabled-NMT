@@ -32,7 +32,9 @@ for f in eval_files:
 # make a dataframe with the scores
 
 # merge the two dataframes by model and test file
-df = pd.merge(bleu_df, comet_df, on=['model', 'test_file'], how='outer')
+# df = pd.merge(bleu_df, comet_df, on=['model', 'test_file'], how='outer')
 
 # save the dataframe to a csv file
-df.to_csv('/scratch/s3412768/genre_NMT/en-hr/results/eval_scores.csv', index=False)
+# df.to_csv('/scratch/s3412768/genre_NMT/en-hr/results/eval_scores.csv', index=False)
+# save only bleu scores
+bleu_df.to_csv('/scratch/s3412768/genre_NMT/en-hr/results/eval_bleu_scores.csv', index=False)
