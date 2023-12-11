@@ -5,7 +5,6 @@
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
 #SBATCH --mem=20G
-#SBATCH --array=1-3
 
 
 export PATH="$PATH:/home1/s3412768/.local/bin"
@@ -28,9 +27,10 @@ model_type=$3 # type of model (genre_aware, genre_aware_token -genres are added 
 # genre=$5 # the genre that the model was trained on
 test_on=$4 # the test file to evaluate on, assuming it is placed in root_dir/data
 use_tok=$5 # yes or no
+seed=$6
 
 
-seed=$SLURM_ARRAY_TASK_ID
+# seed=$SLURM_ARRAY_TASK_ID
 
 # if [ $use_old_data == 'yes' ]; then
 #     model_type="od_${model_type}"
@@ -40,15 +40,9 @@ if [ $use_tok == 'yes' ]; then
     model_type="tok_${model_type}"
 fi
 
-if [ $seed == 1 ] && [ $model_type == 'baseline' ]; then
-    model_type="${model_type}"
-else
-    model_type="${model_type}_${seed}"
-fi
-
 
 echo "Use tokenizer: $use_tok"
-echo "Use old data: $use_old_data"
+# echo "Use old data: $use_old_data"
 echo "Test on: $test_on"
 echo "Model type: $model_type"
 echo "Experiment type: $exp_type"
@@ -144,11 +138,11 @@ out_file="$(cut -d'.' -f1 <<<"$test_on")"
 
 out=$root_dir/eval/$exp_type/$model_type/${out_file}_predictions.txt
 
-if [ $use_old_data == 'yes' ]; then
-    eval="$root_dir/data/old_tokens/${eval_file}"
-else
-    eval="$root_dir/data/${eval_file}"
-fi
+# if [ $use_old_data == 'yes' ]; then
+#     eval="$root_dir/data/old_tokens/${eval_file}"
+# else
+eval="$root_dir/data/${eval_file}"
+# fi
 
 
 echo "Output file: $out"
