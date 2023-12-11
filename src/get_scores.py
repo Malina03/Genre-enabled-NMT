@@ -29,6 +29,7 @@ for f in eval_files:
         comet = [float(l.split(" ")[-1].strip()) for l in open(f, "r").readlines()]
         scores[model][f_name]['comet'] = comet
 
+print(scores)
 # make a dataframe with the scores
 df = pd.DataFrame()
 
