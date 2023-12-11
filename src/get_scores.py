@@ -14,8 +14,8 @@ for root, dirs, files in os.walk(root_dir):
 scores = {}
 
 for f in files:
-    f_name = f.split('/')[-1].split('_')[0]
-    model = f.split('/')[-2]
+    f_name = f.split('/')[7].split('_')[0]
+    model = f.split('/')[6]
     # make a dictionary with scores by model and test file
     if model not in scores:
         scores[model] = {}
