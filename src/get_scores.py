@@ -12,9 +12,10 @@ for root, dirs, files in os.walk(root_dir):
 
 # get the scores from the files
 scores = {}
-print(eval_files)
+# print(eval_files)
 
 for f in files:
+    print(f.split('/')[8])
     f_name = f.split('/')[8].split('_')[0]
     model = f.split('/')[7]
     # make a dictionary with scores by model and test file
