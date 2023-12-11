@@ -1,7 +1,7 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
 #SBATCH --time=02:00:00
-#SBATCH --job-name=pred
+#SBATCH --job-name=pred_seeds
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
 #SBATCH --mem=20G
@@ -48,6 +48,7 @@ for test_on in "${test_files[@]}"; do
         model_type="tok_${model_type}"
     fi
 
+    model_type="${model_type}_${seed}"
 
     echo "Use tokenizer: $use_tok"
     # echo "Use old data: $use_old_data"
