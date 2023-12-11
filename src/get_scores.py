@@ -46,6 +46,6 @@ for model in scores:
             scores[model][f_name]['comet'] = float('NaN')
         row = [model, f_name, scores[model][f_name]['bleu'], scores[model][f_name]['comet']]
         df.append(row)
-df.columns = ['model', 'test_file', 'bleu', 'comet']
+# df.columns = ['model', 'test_file', 'bleu', 'comet']
 # save as csv file in /scratch/s3412768/genre_NMT/en-hr/results/
 df.to_csv('/scratch/s3412768/genre_NMT/en-hr/results/eval_scores.csv', sep='\t', index=False, header=True)
