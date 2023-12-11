@@ -14,7 +14,7 @@ for root, dirs, files in os.walk(root_dir):
 scores = {}
 # print(eval_files)
 
-for f in files:
+for f in eval_files:
     print(f.split('/')[8])
     f_name = f.split('/')[8].split('_')[0]
     model = f.split('/')[7]
