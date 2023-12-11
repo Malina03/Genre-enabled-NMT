@@ -28,6 +28,7 @@ for f in eval_files:
         print(model)
         bleu = float(open(f, "r").readlines()[0].strip('\n'))
         scores[model][f_name]['bleu'] = bleu
+        print(bleu)
     elif 'comet' in f:
         comet = [float(l.split(" ")[-1].strip()) for l in open(f, "r").readlines()]
         scores[model][f_name]['comet'] = comet
