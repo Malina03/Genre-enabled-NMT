@@ -33,9 +33,11 @@ use_tok=$4 # yes or no
 seed=$SLURM_ARRAY_TASK_ID
 
 if [ $model_type == 'baseline' ]; then
-    test_files=("MaCoCu.en-hr.test.tsv" "floresdev.en-hr.test.tsv" "floresdevtest.en-hr.test.tsv" "wmttest.en-hr.test.tsv")
+    # test_files=("MaCoCu.en-hr.test.tsv" "floresdev.en-hr.test.tsv" "floresdevtest.en-hr.test.tsv" "wmttest.en-hr.test.tsv")
+    test_files=("floresdev.en-hr.test.tsv" "floresdevtest.en-hr.test.tsv" "wmttest.en-hr.test.tsv")
 elif [ $model_type == 'genre_aware' ] || [ $model_type == 'genre_aware_token' ]; then
-    test_files=("MaCoCu.en-hr.test.tag.tsv" "floresdev.en-hr.test.tag.tsv" "floresdevtest.en-hr.test.tag.tsv" "wmttest.en-hr.test.tag.tsv")
+    # test_files=("MaCoCu.en-hr.test.tag.tsv" "floresdev.en-hr.test.tag.tsv" "floresdevtest.en-hr.test.tag.tsv" "wmttest.en-hr.test.tag.tsv")
+    test_files=("floresdev.en-hr.test.tag.tsv" "floresdevtest.en-hr.test.tag.tsv" "wmttest.en-hr.test.tag.tsv")
 else
     echo "Invalid model type"
     exit 1
@@ -192,9 +194,9 @@ for test_on in "${test_files[@]}"; do
 
     fi
 
-    python /home1/s3412768/Genre-enabled-NMT/src/summarize.py \
-        --folder $root_dir/eval/$exp_type/$model_type/ \
-        --fname $out_file \
-        --ref_with_tags $root_dir/data/$out_file.en-hr.test.tag.tsv \
+    # python /home1/s3412768/Genre-enabled-NMT/src/summarize.py \
+    #     --folder $root_dir/eval/$exp_type/$model_type/ \
+    #     --fname $out_file \
+    #     --ref_with_tags $root_dir/data/$out_file.en-hr.test.tag.tsv \
 
 done
