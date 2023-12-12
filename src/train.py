@@ -53,13 +53,13 @@ if __name__ == "__main__":
         if "from_scratch" in args.exp_type:
             print("Training from scratch")
             config = AutoConfig.from_pretrained(args.model_name)
-            model = AutoModelForSeq2SeqLM.from_config(config, max_position_embeddings=args.max_length)
+            model = AutoModelForSeq2SeqLM.from_config(config)
             if args.train_tokenizer:
                 model.resize_token_embeddings(len(tokenizer))
                 config = update_model_config(config, tokenizer, args)
         else:
             # load the pretrained model to fine-tune it
-            model = AutoModelForSeq2SeqLM.from_pretrained(args.model_name, max_position_embeddings=args.max_length)
+            model = AutoModelForSeq2SeqLM.from_pretrained(args.model_name)
         if "genre_aware_token" in args.model_type:
             model.resize_token_embeddings(len(tokenizer))
     else:

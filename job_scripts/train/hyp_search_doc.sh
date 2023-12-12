@@ -27,7 +27,7 @@ use_tok="no" # yes or no
 lr=$1
 bsz=$2
 gac=$3
-max_seq_len=$4
+
 
 
 
@@ -62,7 +62,7 @@ echo "dev file: $dev_file"
 #     model_type="tok_${model_type}"
 # fi 
 
-model_type="doc_${model_type}_${lr}_${bsz}_${gac}_${max_seq_len}"
+model_type="doc_${model_type}_${lr}_${bsz}_${gac}"
 
 
 log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}.log"
@@ -83,7 +83,6 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --gradient_accumulation_steps $gac \
     --batch_size $bsz \
     --learning_rate $lr \
-    --max_length $max_seq_len \
     --gradient_checkpointing \
     --adafactor \
     --save_strategy epoch \
