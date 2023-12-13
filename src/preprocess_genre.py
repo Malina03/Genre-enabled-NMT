@@ -214,15 +214,18 @@ def preprocess(path, lang_code, length_threshold, drop_par_duplicates = True, dr
 
 	if info == True:
 		print(f"\nTexts that have less than {length_threshold} words were discarded.\n")
-
 		sentences_after_length, texts_after_length = calculate_discarded(sentences_after_text_deduplication, texts_after_text_deduplication, True)
-
+		print("\nNumber of documents shorther than 25 words:{}, which represents {}% of the corpus.".format(corpus_df.en_length[corpus_df.en_length < 25].count(), corpus_df.en_length[corpus_df.en_length < 25].count()/corpus_df.en_length.count())) 
+		print("\nNumber of documents shorther than 50 words:{}, which represents {}% of the corpus.".format(corpus_df.en_length[corpus_df.en_length < 50].count(), corpus_df.en_length[corpus_df.en_length < 50].count()/corpus_df.en_length.count())) 
+		print("\nNumber of documents shorther than 75 words:{}, which represents {}% of the corpus.".format(corpus_df.en_length[corpus_df.en_length < 75].count(), corpus_df.en_length[corpus_df.en_length < 75].count()/corpus_df.en_length.count()))
+		print("\nNumber of documents shorther than 150 words:{}, which represents {}% of the corpus.".format(corpus_df.en_length[corpus_df.en_length < 150].count(), corpus_df.en_length[corpus_df.en_length < 150].count()/corpus_df.en_length.count()))
 	corpus_df['length_diff'] = abs(corpus_df[f'{lang_code}_length'] - corpus_df['en_length'])
 
 	if info == True:
 		# Difference in length between documents
 		print("\nDifference in length between documents:\n")
 		print(corpus_df['length_diff'].describe().to_markdown())
+        
 
 	
 	if keep_columns == False:
@@ -464,6 +467,10 @@ def get_url(lang_code):
         url = 'https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1814/MaCoCu-hr-en.tmx.gz'
     elif lang_code == 'is':
         url = 'https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1812/MaCoCu-is-en.tmx.gz'
+    elif lang_code == 'uk':
+        url = 'https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1858/MaCoCu-uk-en.tmx.gz'
+    else:
+        raise ValueError("Language code not supported")
     return url
 
 
@@ -483,44 +490,44 @@ def main():
         preprocess(data_folder, args.lang_code, 1, drop_par_duplicates = True, drop_doc_duplicates = False, keep_columns=True, info = False)
         print("Preprocessing done.")
 
-    if args.label or not Path(data_folder/f'Macocu-{args.lang_code}-en-sent-doc-labelled.csv').exists():
-        # load the preprocessed data
-        # data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
-        # # only use docs with length >= args.length_threshold
-        # data = data[data['en_length'] >= args.length_threshold]
-        # # only use unique docs for labelling to save time
-        # data = data.drop_duplicates("en_doc")
-        # print("Labelling started. Using docs with length >= {}".format(args.length_threshold))
-        # doc_labels = classify_dataset(data, "en_doc", data_folder/f'Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv')
-        # print(f"Labelling done. Saving the labelled data to {args.data_folder}/Macocu-{args.lang_code}-en.doc.labels.{args.length_threshold}.csv")
-        # # Combine the sentence level data and doc_labels
-        # print(f"Combining the sentence level data and doc_labels. Saving the combined data to {args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled.csv")
-        # # load the full dataset again to get all all sentences back 
-        # del data
-        # data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
-        # # merge doc_data and data based on en_doc
-        # data = pd.merge(doc_labels, data, on="en_doc")
-        # load and merge all Macocu-hr-en.labelled.25.csv_*.* csv files
-        doc_data = pd.DataFrame()
-        for file in data_folder.glob(f"Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv_*.*"):
-            print(f"Loading {file}")
-            doc_data = pd.concat([doc_data, pd.read_csv(file, sep="\t", header=0)])
-        # drop all but en_doc and X-GENRE columns
-        doc_data = doc_data[['en_doc', 'X-GENRE']]
-        data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
-        # merge doc_data and data based on en_doc
-        data = pd.merge(doc_data, data, on="en_doc")
-         # remove Unnamed: 0 column
-        data = data.drop(columns=["Unnamed: 0"])
-        data.to_csv(f"{args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", index=False) 
-    else:
-        data = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", header=0)
+    # if args.label or not Path(data_folder/f'Macocu-{args.lang_code}-en-sent-doc-labelled.csv').exists():
+    #     # load the preprocessed data
+    #     # data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
+    #     # # only use docs with length >= args.length_threshold
+    #     # data = data[data['en_length'] >= args.length_threshold]
+    #     # # only use unique docs for labelling to save time
+    #     # data = data.drop_duplicates("en_doc")
+    #     # print("Labelling started. Using docs with length >= {}".format(args.length_threshold))
+    #     # doc_labels = classify_dataset(data, "en_doc", data_folder/f'Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv')
+    #     # print(f"Labelling done. Saving the labelled data to {args.data_folder}/Macocu-{args.lang_code}-en.doc.labels.{args.length_threshold}.csv")
+    #     # # Combine the sentence level data and doc_labels
+    #     # print(f"Combining the sentence level data and doc_labels. Saving the combined data to {args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled.csv")
+    #     # # load the full dataset again to get all all sentences back 
+    #     # del data
+    #     # data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
+    #     # # merge doc_data and data based on en_doc
+    #     # data = pd.merge(doc_labels, data, on="en_doc")
+    #     # load and merge all Macocu-hr-en.labelled.25.csv_*.* csv files
+    #     doc_data = pd.DataFrame()
+    #     for file in data_folder.glob(f"Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv_*.*"):
+    #         print(f"Loading {file}")
+    #         doc_data = pd.concat([doc_data, pd.read_csv(file, sep="\t", header=0)])
+    #     # drop all but en_doc and X-GENRE columns
+    #     doc_data = doc_data[['en_doc', 'X-GENRE']]
+    #     data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0, quoting=3)
+    #     # merge doc_data and data based on en_doc
+    #     data = pd.merge(doc_data, data, on="en_doc")
+    #      # remove Unnamed: 0 column
+    #     data = data.drop(columns=["Unnamed: 0"])
+    #     data.to_csv(f"{args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", index=False,  quoting=3)) 
+    # else:
+    #     data = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", header=0, quoting=3)
     
-    print("Splitting the data into train, dev, test sets.")
-	# make train, dev, test sets
-    train, dev, test = split_data(data,test_size=args.test_size, dev_size=args.dev_size, balance = False)
-    save_datasets(train, dev, test, args.lang_code, "par", args.data_folder, f"MaCoCu.en-{args.lang_code}")
-    save_datasets(train.drop_duplicates(['en_doc']), dev.drop_duplicates(['en_doc']), test.drop_duplicates(['en_doc']), args.lang_code, "doc", args.data_folder, f"MaCoCu.en-{args.lang_code}.doc")
+    # print("Splitting the data into train, dev, test sets.")
+	# # make train, dev, test sets
+    # train, dev, test = split_data(data,test_size=args.test_size, dev_size=args.dev_size, balance = False)
+    # save_datasets(train, dev, test, args.lang_code, "par", args.data_folder, f"MaCoCu.en-{args.lang_code}")
+    # save_datasets(train.drop_duplicates(['en_doc']), dev.drop_duplicates(['en_doc']), test.drop_duplicates(['en_doc']), args.lang_code, "doc", args.data_folder, f"MaCoCu.en-{args.lang_code}.doc")
     
 
 if __name__ == "__main__":

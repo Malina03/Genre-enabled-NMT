@@ -4,7 +4,7 @@
 #SBATCH --job-name=prep
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
-#SBATCH --mem=164G
+#SBATCH --mem=50G
 
 
 export PATH="$PATH:/home1/s3412768/.local/bin"
@@ -28,4 +28,4 @@ python -u /home1/s3412768/Genre-enabled-NMT/src/preprocess_genre.py \
     -df $root_dir \
     &> $root_dir/preprocess.log
 
-python -u /home1/s3412768/Genre-enabled-NMT/src/analyse.py > $root_dir/analyse.log
+# python -u /home1/s3412768/Genre-enabled-NMT/src/analyse.py > $root_dir/analyse.log
