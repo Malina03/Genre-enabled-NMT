@@ -37,6 +37,12 @@ def tmx_to_json(fname, tgt_language, save_path):
 
     if tgt_language == "hr":
         lang_id = "hr_latin"
+    elif tgt_language == "is":
+        lang_id = "is"
+    elif tgt_language == "uk":
+        lang_id = "uk"
+    else:
+        raise ValueError("Language code not supported")
 
     tu_re = re.compile('<tu tuid=".*?>\n(.*?)<\/tu>', re.DOTALL)
     # Compile relevant information inside tus
