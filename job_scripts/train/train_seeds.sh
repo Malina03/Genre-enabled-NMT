@@ -1,11 +1,11 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=00:10:00
+#SBATCH --time=72:00:00
 #SBATCH --job-name=train_seeds
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
 #SBATCH --mem=50G
-#SBATCH --array=1
+#SBATCH --array=1-3
 
 export PATH="$PATH:/home1/s3412768/.local/bin"
 
@@ -45,15 +45,9 @@ if [ $exp_type = 'from_scratch' ]; then
     if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
         train_file="$root_dir/data/${corpus}.en-$language.train.tag.tsv"
         dev_file="${root_dir}/data/${corpus}.en-$language.dev.tag.tsv"
-    elif [ $model_type = 'doc_genre_aware' ] || [ $model_type = 'doc_genre_aware_token' ]; then
-        train_file="$root_dir/data/${corpus}.en-$language.doc.train.tag.tsv"
-        dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tag.tsv"
     elif [ $model_type = 'baseline' ]; then
         train_file="$root_dir/data/${corpus}.en-$language.train.tsv"
         dev_file="${root_dir}/data/${corpus}.en-$language.dev.tsv"
-    elif [ $model_type = 'doc_baseline' ]; then
-        train_file="$root_dir/data/${corpus}.en-$language.doc.train.tsv"
-        dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tsv"
     else
         echo "Invalid model type"
         exit 1
