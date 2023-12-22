@@ -61,9 +61,21 @@ fi
 echo "train file: $train_file"
 echo "dev file: $dev_file"
 
+
 ## modify model type
 if [ $use_tok == 'yes' ]; then
     model_type="tok_${model_type}"
+    #if train_file.src does not exist, create it by cutting the first column of train_file
+    if [ ! -f "$train_file.src" ]; then
+        cut -f1 $train_file > $train_file.src
+        cut -f2 $train_file > $train_file.ref
+    fi
+    #if dev_file.src does not exist, create it by cutting the first column of dev_file
+    if [ ! -f "$dev_file.src" ]; then
+        cut -f1 $dev_file > $dev_file.src
+        cut -f2 $dev_file > $dev_file.ref
+    fi
+
 fi
 # add seed to model type
 model_type="${model_type}_${SLURM_ARRAY_TASK_ID}"
