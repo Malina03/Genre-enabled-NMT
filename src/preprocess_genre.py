@@ -321,7 +321,7 @@ def check_non_zero(test_cnt, dev_cnt):
         if dev_cnt[genre] == 0:
             raise ValueError("Dev  count for genre {} is 0".format(genre))
 
-def split_data(data, test_prop= 0.1, dev_prop = 0.1, test_size = 0, dev_size = 0, balance = True):
+def split_data(data, test_prop= 0.1, dev_prop = 0.1, test_size = 0, dev_size = 0, balance = True, remove_other=True):
     """
     Split data into train, dev, and test sets. All splits have the same distribution of genres. 
     Internet domains of the data don't overlap bw splits.
@@ -347,6 +347,11 @@ def split_data(data, test_prop= 0.1, dev_prop = 0.1, test_size = 0, dev_size = 0
 
     dom_genre = data.groupby(['en_domain','X-GENRE'])['en_par'].count().reset_index()
     labels = list(dom_genre['X-GENRE'].unique())
+    if remove_other:
+        data = data[data['X-GENRE'] != 'Other']
+        dom_genre = data.groupby(['en_domain','X-GENRE'])['en_par'].count().reset_index()
+        labels = list(dom_genre['X-GENRE'].unique())
+        print("Removed \"Other\" genre")
     print(labels)
     if balance:
         ratios = {label : dom_genre[dom_genre['X-GENRE']==label]['en_par'].sum()/dom_genre['en_par'].sum() for label in labels}
@@ -488,13 +493,13 @@ def main():
     #     print(f"Downloading corpus from {url} and saving it as {args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'}")
     #     download_corpus(url, Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'))
     
-    if args.tmx_to_json or not Path(data_folder/f'MaCoCu-{args.lang_code}-en.json').exists():    
-        tmx_to_json(data_folder/f'MaCoCu-{args.lang_code}-en.tmx', args.lang_code, data_folder/f'MaCoCu-{args.lang_code}-en.json')
+    # if args.tmx_to_json or not Path(data_folder/f'MaCoCu-{args.lang_code}-en.json').exists():    
+    #     tmx_to_json(data_folder/f'MaCoCu-{args.lang_code}-en.tmx', args.lang_code, data_folder/f'MaCoCu-{args.lang_code}-en.json')
     
-    if args.preprocess or not Path(data_folder/f'Macocu-{args.lang_code}-en-doc-format.csv').exists():    
-        print("Preprocessing started.")
-        preprocess(data_folder, args.lang_code, 1, drop_par_duplicates = True, drop_doc_duplicates = False, keep_columns=True, info = False)
-        print("Preprocessing done.")
+    # if args.preprocess or not Path(data_folder/f'Macocu-{args.lang_code}-en-doc-format.csv').exists():    
+    #     print("Preprocessing started.")
+    #     preprocess(data_folder, args.lang_code, 1, drop_par_duplicates = True, drop_doc_duplicates = False, keep_columns=True, info = False)
+    #     print("Preprocessing done.")
 
     # if args.label or not Path(data_folder/f'Macocu-{args.lang_code}-en-sent-doc-labelled.csv').exists():
     #     # load the preprocessed data
@@ -530,10 +535,11 @@ def main():
     #     data = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", header=0, quoting=3)
     
     # print("Splitting the data into train, dev, test sets.")
-	# # make train, dev, test sets
-    # train, dev, test = split_data(data,test_size=args.test_size, dev_size=args.dev_size, balance = False)
-    # save_datasets(train, dev, test, args.lang_code, "par", args.data_folder, f"MaCoCu.en-{args.lang_code}")
-    # save_datasets(train.drop_duplicates(['en_doc']), dev.drop_duplicates(['en_doc']), test.drop_duplicates(['en_doc']), args.lang_code, "doc", args.data_folder, f"MaCoCu.en-{args.lang_code}.doc")
+    data = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0, quoting=3)
+	# make train, dev, test sets
+    train, dev, test = split_data(data,test_size=args.test_size, dev_size=args.dev_size, balance = False, remove_other=True)
+    save_datasets(train, dev, test, args.lang_code, "par", args.data_folder, f"MaCoCu.en-{args.lang_code}")
+    save_datasets(train.drop_duplicates(['en_doc']), dev.drop_duplicates(['en_doc']), test.drop_duplicates(['en_doc']), args.lang_code, "doc", args.data_folder, f"MaCoCu.en-{args.lang_code}.doc")
     
 
 if __name__ == "__main__":

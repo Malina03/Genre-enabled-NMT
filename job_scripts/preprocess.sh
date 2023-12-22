@@ -8,7 +8,7 @@
 
 
 export PATH="$PATH:/home1/s3412768/.local/bin"
-
+            
 # Load modules
 module purge
 module load PyTorch/1.12.1-foss-2022a-CUDA-11.7.0
