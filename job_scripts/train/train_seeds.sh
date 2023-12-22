@@ -25,7 +25,7 @@ model_type=$2 # type of experiment (baseline, genre_aware, genre_aware_token)
 use_tok=$3 # yes or no
 
 corpus="MaCoCu"
-exp_type="from_scartch" # type of model (e.g. fine_tuned or from_scratch.)
+exp_type="from_scratch" # type of model (e.g. fine_tuned or from_scratch.)
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
 
