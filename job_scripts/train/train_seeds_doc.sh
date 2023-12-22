@@ -19,13 +19,14 @@ export CUDA_VISIBLE_DEVICES=0
 #load environment
 source /home1/s3412768/.envs/nmt2/bin/activate
 
-corpus="MaCoCu"
+
 language=$1 # target language
-exp_type=$2 # type of model (e.g. fine_tuned or from_scratch.)
-model_type=$3 # type of experiment (baseline, genre_aware, genre_aware_token)
-use_tok=$4 # yes or no
+model_type=$2 # type of experiment (baseline, genre_aware, genre_aware_token)
+use_tok=$3 # yes or no
 # genre=$5 # genre to fine-tune on 
 
+corpus="MaCoCu"
+exp_type="from_scratch" # type of model (e.g. fine_tuned or from_scratch.)
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
 
