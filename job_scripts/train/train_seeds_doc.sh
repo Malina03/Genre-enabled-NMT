@@ -99,13 +99,13 @@ else
         --train_file $train_file \
         --dev_file $dev_file \
         --wandb \
-        --gradient_accumulation_steps 2 \
-        --batch_size 16 \
+        --gradient_accumulation_steps 1 \
+        --batch_size 32 \
         --gradient_checkpointing \
         --adafactor \
         --save_strategy epoch \
         --evaluation_strategy epoch \
-        --learning_rate 1e-5 \
+        --learning_rate 1e-4 \
         --exp_type $exp_type \
         --model_type $model_type \
         --model_name $model \
