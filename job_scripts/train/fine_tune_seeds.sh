@@ -1,11 +1,11 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=24:00:00
+#SBATCH --time=12:00:00
 #SBATCH --job-name=train_seeds
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
 #SBATCH --mem=50G
-#SBATCH --array=1-5
+#SBATCH --array=1-6
 
 export PATH="$PATH:/home1/s3412768/.local/bin"
 
@@ -23,12 +23,14 @@ source /home1/s3412768/.envs/nmt2/bin/activate
 language=$1 # target language
 model_type=$2 # type of experiment (baseline, genre_aware, genre_aware_token)
 use_tok=$3 # yes or no
+seed=$4 # seed of the pretrained model
 
 corpus="MaCoCu"
 exp_type="fine_tune" # type of model (e.g. fine_tuned or from_scratch.)
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
-genres=('news' ')
+genres=('news' 'law' 'arg' 'info' 'promo' 'random')
+genre="${genres[$SLURM_ARRAY_TASK_ID-1]}"
 echo "corpus: $corpus"
 echo "language: $language"
 echo "exp_type: $exp_type"
@@ -43,11 +45,11 @@ fi
 
 if [ $exp_type = 'fine_tune' ]; then
     if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
-        train_file="$root_dir/data/${corpus}.en-$language.train.tag.tsv"
-        dev_file="${root_dir}/data/${corpus}.en-$language.dev.tag.tsv"
+        train_file="$root_dir/data/${corpus}.en-$language.train.$genre.tag.tsv"
+        dev_file="${root_dir}/data/${corpus}.en-$language.dev.$genre.tag.tsv"
     elif [ $model_type = 'baseline' ]; then
-        train_file="$root_dir/data/${corpus}.en-$language.train.tsv"
-        dev_file="${root_dir}/data/${corpus}.en-$language.dev.tsv"
+        train_file="$root_dir/data/${corpus}.en-$language.train.$genre.tsv"
+        dev_file="${root_dir}/data/${corpus}.en-$language.dev.$genre.tsv"
     else
         echo "Invalid model type"
         exit 1
@@ -63,22 +65,22 @@ echo "dev file: $dev_file"
 
 
 ## modify model type
-if [ $use_tok == 'yes' ]; then
-    model_type="tok_${model_type}"
-    #if train_file.src does not exist, create it by cutting the first column of train_file
-    if [ ! -f "$train_file.src" ]; then
-        cut -f1 $train_file > $train_file.src
-        cut -f2 $train_file > $train_file.ref
-    fi
-    #if dev_file.src does not exist, create it by cutting the first column of dev_file
-    if [ ! -f "$dev_file.src" ]; then
-        cut -f1 $dev_file > $dev_file.src
-        cut -f2 $dev_file > $dev_file.ref
-    fi
+# if [ $use_tok == 'yes' ]; then
+#     model_type="tok_${model_type}"
+#     #if train_file.src does not exist, create it by cutting the first column of train_file
+#     if [ ! -f "$train_file.src" ]; then
+#         cut -f1 $train_file > $train_file.src
+#         cut -f2 $train_file > $train_file.ref
+#     fi
+#     #if dev_file.src does not exist, create it by cutting the first column of dev_file
+#     if [ ! -f "$dev_file.src" ]; then
+#         cut -f1 $dev_file > $dev_file.src
+#         cut -f2 $dev_file > $dev_file.ref
+#     fi
 
-fi
+# fi
 # add seed to model type
-model_type="${model_type}_${SLURM_ARRAY_TASK_ID}"
+model_type="${model_type}_${genre}_${seed}"
 log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}.log"
 if [ ! -d "$root_dir/logs/$exp_type/$model_type" ]; then
     mkdir -p $root_dir/logs/$exp_type/$model_type
@@ -103,9 +105,9 @@ if [ $use_tok == 'yes' ]; then
         --model_type $model_type \
         --model_name $model \
         --early_stopping 10 \
-        --num_train_epochs 15 \
+        --num_train_epochs 5 \
         --train_tokenizer \
-        --seed $SLURM_ARRAY_TASK_ID \
+        --seed $seed \
         &> $log_file
 else
     python /home1/s3412768/Genre-enabled-NMT/src/train.py \
@@ -124,7 +126,7 @@ else
         --model_type $model_type \
         --model_name $model \
         --early_stopping 10 \
-        --num_train_epochs 15 \
-        --seed $SLURM_ARRAY_TASK_ID \
+        --num_train_epochs 5 \
+        --seed $seed \
         &> $log_file
 fi

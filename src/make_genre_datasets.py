@@ -77,10 +77,10 @@ def make_balanced_datasets(language, genres):
             # randomly sample the required number of lines per set and genre
             sampled = only_req_genres[only_req_genres['set'] == s][only_req_genres['X-GENRE'] == g].sample(n=min_examples[s])
             # save en_par and hr_par to tsv
-            sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.{genre_abv[g]}.balanced.tsv', sep='\t', index=False, header=False, quoting=3)
+            sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.{genre_abv[g]}.tsv', sep='\t', index=False, header=False, quoting=3)
             # write to tsv adding the genre tag in the beginning of each en_par
             sampled['en_par'] = genre_tokens[g] + ' ' + sampled['en_par'].astype(str)
-            sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.{genre_abv[g]}.balanced.tag.tsv', sep='\t', index=False, header=False, quoting=3)
+            sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.{genre_abv[g]}.tag.tsv', sep='\t', index=False, header=False, quoting=3)
             del sampled
     # randomly sample the required number of lines for a random genre dataset balanced wrt the number of lines per set
     for s in sets:
