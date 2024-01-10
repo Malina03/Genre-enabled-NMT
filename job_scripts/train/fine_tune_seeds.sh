@@ -1,7 +1,7 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=12:00:00
-#SBATCH --job-name=train_seeds
+#SBATCH --time=3:00:00
+#SBATCH --job-name=ft_seeds
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
 #SBATCH --mem=50G
@@ -101,7 +101,7 @@ if [ $use_tok == 'yes' ]; then
         --adafactor \
         --save_strategy epoch \
         --evaluation_strategy epoch \
-        --learning_rate 1e-5 \
+        --learning_rate 1e-4 \
         --exp_type $exp_type \
         --model_type $model_type \
         --model_name $model \
@@ -125,7 +125,7 @@ else
         --adafactor \
         --save_strategy epoch \
         --evaluation_strategy epoch \
-        --learning_rate 1e-5 \
+        --learning_rate 1e-4 \
         --exp_type $exp_type \
         --model_type $model_type \
         --model_name $model \
