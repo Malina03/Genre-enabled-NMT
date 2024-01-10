@@ -25,14 +25,14 @@ model_type=$2 # type of experiment (baseline, genre_aware, genre_aware_token)
 use_tok=$3 # yes or no
 seed=$4 # seed of the pretrained model
 
-corpus="MaCoCu"
+train_corpus="MaCoCu"
 exp_type="fine_tune" # type of model (e.g. fine_tuned or from_scratch.)
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
 genres=('news' 'law' 'arg' 'info' 'promo' 'random')
 genre="${genres[$SLURM_ARRAY_TASK_ID-1]}"
 
-checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
+# checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
 
 
 echo "corpus: $corpus"
@@ -76,7 +76,7 @@ if [ $use_tok == 'yes' ]; then
 fi
 
 
-checkpoint=$root_dir/models/from_scratch/$model_type_$seed/$train_corpus/checkpoint-*
+checkpoint=$root_dir/models/from_scratch/${model_type}_${seed}/${train_corpus}/checkpoint-*
 
 
 # add seed to model type
@@ -110,7 +110,7 @@ if [ $use_tok == 'yes' ]; then
         --use_costum_tokenizer \
         --tokenizer_path $tokenizer_path \
         --seed $seed \
-        --genre $genre \
+        # --genre $genre \
         &> $log_file
 else
     python /home1/s3412768/Genre-enabled-NMT/src/train.py \
@@ -132,6 +132,6 @@ else
         --early_stopping 5 \
         --num_train_epochs 5 \
         --seed $seed \
-        --genre $genre \
+        # --genre $genre \
         &> $log_file
 fi
