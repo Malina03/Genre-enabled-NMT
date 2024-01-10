@@ -61,7 +61,7 @@ def make_multiple_genre_dataset(language, sets, genres):
 def make_balanced_datasets(language, genres):
     sets = ['train', 'dev']
     genre_tokens = {'Prose/Lyrical': '<lit>','Instruction': '<instr>', 'Promotion': '<promo>', 'Opinion/Argumentation': '<arg>' , 'Other': '<other>' , 'Information/Explanation': '<info>', 'News': '<news>', 'Legal': '<law>', 'Forum': '<forum>'}
-
+    
     all_data = pd.read_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}_complete.tsv', sep='\t', header=0)
     # only keep en_doc, hr_doc, X-genre and set columns
     all_data = all_data[['en_par', f'{language}_par', 'set', 'X-GENRE']]
@@ -98,7 +98,7 @@ def make_balanced_datasets(language, genres):
 
 def main():
     # make_multiple_genre_dataset('hr', ['train', 'dev'], ['law', 'news', 'lit'])
-    make_balanced_datasets('hr', ['law', 'news', 'arg', 'promo', 'info'])
+    make_balanced_datasets('hr', ['Legal', 'News', 'Opinion/Argumentation', 'Promotion', 'Information/Explanation'])
     
 if __name__ == "__main__":
     main()
