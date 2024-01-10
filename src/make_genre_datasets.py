@@ -61,7 +61,7 @@ def make_multiple_genre_dataset(language, sets, genres):
 def make_balanced_datasets(language, genres):
     sets = ['train', 'dev']
     genre_tokens = {'Prose/Lyrical': '<lit>','Instruction': '<instr>', 'Promotion': '<promo>', 'Opinion/Argumentation': '<arg>' , 'Other': '<other>' , 'Information/Explanation': '<info>', 'News': '<news>', 'Legal': '<law>', 'Forum': '<forum>'}
-    
+    genre_abv = {g: genre_tokens[g][1:-1] for g in genres}
     all_data = pd.read_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}_complete.tsv', sep='\t', header=0)
     # only keep en_doc, hr_doc, X-genre and set columns
     all_data = all_data[['en_par', f'{language}_par', 'set', 'X-GENRE']]
@@ -77,21 +77,22 @@ def make_balanced_datasets(language, genres):
             # randomly sample the required number of lines per set and genre
             sampled = only_req_genres[only_req_genres['set'] == s][only_req_genres['X-GENRE'] == g].sample(n=min_examples[s])
             # save en_par and hr_par to tsv
-            sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.{g}.balanced.tsv', sep='\t', index=False, header=False, quoting=3)
+            sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.{genre_abv[g]}.balanced.tsv', sep='\t', index=False, header=False, quoting=3)
             # write to tsv adding the genre tag in the beginning of each en_par
             sampled['en_par'] = genre_tokens[g] + ' ' + sampled['en_par'].astype(str)
-            sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.{g}.balanced.tag.tsv', sep='\t', index=False, header=False, quoting=3)
+            sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.{genre_abv[g]}.balanced.tag.tsv', sep='\t', index=False, header=False, quoting=3)
             del sampled
-    # randomly sample the required number of lines from the remaining genres data 
+    # randomly sample the required number of lines for a random genre dataset balanced wrt the number of lines per set
     for s in sets:
-        sampled = remaining_genres[remaining_genres['set'] == s].sample(n=min_examples[s])
+        sampled = all_data[all_data['set'] == s].sample(n=min_examples[s])
         # print to a file the number of lines per genre
-        sampled.groupby('X-GENRE')['en_par'].count().to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.random.balanced.counts.log', sep='\t', index=True, header=True)
+        sampled.groupby('X-GENRE')['en_par'].count().to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.random.counts.log', sep='\t', index=True, header=True)
         # save en_par and hr_par to tsv
-        sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.random.balanced.tsv', sep='\t', index=False, header=False, quoting=3)
+        sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.random.tsv', sep='\t', index=False, header=False, quoting=3)
         # write to tsv adding the genre tag in the beginning of each en_par
-        sampled['en_par'] = genre_tokens['Other'] + ' ' + sampled['en_par'].astype(str)
-        sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.random.balanced.tag.tsv', sep='\t', index=False, header=False, quoting=3)
+        # add the genre tag in the beginning of each en_par
+        sampled['en_par'] = sampled['X-GENRE'].apply(lambda x: genre_tokens[x]) + ' ' + sampled['en_par'].astype(str)
+        sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.random.tag.tsv', sep='\t', index=False, header=False, quoting=3)
         del sampled
                                                                                                        
 
