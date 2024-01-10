@@ -31,11 +31,17 @@ exp_type="fine_tune" # type of model (e.g. fine_tuned or from_scratch.)
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
 genres=('news' 'law' 'arg' 'info' 'promo' 'random')
 genre="${genres[$SLURM_ARRAY_TASK_ID-1]}"
+
+checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
+
+
 echo "corpus: $corpus"
 echo "language: $language"
 echo "exp_type: $exp_type"
 echo "model_type: $model_type"
 echo "use_tok: $use_tok"
+
+
 
 if [ $language = 'hr' ]; then
     model="Helsinki-NLP/opus-mt-en-sla"
@@ -63,25 +69,19 @@ fi
 echo "train file: $train_file"
 echo "dev file: $dev_file"
 
+if [ $use_tok == 'yes' ]; then
+    tokenizer_path="/scratch/s3412768/genre_NMT/en-$language/models/from_scratch/tok_${model_type}_${seed}/tokenizer"
+    echo "tokenizer path: $tokenizer_path"
+    model_type="tok_${model_type}"
+fi
 
-## modify model type
-# if [ $use_tok == 'yes' ]; then
-#     model_type="tok_${model_type}"
-#     #if train_file.src does not exist, create it by cutting the first column of train_file
-#     if [ ! -f "$train_file.src" ]; then
-#         cut -f1 $train_file > $train_file.src
-#         cut -f2 $train_file > $train_file.ref
-#     fi
-#     #if dev_file.src does not exist, create it by cutting the first column of dev_file
-#     if [ ! -f "$dev_file.src" ]; then
-#         cut -f1 $dev_file > $dev_file.src
-#         cut -f2 $dev_file > $dev_file.ref
-#     fi
 
-# fi
+checkpoint=$root_dir/models/from_scratch/$model_type_$seed/$train_corpus/checkpoint-*
+
+
 # add seed to model type
 model_type="${model_type}_${genre}_${seed}"
-log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}.log"
+log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train.log"
 if [ ! -d "$root_dir/logs/$exp_type/$model_type" ]; then
     mkdir -p $root_dir/logs/$exp_type/$model_type
 fi
@@ -93,6 +93,7 @@ if [ $use_tok == 'yes' ]; then
         --root_dir $root_dir \
         --train_file $train_file \
         --dev_file $dev_file \
+        --checkpoint $checkpoint \
         --wandb \
         --gradient_accumulation_steps 2 \
         --batch_size 16 \
@@ -104,16 +105,19 @@ if [ $use_tok == 'yes' ]; then
         --exp_type $exp_type \
         --model_type $model_type \
         --model_name $model \
-        --early_stopping 10 \
+        --early_stopping 5 \
         --num_train_epochs 5 \
-        --train_tokenizer \
+        --use_costum_tokenizer \
+        --tokenizer_path $tokenizer_path \
         --seed $seed \
+        --genre $genre \
         &> $log_file
 else
     python /home1/s3412768/Genre-enabled-NMT/src/train.py \
         --root_dir $root_dir \
         --train_file $train_file \
         --dev_file $dev_file \
+        --checkpoint $checkpoint \
         --wandb \
         --gradient_accumulation_steps 2 \
         --batch_size 16 \
@@ -125,8 +129,9 @@ else
         --exp_type $exp_type \
         --model_type $model_type \
         --model_name $model \
-        --early_stopping 10 \
+        --early_stopping 5 \
         --num_train_epochs 5 \
         --seed $seed \
+        --genre $genre \
         &> $log_file
 fi
