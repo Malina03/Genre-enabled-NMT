@@ -35,7 +35,10 @@ for f in eval_files:
     f_name = f.split('/')[8].split('_')[0]
     model = f.split('/')[7]
     # make a dictionary with scores by model and test file
-    
+    # if model name doesn't end in _1 or _2 or _3 skip - only include exp with seeds
+    if model[-2] != '_':
+        continue
+
     if 'bleu' in f and 'bleurt' not in f:
        
         bleu = float(open(f, "r").readlines()[0].strip('\n'))
