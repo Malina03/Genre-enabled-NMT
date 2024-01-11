@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=02:00:00
+#SBATCH --time=03:00:00
 #SBATCH --job-name=pred_seeds
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
@@ -33,11 +33,11 @@ use_tok=$4 # yes or no
 seed=$SLURM_ARRAY_TASK_ID
 
 if [ $m_type == 'baseline' ]; then
-    # test_files=("MaCoCu.en-hr.test.tsv" "floresdev.en-hr.test.tsv" "floresdevtest.en-hr.test.tsv" "wmttest2022.en-hr.test.tsv")
-    test_files=("floresdevtest.en-hr.test.tsv")
+    test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
+    # test_files=("floresdevtest.en-hr.test.tsv")
 elif [ $m_type == 'genre_aware' ] || [ $m_type == 'genre_aware_token' ]; then
-    # test_files=("MaCoCu.en-hr.test.tag.tsv" "floresdev.en-hr.test.tag.tsv" "floresdevtest.en-hr.test.tag.tsv" "wmttest2022.en-hr.test.tag.tsv")
-    test_files=("floresdevtest.en-hr.test.tag.tsv")
+    test_files=("MaCoCu.en-${language}.test.tag.tsv" "floresdev.en-${language}.test.tag.tsv" "floresdevtest.en-${language}.test.tag.tsv" "wmttest2022.en-${language}.test.tag.tsv")
+    # test_files=("floresdevtest.en-hr.test.tag.tsv")
 else
     echo "Invalid model type"
     exit 1
@@ -75,11 +75,8 @@ for test_on in "${test_files[@]}"; do
         mkdir -p $root_dir/logs/$exp_type/$model_type/
     fi
 
-    if [ $model_type == 'genre_aware_2' ] || [ $model_type == 'genre_aware_3' ] || [ $model_type == 'baseline_2' ]; then
-        checkpoint="$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-121294"
-    else
-        checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
-    fi
+
+    checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
     echo "Checkpoint: $checkpoint"
 
     if [ $use_tok == 'yes' ]; then
@@ -92,7 +89,7 @@ for test_on in "${test_files[@]}"; do
             --dev_file $test_file \
             --test_file $test_file\
             --gradient_accumulation_steps 2 \
-            --batch_size 16 \
+            --batch_size 32 \
             --gradient_checkpointing \
             --adafactor \
             --exp_type $exp_type \
@@ -111,7 +108,7 @@ for test_on in "${test_files[@]}"; do
             --dev_file $test_file \
             --test_file $test_file\
             --gradient_accumulation_steps 2 \
-            --batch_size 16 \
+            --batch_size 32 \
             --gradient_checkpointing \
             --adafactor \
             --exp_type $exp_type \
