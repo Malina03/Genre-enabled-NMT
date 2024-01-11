@@ -1,11 +1,11 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=3:00:00
-#SBATCH --job-name=ft_opus
+#SBATCH --time=6:00:00
+#SBATCH --job-name=train_seeds
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
 #SBATCH --mem=50G
-#SBATCH --array=1-5
+#SBATCH --array=1-3
 
 export PATH="$PATH:/home1/s3412768/.local/bin"
 
@@ -22,26 +22,16 @@ source /home1/s3412768/.envs/nmt2/bin/activate
 
 language=$1 # target language
 model_type=$2 # type of experiment (baseline, genre_aware, genre_aware_token)
-seed=$3 # seed of the pretrained model
 
 corpus="MaCoCu"
-train_corpus="MaCoCu"
-exp_type="fine_tune" # type of model (e.g. fine_tuned or from_scratch.)
+exp_type="from_scratch" # type of model (e.g. fine_tuned or from_scratch.)
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
-# genres=('news' 'law' 'arg' 'info' 'promo' 'random')
-genres=('news' 'law' 'info' 'promo' 'random')
-genre="${genres[$SLURM_ARRAY_TASK_ID-1]}"
-
-# checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
-
 
 echo "corpus: $corpus"
 echo "language: $language"
 echo "exp_type: $exp_type"
 echo "model_type: $model_type"
-echo "use_tok: $use_tok"
-
 
 
 if [ $language = 'hr' ]; then
@@ -50,13 +40,13 @@ else
     model="Helsinki-NLP/opus-mt-en-${language}"
 fi
 
-if [ $exp_type = 'fine_tune' ]; then
+if [ $exp_type = 'from_scratch' ]; then
     if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
-        train_file="$root_dir/data/${corpus}.en-$language.train.$genre.tag.tsv"
-        dev_file="${root_dir}/data/${corpus}.en-$language.dev.$genre.tag.tsv"
+        train_file="$root_dir/data/${corpus}.en-$language.train.tag.tsv"
+        dev_file="${root_dir}/data/${corpus}.en-$language.dev.tag.tsv"
     elif [ $model_type = 'baseline' ]; then
-        train_file="$root_dir/data/${corpus}.en-$language.train.$genre.tsv"
-        dev_file="${root_dir}/data/${corpus}.en-$language.dev.$genre.tsv"
+        train_file="$root_dir/data/${corpus}.en-$language.train.tsv"
+        dev_file="${root_dir}/data/${corpus}.en-$language.dev.tsv"
     else
         echo "Invalid model type"
         exit 1
@@ -72,31 +62,30 @@ echo "dev file: $dev_file"
 
 
 # add seed to model type
-model_type="${model_type}_opus_${genre}_${seed}"
-log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train.log"
+model_type="${model_type}_opus_${SLURM_ARRAY_TASK_ID}"
+log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}.log"
 if [ ! -d "$root_dir/logs/$exp_type/$model_type" ]; then
     mkdir -p $root_dir/logs/$exp_type/$model_type
 fi
 
 echo "log file: $log_file"
 
-
 python /home1/s3412768/Genre-enabled-NMT/src/train.py \
-    --root_dir $root_dir \
-    --train_file $train_file \
-    --dev_file $dev_file \
-    --wandb \
-    --gradient_accumulation_steps 2 \
-    --batch_size 16 \
-    --gradient_checkpointing \
-    --adafactor \
-    --save_strategy epoch \
-    --evaluation_strategy epoch \
-    --learning_rate 1e-4 \
-    --exp_type $exp_type \
-    --model_type $model_type \
-    --model_name $model \
-    --early_stopping 5 \
-    --num_train_epochs 5 \
-    --seed $seed \
-    &> $log_file
+        --root_dir $root_dir \
+        --train_file $train_file \
+        --dev_file $dev_file \
+        --wandb \
+        --gradient_accumulation_steps 2 \
+        --batch_size 16 \
+        --gradient_checkpointing \
+        --adafactor \
+        --save_strategy epoch \
+        --evaluation_strategy epoch \
+        --learning_rate 1e-5 \
+        --exp_type $exp_type \
+        --model_type $model_type \
+        --model_name $model \
+        --early_stopping 10 \
+        --num_train_epochs 15 \
+        --seed $SLURM_ARRAY_TASK_ID \
+        &> $log_file
