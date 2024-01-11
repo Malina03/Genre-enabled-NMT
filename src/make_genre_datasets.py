@@ -99,7 +99,7 @@ def make_balanced_datasets(language, genres):
 
 def main():
     # make_multiple_genre_dataset('hr', ['train', 'dev'], ['law', 'news', 'lit'])
-    make_balanced_datasets('hr', ['Legal', 'News', 'Opinion/Argumentation', 'Promotion', 'Information/Explanation'])
+    make_balanced_datasets('is', ['Legal', 'News', 'Promotion', 'Information/Explanation'])
     
 if __name__ == "__main__":
     main()
