@@ -22,7 +22,7 @@ export CUDA_VISIBLE_DEVICES=0
 source /home1/s3412768/.envs/nmt2/bin/activate
 
 train_corpus="MaCoCu"
-exp_type="fine_tuned"
+exp_type="fine_tune"
 
 language=$1 # the target language
 m_type=$2 # type of model (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
