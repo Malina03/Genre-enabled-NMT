@@ -72,7 +72,7 @@ for genre in "${genres[@]}"; do
         fi
 
 
-        checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
+        checkpoint=$root_dir/models/fine_tune/$model_type/$train_corpus/checkpoint-*
 
         echo "Checkpoint: $checkpoint"
         echo "Log file: $log_file"
