@@ -113,7 +113,7 @@ for test_on in "${test_files[@]}"; do
         # First check if the file exists in the data folder
         if [[ -f $eval ]]; then
             # If so, extract the source column
-            cut -d $'\t'-f1 $eval > "$src"
+            cut -d $'\t' -f1 $eval > "$src"
         else
             echo "File $eval not found"
         fi
@@ -135,3 +135,4 @@ for test_on in "${test_files[@]}"; do
         comet-score -s $src -t $out -r $ref > "${out}.eval.comet"
 
     fi
+done
