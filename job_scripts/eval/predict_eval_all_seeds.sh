@@ -22,12 +22,12 @@ export CUDA_VISIBLE_DEVICES=0
 source /home1/s3412768/.envs/nmt2/bin/activate
 
 train_corpus=MaCoCu
+exp_type="from_scratch"
 language=$1 # the target language
-exp_type=$2 # type of experiment (fine_tuned or from_scratch.)
-m_type=$3 # type of model (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
+m_type=$2 # type of model (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
 # genre=$5 # the genre that the model was trained on
 # test_on=$4 # the test file to evaluate on, assuming it is placed in root_dir/data
-use_tok=$4 # yes or no
+use_tok=$3 # yes or no
 
 
 seed=$SLURM_ARRAY_TASK_ID
