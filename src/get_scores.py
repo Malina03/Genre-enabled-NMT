@@ -42,6 +42,11 @@ for f in eval_files:
         bleu_df = bleu_df.append({'model': model, 'test_file': f_name, 'bleu': bleu}, ignore_index=True)
     elif 'comet' in f:
         # get the score in the last line
+        try :
+            comet = float(open(f, "r").readlines()[-2].split(" ")[-1].strip())
+        except:
+            print(f)
+            continue
         comet = float(open(f, "r").readlines()[-1].split(" ")[-1].strip())
         comet_df = comet_df.append({'model': model, 'test_file': f_name, 'comet': comet}, ignore_index=True)
         # get scores per sentence
