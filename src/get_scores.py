@@ -20,13 +20,13 @@ list_of_df = []
 
 tokens_to_genres = {'<info>': 'Information/Explanation', '<promo>': 'Promotion', '<news>': 'News', '<law>': 'Legal', '<other>': 'Other', '<arg>': 'Opinion/Argumentation', '<instr>': 'Instruction', '<lit>': 'Prose/Lyrical', '<forum>': 'Forum'}
 
-ref_with_tags_macocu = pd.read_csv(root_data_dir + '/data/MaCoCu.en-hr.test.tag.tsv', sep='\t', header=None)
+ref_with_tags_macocu = pd.read_csv(root_data_dir + 'MaCoCu.en-hr.test.tag.tsv', sep='\t', header=None)
 genres_macocu = [tokens_to_genres[line.split(' ')[0]] for line in ref_with_tags_macocu[ref_with_tags_macocu.columns[0]].to_list()]
-ref_with_tags_floresdev = pd.read_csv(root_data_dir + '/data/floresdev.en-hr.tag.tsv', sep='\t', header=None)
+ref_with_tags_floresdev = pd.read_csv(root_data_dir + 'floresdev.en-hr.tag.tsv', sep='\t', header=None)
 genres_floresdev = [tokens_to_genres[line.split(' ')[0]] for line in ref_with_tags_floresdev[ref_with_tags_floresdev.columns[0]].to_list()]
-ref_with_tags_floresdevtest = pd.read_csv(root_data_dir + '/data/floresdevtest.en-hr.tag.tsv', sep='\t', header=None)
+ref_with_tags_floresdevtest = pd.read_csv(root_data_dir + 'floresdevtest.en-hr.tag.tsv', sep='\t', header=None)
 genres_floresdevtest = [tokens_to_genres[line.split(' ')[0]] for line in ref_with_tags_floresdevtest[ref_with_tags_floresdevtest.columns[0]].to_list()]
-ref_with_tags_wmttest2022 = pd.read_csv(root_data_dir + '/data/wmttest2022.en-hr.tag.tsv', sep='\t', header=None)
+ref_with_tags_wmttest2022 = pd.read_csv(root_data_dir + 'wmttest2022.en-hr.tag.tsv', sep='\t', header=None)
 genres_wmttest2022 = [tokens_to_genres[line.split(' ')[0]] for line in ref_with_tags_wmttest2022[ref_with_tags_wmttest2022.columns[0]].to_list()]
 
 
