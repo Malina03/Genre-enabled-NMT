@@ -46,18 +46,18 @@ for f in eval_files:
         comet_df = comet_df.append({'model': model, 'test_file': f_name, 'comet': comet}, ignore_index=True)
         # get scores per sentence
         individial_scores_comet = [float(l.split(" ")[-1].strip()) for l in open(f, "r").readlines()[:-1]]
-        if "MaCoCu" in f_name:
+        if f_name == "MaCoCu":
             genres = genres_macocu
-        elif "floresdev" in f_name:
+        elif f_name == "floresdev":
             genres = genres_floresdev
-        elif "floresdevtest" in f_name:
+        elif f_name == "floresdevtest":
             genres = genres_floresdevtest
         # elif "wmttest2022" in f_name:
         #     genres = genres_wmttest2022
         else:
             print("Error: test file not recognized")
-        print(len(genres))
-        print(len(individial_scores_comet))
+        # print(len(genres))
+        # print(len(individial_scores_comet))
         scores_per_genre = pd.DataFrame({'model': [model]*len(genres), 'test_file': [f_name]*len(genres), 'genre': genres, 'comet': individial_scores_comet})
         # comet_scores_per_genre = comet_scores_per_genre.append(scores_per_genre, ignore_index=True)
         # compute the average score per genre and standard deviation
