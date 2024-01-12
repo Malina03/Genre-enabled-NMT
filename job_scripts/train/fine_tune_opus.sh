@@ -24,7 +24,7 @@ language=$1 # target language
 model_type=$2 # type of experiment (baseline, genre_aware, genre_aware_token)
 
 corpus="MaCoCu"
-exp_type="from_scratch" # type of model (e.g. fine_tuned or from_scratch.)
+exp_type="fine_tune" # type of model (e.g. fine_tuned or from_scratch.)
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
 
@@ -40,7 +40,7 @@ else
     model="Helsinki-NLP/opus-mt-en-${language}"
 fi
 
-if [ $exp_type = 'from_scratch' ]; then
+if [ $exp_type = 'fine_tune' ]; then
     if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
         train_file="$root_dir/data/${corpus}.en-$language.train.tag.tsv"
         dev_file="${root_dir}/data/${corpus}.en-$language.dev.tag.tsv"
@@ -81,11 +81,11 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
         --adafactor \
         --save_strategy epoch \
         --evaluation_strategy epoch \
-        --learning_rate 1e-5 \
+        --learning_rate 1e-4 \
         --exp_type $exp_type \
         --model_type $model_type \
         --model_name $model \
-        --early_stopping 10 \
-        --num_train_epochs 15 \
+        --early_stopping 5 \
+        --num_train_epochs 5 \
         --seed $SLURM_ARRAY_TASK_ID \
         &> $log_file
