@@ -44,6 +44,12 @@ else
 fi
 
 for test_on in "${test_files[@]}"; do
+
+    module purge
+    module load PyTorch/1.12.1-foss-2022a-CUDA-11.7.0
+    #load environment
+    source /home1/s3412768/.envs/nmt2/bin/activate
+
     model_type=$m_type
     #
     if [ $use_tok == 'yes' ]; then
