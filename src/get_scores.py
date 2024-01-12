@@ -75,9 +75,9 @@ for f in eval_files:
         #     genres = genres_wmttest2022
         else:
             print("Error: test file not recognized")
-        print("test file: {} and model: {}".format(f_name, model))
-        print(len(genres))
-        print(len(individial_scores_comet))
+        # print("test file: {} and model: {}".format(f_name, model))
+        # print(len(genres))
+        # print(len(individial_scores_comet))
         scores_per_genre = pd.DataFrame({'model': [model]*len(genres), 'test_file': [f_name]*len(genres), 'genre': genres, 'comet': individial_scores_comet})
         # comet_scores_per_genre = comet_scores_per_genre.append(scores_per_genre, ignore_index=True)
         # compute the average score per genre and standard deviation
