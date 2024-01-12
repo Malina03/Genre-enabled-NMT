@@ -28,7 +28,8 @@ ref_with_tags_floresdevtest = pd.read_csv(root_data_dir + 'floresdevtest.en-hr.t
 genres_floresdevtest = [tokens_to_genres[line.split(' ')[0]] for line in ref_with_tags_floresdevtest[ref_with_tags_floresdevtest.columns[0]].to_list()]
 # ref_with_tags_wmttest2022 = pd.read_csv(root_data_dir + 'wmttest2022.en-hr.test.tag.tsv', sep='\t', header=None)
 # genres_wmttest2022 = [tokens_to_genres[line.split(' ')[0]] for line in ref_with_tags_wmttest2022[ref_with_tags_wmttest2022.columns[0]].to_list()]
-
+ref_with_targs_macocu_doc = pd.read_csv(root_data_dir + 'MaCoCu.en-hr.doc.test.tag.tsv', sep='\t', header=None)
+genres_macocu_doc = [tokens_to_genres[line.split(' ')[0]] for line in ref_with_targs_macocu_doc[ref_with_targs_macocu_doc.columns[0]].to_list()]
 
 for f in eval_files:
     # print(f.split('/')[8])
@@ -54,7 +55,9 @@ for f in eval_files:
         comet_df = comet_df.append({'model': model, 'test_file': f_name, 'comet': comet}, ignore_index=True)
         # get scores per sentence
         individial_scores_comet = [float(l.split(" ")[-1].strip()) for l in open(f, "r").readlines()[:-1]]
-        if f_name == "MaCoCu":
+        if "doc" in f:
+            genres = genres_macocu_doc
+        elif f_name == "MaCoCu":
             genres = genres_macocu
         elif f_name == "floresdev":
             genres = genres_floresdev
@@ -72,6 +75,12 @@ for f in eval_files:
         # compute the average score per genre and standard deviation
         scores_per_genre = scores_per_genre.groupby(['model', 'test_file', 'genre']).agg({'comet': ['mean', 'std']}).reset_index()
         scores_per_genre.columns = ['model', 'test_file', 'genre', 'comet_mean', 'comet_std']
+        # split model name in model and seed
+        scores_per_genre['seed'] = scores_per_genre['model'].str[-1]
+        scores_per_genre['model'] = scores_per_genre['model'].str[:-2]
+        # compute the average score per model and standard deviation
+        scores_per_model = scores_per_genre.groupby(['model', 'test_file', 'genre']).agg({'comet_mean': ['mean', 'std']}).reset_index()
+        scores_per_model.columns = ['model', 'test_file', 'genre', 'comet_mean', 'comet_std']
         list_of_df.append(scores_per_genre)
 
 
@@ -83,7 +92,17 @@ for f in eval_files:
 
 # save the dataframe to a csv file
 # df.to_csv('/scratch/s3412768/genre_NMT/en-hr/results/eval_scores.csv', index=False)
-# save only bleu scores
+# split bleu model name in model and seed
+bleu_df['seed'] = bleu_df['model'].str[-1]
+bleu_df['model'] = bleu_df['model'].str[:-2]
+# split comet model name in model and seed
+comet_df['seed'] = comet_df['model'].str[-1]
+comet_df['model'] = comet_df['model'].str[:-2]
+# compute the average score per model and standard deviation
+bleu_df = bleu_df.groupby(['model', 'test_file']).agg({'bleu': ['mean', 'std']}).reset_index()
+bleu_df.columns = ['model', 'test_file', 'bleu_mean', 'bleu_std']
+comet_df = comet_df.groupby(['model', 'test_file']).agg({'comet': ['mean', 'std']}).reset_index()
+comet_df.columns = ['model', 'test_file', 'comet_mean', 'comet_std']
 bleu_df.to_csv('/scratch/s3412768/genre_NMT/en-hr/results/eval_bleu_scores.csv', index=False)
 # save only comet scores
 comet_df.to_csv('/scratch/s3412768/genre_NMT/en-hr/results/eval_comet_scores.csv', index=False)
