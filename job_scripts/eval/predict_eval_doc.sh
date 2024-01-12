@@ -74,46 +74,22 @@ echo "log file: $log_file"
 echo "model type: $model_type"
 echo "model: $model"
 
-if [ $use_tok = 'yes' ]; then
-    python /home1/s3412768/Genre-enabled-NMT/src/train.py \
-        --root_dir $root_dir \
-        --train_file $test_file \
-        --dev_file $test_file \
-        --test_file $test_file \
-        --gradient_accumulation_steps 1 \
-        --batch_size 32 \
-        --gradient_checkpointing \
-        --adafactor \
-        --save_strategy epoch \
-        --evaluation_strategy epoch \
-        --learning_rate 1e-4 \
-        --exp_type $exp_type \
-        --model_type $model_type \
-        --model_name $model \
-        --use_costum_tokenizer \
-        --tokenizer_path $tokenizer_path \
-        --predict \
-        --eval \
-        --checkpoint $checkpoint \
-        &> $log_file
-else
-    python /home1/s3412768/Genre-enabled-NMT/src/train.py \
-        --root_dir $root_dir \
-        --train_file $test_file \
-        --dev_file $test_file \
-        --test_file $test_file \
-        --gradient_accumulation_steps 1 \
-        --batch_size 32 \
-        --gradient_checkpointing \
-        --adafactor \
-        --save_strategy epoch \
-        --evaluation_strategy epoch \
-        --learning_rate 1e-4 \
-        --exp_type $exp_type \
-        --model_type $model_type \
-        --model_name $model \
-        --predict \
-        --eval \
-        --checkpoint $checkpoint \
-        &> $log_file
-fi
+python /home1/s3412768/Genre-enabled-NMT/src/train.py \
+    --root_dir $root_dir \
+    --train_file $test_file \
+    --dev_file $test_file \
+    --test_file $test_file \
+    --gradient_accumulation_steps 1 \
+    --batch_size 32 \
+    --gradient_checkpointing \
+    --adafactor \
+    --save_strategy epoch \
+    --evaluation_strategy epoch \
+    --learning_rate 1e-4 \
+    --exp_type $exp_type \
+    --model_type $model_type \
+    --model_name $model \
+    --predict \
+    --eval \
+    --checkpoint $checkpoint \
+    &> $log_file
