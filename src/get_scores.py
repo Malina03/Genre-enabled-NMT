@@ -111,9 +111,9 @@ bleu_df = bleu_df.groupby(['model', 'test_file']).agg({'bleu': ['mean', 'std']})
 bleu_df.columns = ['model', 'test_file', 'bleu_mean', 'bleu_std']
 comet_df = comet_df.groupby(['model', 'test_file']).agg({'comet': ['mean', 'std']}).reset_index()
 comet_df.columns = ['model', 'test_file', 'comet_mean', 'comet_std']
-bleu_df.to_csv('/scratch/s3412768/genre_NMT/en-' + args.language + '/results/' + args.exp_type + '_bleu_scores.csv', index=False)
+bleu_df.to_csv('/scratch/s3412768/genre_NMT/en-' + args.language + '/results/' + args.exp_folder + '_bleu_scores.csv', index=False)
 # save only comet scores
-comet_df.to_csv('/scratch/s3412768/genre_NMT/en-' + args.language + '/results/' + args.exp_type + '_comet_scores.csv', index=False)
+comet_df.to_csv('/scratch/s3412768/genre_NMT/en-' + args.language + '/results/' + args.exp_folder + '_comet_scores.csv', index=False)
 # save comet scores per genre
 comet_scores_per_genre = pd.concat(list_of_df)
-comet_scores_per_genre.to_csv('/scratch/s3412768/genre_NMT/en-' + args.language + '/results/' + args.exp_type + '_comet_scores_per_genre.csv', index=False)
+comet_scores_per_genre.to_csv('/scratch/s3412768/genre_NMT/en-' + args.language + '/results/' + args.exp_folder + '_comet_scores_per_genre.csv', index=False)
