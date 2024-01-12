@@ -26,6 +26,7 @@ use_tok=$3 # yes or no
 # genre=$5 # genre to fine-tune on 
 
 corpus="MaCoCu"
+train_corpus="MaCoCu"
 exp_type="from_scratch" # type of model (e.g. fine_tuned or from_scratch.)
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
@@ -65,7 +66,7 @@ echo "Checkpoint: $checkpoint"
 echo "Log file: $log_file"
 
 
-log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}.log"
+log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/eval_${corpus}.log"
 if [ ! -d "$root_dir/logs/$exp_type/$model_type" ]; then
     mkdir -p $root_dir/logs/$exp_type/$model_type
 fi
