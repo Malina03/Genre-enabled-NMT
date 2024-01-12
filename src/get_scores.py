@@ -10,7 +10,7 @@ args = parser.parse_args()
 
 
 root_dir = '/scratch/s3412768/genre_NMT/en-' + args.language + '/eval/' + args.exp_folder + '/'
-root_data_dir = '/scratch/s3412768/genre_NMT/en-hr/data/'
+root_data_dir = '/scratch/s3412768/genre_NMT/en-' + args.language + '/data/'
 
 # find all evaluation files .eval.bleu, eval.comet
 eval_files = []
@@ -31,7 +31,7 @@ tokens_to_genres = {'<info>': 'Information/Explanation', '<promo>': 'Promotion',
 ref_with_tags_macocu = pd.read_csv(root_data_dir + 'MaCoCu.en-'+ args.language + '.test.tag.tsv', sep='\t', header=None)
 genres_macocu = [tokens_to_genres[line.split(' ')[0]] for line in ref_with_tags_macocu[ref_with_tags_macocu.columns[0]].to_list()]
 
-if language == 'hr':
+if args.language == 'hr':
     ref_with_tags_floresdev = pd.read_csv(root_data_dir + 'floresdev.en-'+ args.language + '.test.tag.tsv', sep='\t', header=None)
     genres_floresdev = [tokens_to_genres[line.split(' ')[0]] for line in ref_with_tags_floresdev[ref_with_tags_floresdev.columns[0]].to_list()]
     ref_with_tags_floresdevtest = pd.read_csv(root_data_dir + 'floresdevtest.en-'+ args.language + '.test.tag.tsv', sep='\t', header=None)
