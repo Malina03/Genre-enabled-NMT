@@ -85,49 +85,49 @@ for test_on in "${test_files[@]}"; do
     checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
     echo "Checkpoint: $checkpoint"
 
-    if [ $use_tok == 'yes' ]; then
-        tokenizer_dir="$root_dir/models/from_scratch/$model_type/tokenizer"
-        echo "Checkpoint: $checkpoint"
-        echo "Tokenizer: $tokenizer_dir"
-        python /home1/s3412768/Genre-enabled-NMT/src/train.py \
-            --root_dir $root_dir \
-            --train_file $test_file \
-            --dev_file $test_file \
-            --test_file $test_file\
-            --gradient_accumulation_steps 2 \
-            --batch_size 32 \
-            --gradient_checkpointing \
-            --adafactor \
-            --exp_type $exp_type \
-            --model_type $model_type \
-            --checkpoint $checkpoint \
-            --model_name $model \
-            --tokenizer_path $tokenizer_dir \
-            --use_costum_tokenizer \
-            --eval \
-            --predict \
-            &> $log_file 
-    elif [ $use_tok == 'no' ]; then
-        python /home1/s3412768/Genre-enabled-NMT/src/train.py \
-            --root_dir $root_dir \
-            --train_file $test_file \
-            --dev_file $test_file \
-            --test_file $test_file\
-            --gradient_accumulation_steps 2 \
-            --batch_size 32 \
-            --gradient_checkpointing \
-            --adafactor \
-            --exp_type $exp_type \
-            --model_type $model_type \
-            --checkpoint $checkpoint \
-            --model_name $model \
-            --eval \
-            --predict \
-            &> $log_file 
-    else    
-        echo "Use_tok should be yes or no"
-        exit 1
-    fi
+    # if [ $use_tok == 'yes' ]; then
+    #     tokenizer_dir="$root_dir/models/from_scratch/$model_type/tokenizer"
+    #     echo "Checkpoint: $checkpoint"
+    #     echo "Tokenizer: $tokenizer_dir"
+    #     python /home1/s3412768/Genre-enabled-NMT/src/train.py \
+    #         --root_dir $root_dir \
+    #         --train_file $test_file \
+    #         --dev_file $test_file \
+    #         --test_file $test_file\
+    #         --gradient_accumulation_steps 2 \
+    #         --batch_size 32 \
+    #         --gradient_checkpointing \
+    #         --adafactor \
+    #         --exp_type $exp_type \
+    #         --model_type $model_type \
+    #         --checkpoint $checkpoint \
+    #         --model_name $model \
+    #         --tokenizer_path $tokenizer_dir \
+    #         --use_costum_tokenizer \
+    #         --eval \
+    #         --predict \
+    #         &> $log_file 
+    # elif [ $use_tok == 'no' ]; then
+    #     python /home1/s3412768/Genre-enabled-NMT/src/train.py \
+    #         --root_dir $root_dir \
+    #         --train_file $test_file \
+    #         --dev_file $test_file \
+    #         --test_file $test_file\
+    #         --gradient_accumulation_steps 2 \
+    #         --batch_size 32 \
+    #         --gradient_checkpointing \
+    #         --adafactor \
+    #         --exp_type $exp_type \
+    #         --model_type $model_type \
+    #         --checkpoint $checkpoint \
+    #         --model_name $model \
+    #         --eval \
+    #         --predict \
+    #         &> $log_file 
+    # else    
+    #     echo "Use_tok should be yes or no"
+    #     exit 1
+    # fi
         
 
     # deactivate the env used for predictions
