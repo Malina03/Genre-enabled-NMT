@@ -492,10 +492,10 @@ def get_url(lang_code):
 def main():
     args = create_arg_parser()
     data_folder = Path(args.data_folder)
-    if args.download_corpus or not Path(data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz').exists():
-        url = args.url if args.url else get_url(args.lang_code)
-        print(f"Downloading corpus from {url} and saving it as {data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'}")
-        download_corpus(url, Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'))
+    # if args.download_corpus or not Path(data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz').exists():
+    #     url = args.url if args.url else get_url(args.lang_code)
+    #     print(f"Downloading corpus from {url} and saving it as {data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'}")
+    #     download_corpus(url, Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'))
     
     if args.tmx_to_json or not Path(data_folder/f'MaCoCu-{args.lang_code}-en.json').exists():    
         tmx_to_json(data_folder/f'MaCoCu-{args.lang_code}-en.tmx', args.lang_code, data_folder/f'MaCoCu-{args.lang_code}-en.json')
