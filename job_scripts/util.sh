@@ -26,4 +26,4 @@ root_dir="/scratch/s3412768/genre_NMT/en-is/data"
 # python -u /home1/s3412768/Genre-enabled-NMT/src/analyse.py > $root_dir/analyse.log
 # python -u /home1/s3412768/Genre-enabled-NMT/src/make_genre_datasets.py
 
-python -u /home1/s3412768/Genre-enabled-NMT/src/x_genre_predict.py -lang tr -df /scratch/s3412768/genre_NMT/en-hr/data/softmax_saves -sb $start_batch -eb $end_batch 
+python -u /home1/s3412768/Genre-enabled-NMT/src/x_genre_predict.py -lang tr -df /scratch/s3412768/genre_NMT/en-tr/data/softmax_saves -sb $start_batch -eb $end_batch 
