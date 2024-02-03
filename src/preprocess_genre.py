@@ -499,13 +499,13 @@ def main():
     #     print(f"Downloading corpus from {url} and saving it as {data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'}")
     #     download_corpus(url, Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'))
     
-    if args.tmx_to_json or not Path(data_folder/f'MaCoCu-{args.lang_code}-en.json').exists():    
-        tmx_to_json(data_folder/f'MaCoCu-{args.lang_code}-en.tmx', args.lang_code, data_folder/f'MaCoCu-{args.lang_code}-en.json')
+    # if args.tmx_to_json or not Path(data_folder/f'MaCoCu-{args.lang_code}-en.json').exists():    
+    #     tmx_to_json(data_folder/f'MaCoCu-{args.lang_code}-en.tmx', args.lang_code, data_folder/f'MaCoCu-{args.lang_code}-en.json')
     
-    if args.preprocess or not Path(data_folder/f'Macocu-{args.lang_code}-en-doc-format.csv').exists():    
-        print("Preprocessing started.")
-        preprocess(data_folder, args.lang_code, 1, drop_par_duplicates = True, drop_doc_duplicates = False, keep_columns=True, info = False)
-        print("Preprocessing done.")
+    # if args.preprocess or not Path(data_folder/f'Macocu-{args.lang_code}-en-doc-format.csv').exists():    
+    #     print("Preprocessing started.")
+    #     preprocess(data_folder, args.lang_code, 1, drop_par_duplicates = True, drop_doc_duplicates = False, keep_columns=True, info = False)
+    #     print("Preprocessing done.")
 
     # if args.label or not Path(data_folder/f'Macocu-{args.lang_code}-en-sent-doc-labelled.csv').exists():
     #     # load the preprocessed data
