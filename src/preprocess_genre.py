@@ -41,6 +41,8 @@ def tmx_to_json(fname, tgt_language, save_path):
         lang_id = "is"
     elif tgt_language == "uk":
         lang_id = "uk"
+    elif tgt_language == "tr":
+        lang_id = "tr"
     else:
         raise ValueError("Language code not supported")
 
@@ -120,7 +122,7 @@ def preprocess(path, lang_code, length_threshold, drop_par_duplicates = True, dr
 
 
 	# # Add column for domains that are different
-	# corpus_df["different_domains"] = corpus_df["en_domain"] + " " + corpus_df[f"{lang_code}_domain"]
+	corpus_df["different_domains"] = corpus_df["en_domain"] + " " + corpus_df[f"{lang_code}_domain"]
 
 	if info == True:
 	# Print the information
@@ -480,6 +482,8 @@ def get_url(lang_code):
         url = 'https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1812/MaCoCu-is-en.tmx.gz'
     elif lang_code == 'uk':
         url = 'https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1858/MaCoCu-uk-en.tmx.gz'
+    elif lang_code == 'tr':
+        ulr = 'https://www.clarin.si/repository/xmlui/bitstream/handle/11356/1816/MaCoCu-tr-en.tmx.gz'
     else:
         raise ValueError("Language code not supported")
     return url
@@ -488,18 +492,18 @@ def get_url(lang_code):
 def main():
     args = create_arg_parser()
     data_folder = Path(args.data_folder)
-    # if args.download_corpus or not Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz').exists():
-    #     url = args.url if args.url else get_url(args.lang_code)
-    #     print(f"Downloading corpus from {url} and saving it as {args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'}")
-    #     download_corpus(url, Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'))
+    if args.download_corpus or not Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz').exists():
+        url = args.url if args.url else get_url(args.lang_code)
+        print(f"Downloading corpus from {url} and saving it as {args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'}")
+        download_corpus(url, Path(args.data_folder/f'MaCoCu-{args.lang_code}-en.tmx.gz'))
     
-    # if args.tmx_to_json or not Path(data_folder/f'MaCoCu-{args.lang_code}-en.json').exists():    
-    #     tmx_to_json(data_folder/f'MaCoCu-{args.lang_code}-en.tmx', args.lang_code, data_folder/f'MaCoCu-{args.lang_code}-en.json')
+    if args.tmx_to_json or not Path(data_folder/f'MaCoCu-{args.lang_code}-en.json').exists():    
+        tmx_to_json(data_folder/f'MaCoCu-{args.lang_code}-en.tmx', args.lang_code, data_folder/f'MaCoCu-{args.lang_code}-en.json')
     
-    # if args.preprocess or not Path(data_folder/f'Macocu-{args.lang_code}-en-doc-format.csv').exists():    
-    #     print("Preprocessing started.")
-    #     preprocess(data_folder, args.lang_code, 1, drop_par_duplicates = True, drop_doc_duplicates = False, keep_columns=True, info = False)
-    #     print("Preprocessing done.")
+    if args.preprocess or not Path(data_folder/f'Macocu-{args.lang_code}-en-doc-format.csv').exists():    
+        print("Preprocessing started.")
+        preprocess(data_folder, args.lang_code, 1, drop_par_duplicates = True, drop_doc_duplicates = False, keep_columns=True, info = False)
+        print("Preprocessing done.")
 
     # if args.label or not Path(data_folder/f'Macocu-{args.lang_code}-en-sent-doc-labelled.csv').exists():
     #     # load the preprocessed data
@@ -535,11 +539,11 @@ def main():
     #     data = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", header=0, quoting=3)
     
     # print("Splitting the data into train, dev, test sets.")
-    data = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", header=0, quoting=3)
-	# make train, dev, test sets
-    train, dev, test = split_data(data,test_size=args.test_size, dev_size=args.dev_size, balance = False, remove_other=True)
-    save_datasets(train, dev, test, args.lang_code, "par", args.data_folder, f"MaCoCu.en-{args.lang_code}")
-    save_datasets(train.drop_duplicates(['en_doc']), dev.drop_duplicates(['en_doc']), test.drop_duplicates(['en_doc']), args.lang_code, "doc", args.data_folder, f"MaCoCu.en-{args.lang_code}.doc")
+    # data = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", header=0, quoting=3)
+	# # make train, dev, test sets
+    # train, dev, test = split_data(data,test_size=args.test_size, dev_size=args.dev_size, balance = False, remove_other=True)
+    # save_datasets(train, dev, test, args.lang_code, "par", args.data_folder, f"MaCoCu.en-{args.lang_code}")
+    # save_datasets(train.drop_duplicates(['en_doc']), dev.drop_duplicates(['en_doc']), test.drop_duplicates(['en_doc']), args.lang_code, "doc", args.data_folder, f"MaCoCu.en-{args.lang_code}.doc")
     
 
 if __name__ == "__main__":
