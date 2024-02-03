@@ -71,7 +71,7 @@ def tmx_to_json(fname, tgt_language, save_path):
         en_par_id = en_par_id_re.search(i).group(1)
         en_par = en_par_re.search(i).group(1)
         en_var_doc = en_var_doc_re.search(i).group(1)
-        en_var_dom = en_var_dom_re.search(i).group(1)
+        # en_var_dom = en_var_dom_re.search(i).group(1)
         sl_source = sl_source_re.search(i).group(1)
         sl_par_id = sl_par_id_re.search(i).group(1)
         sl_par = sl_par_re.search(i).group(1)
