@@ -76,7 +76,9 @@ def tmx_to_json(fname, tgt_language, save_path):
         sl_par_id = sl_par_id_re.search(i).group(1)
         sl_par = sl_par_re.search(i).group(1)
         # Add information to the dictionary
-        current_tu = {"score_bicleaner_ai": float(bi_score), "translation_direction": translation_dir, "en_source": en_source, "en_par_id": en_par_id, "en_par": en_par, "en_var_doc": en_var_doc, "en_var_dom": en_var_dom, f"{tgt_language}_source": sl_source, f"{tgt_language}_par_id": sl_par_id, f"{tgt_language}_par": sl_par}
+        # current_tu = {"score_bicleaner_ai": float(bi_score), "translation_direction": translation_dir, "en_source": en_source, "en_par_id": en_par_id, "en_par": en_par, "en_var_doc": en_var_doc, "en_var_dom": en_var_dom, f"{tgt_language}_source": sl_source, f"{tgt_language}_par_id": sl_par_id, f"{tgt_language}_par": sl_par}
+        current_tu = {"score_bicleaner_ai": float(bi_score), "translation_direction": translation_dir, "en_source": en_source, "en_par_id": en_par_id, "en_par": en_par, "en_var_doc": en_var_doc, f"{tgt_language}_source": sl_source, f"{tgt_language}_par_id": sl_par_id, f"{tgt_language}_par": sl_par}
+
         # Append the dictionary to the list
         tus_content.append(current_tu)
         
