@@ -223,30 +223,37 @@ def main():
     # if args.end_batch == 0:
     #     end_batch = None
     # Load the dataframe
-    data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
-    # only use docs with length >= args.length_threshold
-    data = data[data['en_length'] >= args.length_threshold]
-    # only use unique docs for labelling to save time
-    data = data.drop_duplicates("en_doc")
-    # only save the en_doc column to save memory
-    data = data[["en_doc"]]
-    print("Labelling started. Using docs with length >= {}".format(args.length_threshold))
-    doc_labels = classify_dataset(data, "en_doc", data_folder/f'Macocu-{args.lang_code}-en.labelled.softmax{args.length_threshold}.csv', compute_softmax=True, batch_saves=args.batch_saves, start_save=args.start_batch, end_save=args.end_batch)
-    if args.end_batch == 0:
-        print(f"Labelling done. Saving the labelled data to {args.data_folder}/Macocu-{args.lang_code}-en.doc.labels.softmax.{args.length_threshold}.csv")
-        # Combine the sentence level data and doc_labels
-        print(f"Combining the sentence level data and doc_labels. Saving the combined data to {args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled-softmax.csv")
-        # load the full dataset again to get all all sentences back 
-        del data
-        data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
-        # merge doc_data and data based on en_doc
-        data = pd.merge(doc_labels, data, on="en_doc")
-        data = data.drop(columns=["Unnamed: 0"])
-        data.to_csv(f"{args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled-softmax.csv", sep="\t", index=False) 
+    # data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
+    # # only use docs with length >= args.length_threshold
+    # data = data[data['en_length'] >= args.length_threshold]
+    # # only use unique docs for labelling to save time
+    # data = data.drop_duplicates("en_doc")
+    # # only save the en_doc column to save memory
+    # data = data[["en_doc"]]
+    # print("Labelling started. Using docs with length >= {}".format(args.length_threshold))
+    # doc_labels = classify_dataset(data, "en_doc", data_folder/f'Macocu-{args.lang_code}-en.labelled.softmax{args.length_threshold}.csv', compute_softmax=True, batch_saves=args.batch_saves, start_save=args.start_batch, end_save=args.end_batch)
+    # if args.end_batch == 0:
+    #     print(f"Labelling done. Saving the labelled data to {args.data_folder}/Macocu-{args.lang_code}-en.doc.labels.softmax.{args.length_threshold}.csv")
+    #     # Combine the sentence level data and doc_labels
+    #     print(f"Combining the sentence level data and doc_labels. Saving the combined data to {args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled-softmax.csv")
+    #     # load the full dataset again to get all all sentences back 
+    #     del data
+    #     data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
+    #     # merge doc_data and data based on en_doc
+    #     data = pd.merge(doc_labels, data, on="en_doc")
+    #     data = data.drop(columns=["Unnamed: 0"])
+    #     data.to_csv(f"{args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled-softmax.csv", sep="\t", index=False) 
 
+    # merge all softmax labelled data ending in .0
+    print(f"Combining the saved softmax labelled data. Saving the combined data to {args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled-softmax.csv")
+    labelled = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en.labelled.softmax{args.length_threshold}.csv_1.0", sep="\t", header=0)
+    for i in range(2, 30):
+        labelled = labelled.append(pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en.labelled.softmax{args.length_threshold}.csv_{i}.0", sep="\t", header=0))
+    labelled.to_csv(f"{args.data_folder}/Macocu-{args.lang_code}-en.labelled.softmax{args.length_threshold}.csv", sep="\t", index=False)
+    del labelled
     doc_labels = pd.read_csv(data_folder/f"Macocu-tr-en.labelled.softmax25.csv", sep="\t", header=0)
     doc_labels = doc_labels.drop(columns=["Unnamed: 0"])
-    data = pd.read_csv(data_folder/f"Macocu-uk-en-doc-format-duplicates.csv", sep="\t", header=0)
+    data = pd.read_csv(data_folder/f"Macocu-tr-en-doc-format-duplicates.csv", sep="\t", header=0)
     # merge doc_data and data based on en_doc
     data = pd.merge(doc_labels, data, on="en_doc")
     data.to_csv(f"{args.data_folder}/Macocu-tr-en-sent-doc-labelled-softmax.csv", sep="\t", index=False)
