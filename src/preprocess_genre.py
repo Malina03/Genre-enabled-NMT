@@ -431,12 +431,12 @@ def save_datasets(train, dev, test, tgt_lang, tgt_col, path, name):
         test['set'] = ['test'] * test.shape[0]
         # merge all datasets
         df = pd.concat([train, dev, test])
-        df.to_csv(path  + "/" +  name + '_complete.tsv', sep='\t', index=False)
+        df.to_csv(str(path  + '/' +  name + '_complete.tsv'), sep='\t', index=False)
     # save only en_par and is_par columns to csv
 
-    train[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path  + "/" +  name + '.train.tsv', sep='\t', index=False, header=False, quoting=3)
-    dev[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path  + "/" + name + '.dev.tsv', sep='\t', index=False, header=False, quoting=3)
-    test[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path  + "/" +  name + '.test.tsv', sep='\t', index=False, header=False, quoting=3)
+    train[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path  + '/' +  name + '.train.tsv', sep='\t', index=False, header=False, quoting=3)
+    dev[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path  + '/' + name + '.dev.tsv', sep='\t', index=False, header=False, quoting=3)
+    test[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path  + '/' +  name + '.test.tsv', sep='\t', index=False, header=False, quoting=3)
     
     # add token in from of en_par according to mapping
     # genre_tokens = {'Prose/Lyrical': '>>lit<<','Instruction': '>>instr<<', 'Promotion': '>>promo<<', 'Opinion/Argumentation': '>>arg<<' , 'Other': '>>other<<' , 'Information/Explanation': '>>info<<', 'News': '>>news<<', 'Legal': '>>law<<', 'Forum': 
