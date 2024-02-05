@@ -434,9 +434,9 @@ def save_datasets(train, dev, test, tgt_lang, tgt_col, path, name):
         df.to_csv(str(path  + '/' +  name + '_complete.tsv'), sep='\t', index=False)
     # save only en_par and is_par columns to csv
 
-    train[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path  + '/' +  name + '.train.tsv', sep='\t', index=False, header=False, quoting=3)
-    dev[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path  + '/' + name + '.dev.tsv', sep='\t', index=False, header=False, quoting=3)
-    test[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(path  + '/' +  name + '.test.tsv', sep='\t', index=False, header=False, quoting=3)
+    train[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(str(path  + '/' +  name + '.train.tsv'), sep='\t', index=False, header=False, quoting=3)
+    dev[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(str(path  + '/' + name + '.dev.tsv'), sep='\t', index=False, header=False, quoting=3)
+    test[[f'en_{tgt_col}', f'{tgt_lang}_{tgt_col}']].to_csv(str(path  + '/' +  name + '.test.tsv', sep='\t'), index=False, header=False, quoting=3)
     
     # add token in from of en_par according to mapping
     # genre_tokens = {'Prose/Lyrical': '>>lit<<','Instruction': '>>instr<<', 'Promotion': '>>promo<<', 'Opinion/Argumentation': '>>arg<<' , 'Other': '>>other<<' , 'Information/Explanation': '>>info<<', 'News': '>>news<<', 'Legal': '>>law<<', 'Forum': 
@@ -456,9 +456,9 @@ def save_datasets(train, dev, test, tgt_lang, tgt_col, path, name):
 
     # save en_par and tgt_lang_par with genre tokens
 
-    train[[f'en_{tgt_col}_tokens', f'{tgt_lang}_{tgt_col}']].to_csv(path  + "/" +  name + '.train.tag.tsv', sep='\t', index=False, header=False, quoting=3)
-    dev[[f'en_{tgt_col}_tokens', f'{tgt_lang}_{tgt_col}']].to_csv(path  + "/" +  name + '.dev.tag.tsv', sep='\t', index=False, header=False, quoting=3)
-    test[[f'en_{tgt_col}_tokens', f'{tgt_lang}_{tgt_col}']].to_csv(path  + "/" +  name + '.test.tag.tsv', sep='\t', index=False, header=False, quoting=3)
+    train[[f'en_{tgt_col}_tokens', f'{tgt_lang}_{tgt_col}']].to_csv(str(path  + "/" +  name + '.train.tag.tsv'), sep='\t', index=False, header=False, quoting=3)
+    dev[[f'en_{tgt_col}_tokens', f'{tgt_lang}_{tgt_col}']].to_csv(str(path  + "/" +  name + '.dev.tag.tsv'), sep='\t', index=False, header=False, quoting=3)
+    test[[f'en_{tgt_col}_tokens', f'{tgt_lang}_{tgt_col}']].to_csv(str(path  + "/" +  name + '.test.tag.tsv'), sep='\t', index=False, header=False, quoting=3)
 
     print('Saved datasets to ' + path  + "/" +  name + '.tsv and ' + path  + "/" +  name + '.tag.tsv and ' + path  + "/" +  name + '_complete.tsv')
 
