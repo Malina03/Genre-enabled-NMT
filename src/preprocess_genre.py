@@ -541,7 +541,9 @@ def main():
     #     data = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", header=0, quoting=3)
     
     print("Splitting the data into train, dev, test sets.")
-    data = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", header=0, quoting=3)
+    # data = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", header=0, quoting=3)
+    data = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-sent-doc-labelled-softmax.csv", sep="\t", header=0, quoting=3)
+
 	# make train, dev, test sets
     train, dev, test = split_data(data,test_size=args.test_size, dev_size=args.dev_size, balance = False, remove_other=True)
     save_datasets(train, dev, test, args.lang_code, "par", args.data_folder, f"MaCoCu.en-{args.lang_code}")
