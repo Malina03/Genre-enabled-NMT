@@ -508,23 +508,23 @@ def main():
     #     print("Preprocessing done.")
 
     # if args.label or not Path(data_folder/f'Macocu-{args.lang_code}-en-sent-doc-labelled.csv').exists():
-    #     # load the preprocessed data
-    #     # data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
-    #     # # only use docs with length >= args.length_threshold
-    #     # data = data[data['en_length'] >= args.length_threshold]
-    #     # # only use unique docs for labelling to save time
-    #     # data = data.drop_duplicates("en_doc")
-    #     # print("Labelling started. Using docs with length >= {}".format(args.length_threshold))
-    #     # doc_labels = classify_dataset(data, "en_doc", data_folder/f'Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv')
-    #     # print(f"Labelling done. Saving the labelled data to {args.data_folder}/Macocu-{args.lang_code}-en.doc.labels.{args.length_threshold}.csv")
-    #     # # Combine the sentence level data and doc_labels
-    #     # print(f"Combining the sentence level data and doc_labels. Saving the combined data to {args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled.csv")
-    #     # # load the full dataset again to get all all sentences back 
-    #     # del data
-    #     # data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
-    #     # # merge doc_data and data based on en_doc
-    #     # data = pd.merge(doc_labels, data, on="en_doc")
-    #     # load and merge all Macocu-hr-en.labelled.25.csv_*.* csv files
+        # load the preprocessed data
+        # data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
+        # # only use docs with length >= args.length_threshold
+        # data = data[data['en_length'] >= args.length_threshold]
+        # # only use unique docs for labelling to save time
+        # data = data.drop_duplicates("en_doc")
+        # print("Labelling started. Using docs with length >= {}".format(args.length_threshold))
+        # doc_labels = classify_dataset(data, "en_doc", data_folder/f'Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv')
+        # print(f"Labelling done. Saving the labelled data to {args.data_folder}/Macocu-{args.lang_code}-en.doc.labels.{args.length_threshold}.csv")
+        # # Combine the sentence level data and doc_labels
+        # print(f"Combining the sentence level data and doc_labels. Saving the combined data to {args.data_folder}/Macocu-{args.lang_code}-en-sent-doc-labelled.csv")
+        # # load the full dataset again to get all all sentences back 
+        # del data
+        # data= pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-doc-format-duplicates.csv", sep="\t", header=0)
+        # # merge doc_data and data based on en_doc
+        # data = pd.merge(doc_labels, data, on="en_doc")
+        # load and merge all Macocu-hr-en.labelled.25.csv_*.* csv files
     #     doc_data = pd.DataFrame()
     #     for file in data_folder.glob(f"Macocu-{args.lang_code}-en.labelled.{args.length_threshold}.csv_*.*"):
     #         print(f"Loading {file}")
@@ -540,12 +540,12 @@ def main():
     # else:
     #     data = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", header=0, quoting=3)
     
-    # print("Splitting the data into train, dev, test sets.")
-    # data = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", header=0, quoting=3)
-	# # make train, dev, test sets
-    # train, dev, test = split_data(data,test_size=args.test_size, dev_size=args.dev_size, balance = False, remove_other=True)
-    # save_datasets(train, dev, test, args.lang_code, "par", args.data_folder, f"MaCoCu.en-{args.lang_code}")
-    # save_datasets(train.drop_duplicates(['en_doc']), dev.drop_duplicates(['en_doc']), test.drop_duplicates(['en_doc']), args.lang_code, "doc", args.data_folder, f"MaCoCu.en-{args.lang_code}.doc")
+    print("Splitting the data into train, dev, test sets.")
+    data = pd.read_csv(data_folder/f"Macocu-{args.lang_code}-en-sent-doc-labelled.csv", sep="\t", header=0, quoting=3)
+	# make train, dev, test sets
+    train, dev, test = split_data(data,test_size=args.test_size, dev_size=args.dev_size, balance = False, remove_other=True)
+    save_datasets(train, dev, test, args.lang_code, "par", args.data_folder, f"MaCoCu.en-{args.lang_code}")
+    save_datasets(train.drop_duplicates(['en_doc']), dev.drop_duplicates(['en_doc']), test.drop_duplicates(['en_doc']), args.lang_code, "doc", args.data_folder, f"MaCoCu.en-{args.lang_code}.doc")
     
 
 if __name__ == "__main__":

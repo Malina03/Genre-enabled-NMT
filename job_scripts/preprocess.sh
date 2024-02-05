@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=2:00:00
+#SBATCH --time=1:00:00
 #SBATCH --job-name=prep
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
