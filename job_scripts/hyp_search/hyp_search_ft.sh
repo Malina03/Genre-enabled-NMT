@@ -1,7 +1,7 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
 #SBATCH --time=4:00:00
-#SBATCH --job-name=hyp_search_doc
+#SBATCH --job-name=hyp_search
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
 #SBATCH --mem=24G
@@ -35,6 +35,8 @@ root_dir="/scratch/s3412768/genre_NMT/en-$language"
 
 if [ $language = 'hr' ]; then
     model="Helsinki-NLP/opus-mt-en-sla"
+elif [ $language = 'tr' ]; then
+    model="Helsinki-NLP/opus-mt-tc-big-en-tr"
 else
     model="Helsinki-NLP/opus-mt-en-${language}"
 fi

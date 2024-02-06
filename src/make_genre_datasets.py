@@ -70,6 +70,7 @@ def make_balanced_datasets(language, genres):
     only_req_genres = all_data[all_data['X-GENRE'].isin(genres)]
     remaining_genres = all_data[~all_data['X-GENRE'].isin(genres)]
     # get the minimum number of lines per genre per set to dictionary
+    print(only_req_genres.groupby(['set', 'X-GENRE'])['en_par'].count())
     min_examples = only_req_genres.groupby(['set', 'X-GENRE'])['en_par'].count().groupby('set').min().to_dict()
     print(min_examples)
     for s in sets:
