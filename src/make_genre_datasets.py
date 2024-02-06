@@ -66,6 +66,7 @@ def make_balanced_datasets(language, genres):
     # only keep en_doc, hr_doc, X-genre and set columns
     all_data = all_data[['en_par', f'{language}_par', 'set', 'X-GENRE']]
     # remove test set
+    print(all_data.set.unique())
     all_data = all_data[all_data['set'] != 'test']
     only_req_genres = all_data[all_data['X-GENRE'].isin(genres)]
     remaining_genres = all_data[~all_data['X-GENRE'].isin(genres)]
