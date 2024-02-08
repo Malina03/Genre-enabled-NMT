@@ -61,6 +61,7 @@ def make_multiple_genre_dataset(language, sets, genres):
 def make_balanced_datasets(language, genres):
     sets = ['train', 'dev']
     genre_tokens = {'Prose/Lyrical': '<lit>','Instruction': '<instr>', 'Promotion': '<promo>', 'Opinion/Argumentation': '<arg>' , 'Other': '<other>' , 'Information/Explanation': '<info>', 'News': '<news>', 'Legal': '<law>', 'Forum': '<forum>'}
+    reverse_genre_tokens = {v: k for k, v in genre_tokens.items()}
     genre_abv = {g: genre_tokens[g][1:-1] for g in genres}
     # all_data = pd.read_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}_complete.tsv', sep='\t', header=0)
     dat_train = pd.read_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.train.tag.tsv', sep='\t', header=None)
@@ -73,14 +74,16 @@ def make_balanced_datasets(language, genres):
     dat_dev['set'] = 'dev'
     dat_dev['X-GENRE'] = dat_dev['en_par'].apply(lambda x: x.split(' ')[0][1:-1])
     dat_dev['en_par'] = dat_dev['en_par'].apply(lambda x: ' '.join(x.split(' ')[1:]))
-    dat_test = pd.read_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.test.tag.tsv', sep='\t', header=None)
-    dat_test.columns = ['en_par', f'{language}_par']
-    dat_test['set'] = 'test'
-    dat_test['X-GENRE'] = dat_test['en_par'].apply(lambda x: x.split(' ')[0][1:-1])
-    dat_test['en_par'] = dat_test['en_par'].apply(lambda x: ' '.join(x.split(' ')[1:]))
-    all_data = pd.concat([dat_train, dat_dev, dat_test])
+    # dat_test = pd.read_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.test.tag.tsv', sep='\t', header=None)
+    # dat_test.columns = ['en_par', f'{language}_par']
+    # dat_test['set'] = 'test'
+    # dat_test['X-GENRE'] = dat_test['en_par'].apply(lambda x: x.split(' ')[0][1:-1])
+    # dat_test['en_par'] = dat_test['en_par'].apply(lambda x: ' '.join(x.split(' ')[1:]))
+    all_data = pd.concat([dat_train, dat_dev])
+    # rename from values to keys from genre_tokens
+    all_data['X-GENRE'] = all_data['X-GENRE'].apply(lambda x: reverse_genre_tokens[x])
     # only keep en_doc, hr_doc, X-genre and set columns
-    all_data = all_data[['en_par', f'{language}_par', 'set', 'X-GENRE']]
+    # all_data = all_data[['en_par', f'{language}_par', 'set', 'X-GENRE']]
     # remove test set
     print(all_data.set.unique())
     all_data = all_data[all_data['set'] != 'test']
