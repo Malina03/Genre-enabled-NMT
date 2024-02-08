@@ -72,7 +72,7 @@ def make_balanced_datasets(language, genres):
     dat_dev = pd.read_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.dev.tag.tsv', sep='\t', header=None)
     dat_dev.columns = ['en_par', f'{language}_par']
     dat_dev['set'] = 'dev'
-    dat_dev['X-GENRE'] = dat_dev['en_par'].apply(lambda x: x.split(' ')[0][1:-1])
+    dat_dev['X-GENRE'] = dat_dev['en_par'].apply(lambda x: x.split(' ')[0])
     dat_dev['en_par'] = dat_dev['en_par'].apply(lambda x: ' '.join(x.split(' ')[1:]))
     # dat_test = pd.read_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.test.tag.tsv', sep='\t', header=None)
     # dat_test.columns = ['en_par', f'{language}_par']
