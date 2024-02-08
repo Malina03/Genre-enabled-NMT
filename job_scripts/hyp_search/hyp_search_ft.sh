@@ -21,7 +21,7 @@ source /home1/s3412768/.envs/nmt2/bin/activate
 
 corpus="MaCoCu"
 language="tr" # target language
-exp_type="from_scratch/hyp_search" # type of model (e.g. fine_tuned or from_scratch.)
+exp_type="fine_tune/hyp_search" # type of model (e.g. fine_tuned or from_scratch.)
 model_type="baseline" # type of experiment (baseline, genre_aware, genre_aware_token)
 use_tok="no" # yes or no
 lr=$1
