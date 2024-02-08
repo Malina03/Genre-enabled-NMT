@@ -80,6 +80,8 @@ def make_balanced_datasets(language, genres):
     # dat_test['X-GENRE'] = dat_test['en_par'].apply(lambda x: x.split(' ')[0][1:-1])
     # dat_test['en_par'] = dat_test['en_par'].apply(lambda x: ' '.join(x.split(' ')[1:]))
     all_data = pd.concat([dat_train, dat_dev])
+    # reindex
+    all_data = all_data.reset_index(drop=True)
     # rename from values to keys from genre_tokens
     all_data['X-GENRE'] = all_data['X-GENRE'].apply(lambda x: reverse_genre_tokens[x])
     # only keep en_doc, hr_doc, X-genre and set columns
