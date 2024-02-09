@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=02:00:00
+#SBATCH --time=03:00:00
 #SBATCH --job-name=pred_seeds
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
@@ -31,9 +31,10 @@ opus=$3 # test the fine-tuned opus model instead of models trained from scratch 
 seed=$SLURM_ARRAY_TASK_ID
 
 if [ $m_type == 'baseline' ]; then
-    test_files=("MaCoCu.en-${language}.test.tsv")
+    # test_files=("MaCoCu.en-${language}.test.tsv")
+    test_files=("floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
 elif [ $m_type == 'genre_aware' ] || [ $m_type == 'genre_aware_token' ]; then
-    test_files=("MaCoCu.en-${language}.test.tag.tsv")
+    test_files="floresdev.en-${language}.test.tag.tsv" "floresdevtest.en-${language}.test.tag.tsv" "wmttest2022.en-${language}.test.tag.tsv"
 else
     echo "Invalid model type"
     exit 1
