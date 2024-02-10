@@ -21,9 +21,21 @@ export CUDA_VISIBLE_DEVICES=0
 source /home1/s3412768/.envs/nmt2/bin/activate
 
 train_corpus=MaCoCu
-model_type=baseline_opus
-exp_type=opus
+# model_type=baseline_opus
+# exp_type=opus
 language=$1 # the target language
+model_type=$2 # type of model (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
+
+if [ $model_type == 'baseline_opus' ]; then
+    exp_type="opus"
+    # test_files=("MaCoCu.en-${language}.test.tsv")
+    # test_files=("floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
+    # IS
+    test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2021.en-${language}.test.tsv")
+else
+    exp_type="fine_tune"
+    test_files=("MaCoCu.en-${language}.test.tag.tsv" "floresdev.en-${language}.test.tag.tsv" "floresdevtest.en-${language}.test.tag.tsv" "wmttest2021.en-${language}.test.tag.tsv")
+fi
 
 
 # HR
