@@ -101,7 +101,7 @@ for f in eval_files:
 df = pd.merge(bleu_df, comet_df, on=['model', 'test_file'], how='outer')
 
 # save the dataframe to a csv file
-df.to_csv('/scratch/s3412768/genre_NMT/en-hr/results/eval_scores.csv', index=False)
+df.to_csv(f'/scratch/s3412768/genre_NMT/en-hr/results/{args.exp_folder}_eval_scores.csv', index=False)
 # split bleu model name in model and seed
 bleu_df['seed'] = bleu_df['model'].str[-1]
 bleu_df['model'] = bleu_df['model'].str[:-2]
