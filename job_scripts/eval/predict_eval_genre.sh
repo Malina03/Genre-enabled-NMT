@@ -32,9 +32,9 @@ seed=$SLURM_ARRAY_TASK_ID
 
 if [ $m_type == 'baseline' ]; then
     # test_files=("MaCoCu.en-${language}.test.tsv")
-    # test_files=("floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
+    test_files=("floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
     # is wmttest2021
-    test_files=("floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2021.en-${language}.test.tsv")
+    # test_files=("floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2021.en-${language}.test.tsv")
 elif [ $m_type == 'genre_aware' ] || [ $m_type == 'genre_aware_token' ]; then
     # test_files=("floresdev.en-${language}.test.tag.tsv" "floresdevtest.en-${language}.test.tag.tsv" "wmttest2022.en-${language}.test.tag.tsv")
     test_files=("floresdev.en-${language}.test.tag.tsv" "floresdevtest.en-${language}.test.tag.tsv" "wmttest2021.en-${language}.test.tag.tsv")
