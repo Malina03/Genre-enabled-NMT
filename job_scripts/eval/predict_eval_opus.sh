@@ -38,7 +38,7 @@ for test_on in "${test_files[@]}"; do
     #load environment
     source /home1/s3412768/.envs/nmt2/bin/activate
 
-    echo "Use tokenizer: $use_tok"
+    # echo "Use tokenizer: $use_tok"
     echo "Test on: $test_on"
     echo "Model type: $model_type"
     echo "Experiment type: $exp_type"
@@ -97,8 +97,6 @@ for test_on in "${test_files[@]}"; do
 
     out=$root_dir/eval/$exp_type/$model_type/${out_file}_predictions.txt
     eval="$root_dir/data/${eval_file}"
-
-
 
     echo "Output file: $out"
     echo "Eval file: $eval"
