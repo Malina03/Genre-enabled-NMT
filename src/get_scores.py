@@ -73,15 +73,15 @@ for f in eval_files:
             genres = genres_floresdev
         elif f_name == "floresdevtest":
             genres = genres_floresdevtest
-        # elif "wmttest2022" in f_name:
-        #     genres = genres_wmttest2022
+        elif "wmttest2022" in f_name:
+            genres = genres_wmttest2022
         else:
             print("Error: test file not recognized")
-        # print("test file: {} and model: {}".format(f_name, model))
-        # print(len(genres))
-        # print(len(individial_scores_comet))
+        print("test file: {} and model: {}".format(f_name, model))
+        print(len(genres))
+        print(len(individial_scores_comet))
         scores_per_genre = pd.DataFrame({'model': [model]*len(genres), 'test_file': [f_name]*len(genres), 'genre': genres, 'comet': individial_scores_comet})
-        # comet_scores_per_genre = comet_scores_per_genre.append(scores_per_genre, ignore_index=True)
+        comet_scores_per_genre = comet_scores_per_genre.append(scores_per_genre, ignore_index=True)
         # compute the average score per genre and standard deviation
         scores_per_genre = scores_per_genre.groupby(['model', 'test_file', 'genre']).agg({'comet': ['mean', 'std']}).reset_index()
         scores_per_genre.columns = ['model', 'test_file', 'genre', 'comet_mean', 'comet_std']
@@ -98,10 +98,10 @@ for f in eval_files:
 # make a dataframe with the scores
 
 # merge the two dataframes by model and test file
-# df = pd.merge(bleu_df, comet_df, on=['model', 'test_file'], how='outer')
+df = pd.merge(bleu_df, comet_df, on=['model', 'test_file'], how='outer')
 
 # save the dataframe to a csv file
-# df.to_csv('/scratch/s3412768/genre_NMT/en-hr/results/eval_scores.csv', index=False)
+df.to_csv('/scratch/s3412768/genre_NMT/en-hr/results/eval_scores.csv', index=False)
 # split bleu model name in model and seed
 bleu_df['seed'] = bleu_df['model'].str[-1]
 bleu_df['model'] = bleu_df['model'].str[:-2]
