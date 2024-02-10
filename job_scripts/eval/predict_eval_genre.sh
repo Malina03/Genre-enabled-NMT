@@ -42,9 +42,11 @@ else
     echo "Invalid model type"
     exit 1
 fi
-
+# hr
 # genres=('news' 'law' 'arg' 'info' 'promo' 'random')
-genres=('news' 'law' 'info' 'promo' 'random')
+genres=('arg')
+#is
+# genres=('news' 'law' 'info' 'promo' 'random')
 
 for genre in "${genres[@]}"; do 
 
