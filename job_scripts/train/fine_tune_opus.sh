@@ -7,6 +7,10 @@
 #SBATCH --mem=50G
 #SBATCH --array=1-3
 
+
+## FINE TUNE OPUS MODELS ON ALL MACOCU DATA 
+
+
 export PATH="$PATH:/home1/s3412768/.local/bin"
 
 # Load modules
@@ -84,7 +88,7 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
         --adafactor \
         --save_strategy epoch \
         --evaluation_strategy epoch \
-        --learning_rate 1e-5 \
+        --learning_rate 1e-4 \
         --exp_type $exp_type \
         --model_type $model_type \
         --model_name $model \
