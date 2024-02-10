@@ -43,8 +43,8 @@ else
     exit 1
 fi
 # hr
-# genres=('news' 'law' 'arg' 'info' 'promo' 'random')
-genres=('arg')
+genres=('news' 'law' 'arg' 'info' 'promo' 'random')
+# genres=('arg')
 #is
 # genres=('news' 'law' 'info' 'promo' 'random')
 
