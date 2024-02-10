@@ -47,7 +47,7 @@ for f in eval_files:
     model = f.split('/')[7]
     # make a dictionary with scores by model and test file
     # if model name doesn't end in _1 or _2 or _3 skip - only include exp with seeds
-    if model[-2] != '_':
+    if model[-2] != '_' and args.exp_folder != 'opus':
         continue
 
     if 'bleu' in f and 'bleurt' not in f:
