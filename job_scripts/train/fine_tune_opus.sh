@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=6:00:00
+#SBATCH --time=06:00:00
 #SBATCH --job-name=train_seeds
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
@@ -84,7 +84,7 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
         --adafactor \
         --save_strategy epoch \
         --evaluation_strategy epoch \
-        --learning_rate 1e-4 \
+        --learning_rate 1e-5 \
         --exp_type $exp_type \
         --model_type $model_type \
         --model_name $model \

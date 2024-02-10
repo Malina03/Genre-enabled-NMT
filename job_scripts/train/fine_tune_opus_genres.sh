@@ -22,7 +22,7 @@ source /home1/s3412768/.envs/nmt2/bin/activate
 
 language=$1 # target language
 model_type=$2 # type of experiment (baseline, genre_aware, genre_aware_token)
-seed=$3 # seed of the pretrained model
+seed=$3 # use a seed for the model - job array used for genres
 
 corpus="MaCoCu"
 train_corpus="MaCoCu"
