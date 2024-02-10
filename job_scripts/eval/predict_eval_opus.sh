@@ -27,10 +27,17 @@ language=$1 # the target language
 
 
 
-test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
+# test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
+test_files=("floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
+
 
 for test_on in "${test_files[@]}"; do
    
+    module purge
+    module load PyTorch/1.12.1-foss-2022a-CUDA-11.7.0
+    #load environment
+    source /home1/s3412768/.envs/nmt2/bin/activate
+
     echo "Use tokenizer: $use_tok"
     echo "Test on: $test_on"
     echo "Model type: $model_type"
@@ -40,6 +47,9 @@ for test_on in "${test_files[@]}"; do
 
     if [ $language = 'hr' ]; then
         model="Helsinki-NLP/opus-mt-en-sla"
+    elif 
+        [ $language = 'tr' ]; then
+        model="Helsinki-NLP/opus-mt-tc-big-en-tr"
     else
         model="Helsinki-NLP/opus-mt-en-${language}"
     fi
