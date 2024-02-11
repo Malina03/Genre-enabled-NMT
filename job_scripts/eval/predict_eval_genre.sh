@@ -44,7 +44,8 @@ else
 fi
 # hr
 # genres=('news' 'law' 'arg' 'info' 'promo' 'random')
-genres=('arg' 'info' 'promo' 'random')
+# genres=('arg' 'info' 'promo' 'random')
+genres=('random')
 # genres=('arg')
 # genres=('arg')
 #is
