@@ -48,7 +48,7 @@ elif args.language == 'tr':
     genres_wmttest2022 = [tokens_to_genres[line.split(' ')[0]] for line in ref_with_tags_wmttest2022[ref_with_tags_wmttest2022.columns[0]].to_list()]
 else:
     print("Language not recognized")
-    
+
 for f in eval_files:
     # print(f.split('/')[8])
     f_name = f.split('/')[8].split('_')[0]
@@ -81,7 +81,7 @@ for f in eval_files:
             genres = genres_floresdev
         elif f_name == "floresdevtest":
             genres = genres_floresdevtest
-        elif "wmttest2022" in f_name:
+        elif "wmttest" in f_name:
             genres = genres_wmttest2022
         else:
             print("Error: test file not recognized")
