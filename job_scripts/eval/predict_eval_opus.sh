@@ -76,25 +76,43 @@ for test_on in "${test_files[@]}"; do
         mkdir -p $root_dir/logs/$exp_type/$model_type/
     fi
 
-
-    echo "Checkpoint: No checkpoint, testing the baseline opus model"
-
-    python /home1/s3412768/Genre-enabled-NMT/src/train.py \
-        --root_dir $root_dir \
-        --train_file $test_file \
-        --dev_file $test_file \
-        --test_file $test_file\
-        --gradient_accumulation_steps 2 \
-        --batch_size 32 \
-        --gradient_checkpointing \
-        --adafactor \
-        --exp_type $exp_type \
-        --model_type $model_type \
-        --model_name $model \
-        --eval \
-        --predict \
-        &> $log_file 
-
+    if [ $model_type == 'baseline_opus' ]; then
+        echo "Checkpoint: No checkpoint, testing the baseline opus model"
+        python /home1/s3412768/Genre-enabled-NMT/src/train.py \
+            --root_dir $root_dir \
+            --train_file $test_file \
+            --dev_file $test_file \
+            --test_file $test_file\
+            --gradient_accumulation_steps 2 \
+            --batch_size 32 \
+            --gradient_checkpointing \
+            --adafactor \
+            --exp_type $exp_type \
+            --model_type $model_type \
+            --model_name $model \
+            --eval \
+            --predict \
+            &> $log_file 
+    else
+        checkpoint_dir="${root_dir}/models/$exp_type/$model_type/MaCoCu/"
+        echo "Checkpoint: $checkpoint_dir"
+        python /home1/s3412768/Genre-enabled-NMT/src/train.py \
+            --root_dir $root_dir \
+            --train_file $test_file \
+            --dev_file $test_file \
+            --test_file $test_file\
+            --gradient_accumulation_steps 2 \
+            --batch_size 32 \
+            --gradient_checkpointing \
+            --adafactor \
+            --exp_type $exp_type \
+            --model_type $model_type \
+            --model_name $model \
+            --eval \
+            --predict \
+            --checkpoint_dir $checkpoint_dir \
+            &> $log_file
+    fi
 
     # deactivate the env used for predictions
     deactivate
