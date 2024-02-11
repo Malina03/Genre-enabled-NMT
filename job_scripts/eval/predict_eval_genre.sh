@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=03:00:00
+#SBATCH --time=04:00:00
 #SBATCH --job-name=pred_seeds
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
@@ -31,13 +31,13 @@ opus=$3 # test the fine-tuned opus model instead of models trained from scratch 
 seed=$SLURM_ARRAY_TASK_ID
 
 if [ $m_type == 'baseline' ]; then
-    # test_files=("MaCoCu.en-${language}.test.tsv")
-    test_files=("floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
+    test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2018.en-${language}.test.tsv")
+    # test_files=("floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
     # is wmttest2021
     # test_files=("floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2021.en-${language}.test.tsv")
 elif [ $m_type == 'genre_aware' ] || [ $m_type == 'genre_aware_token' ]; then
-    test_files=("MaCoCu.en-${language}.test.tag.tsv" "wmttest2022.en-${language}.test.tag.tsv")
-    # test_files=("floresdev.en-${language}.test.tag.tsv" "floresdevtest.en-${language}.test.tag.tsv" "wmttest2021.en-${language}.test.tag.tsv")
+    # test_files=("MaCoCu.en-${language}.test.tag.tsv" "wmttest2022.en-${language}.test.tag.tsv")
+    test_files=("MaCoCu.en-${language}.test.tag.tsv" "floresdev.en-${language}.test.tag.tsv" "floresdevtest.en-${language}.test.tag.tsv" "wmttest2018.en-${language}.test.tag.tsv")
 else
     echo "Invalid model type"
     exit 1
@@ -45,11 +45,13 @@ fi
 # hr
 # genres=('news' 'law' 'arg' 'info' 'promo' 'random')
 # genres=('arg' 'info' 'promo' 'random')
-genres=('random')
+# genres=('random')
 # genres=('arg')
 # genres=('arg')
 #is
 # genres=('news' 'law' 'info' 'promo' 'random')
+# tr
+genres=('news' 'law' 'arg' 'info' 'promo' 'random')
 
 for genre in "${genres[@]}"; do 
 
