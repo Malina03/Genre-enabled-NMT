@@ -96,7 +96,7 @@ for test_on in "${test_files[@]}"; do
             --predict \
             &> $log_file 
     else
-        checkpoint_dir="${root_dir}/models/$exp_type/$model_type/MaCoCu/"
+        checkpoint_dir="${root_dir}/models/$exp_type/$model_type/MaCoCu"
         echo "Checkpoint: $checkpoint_dir"
         python /home1/s3412768/Genre-enabled-NMT/src/train.py \
             --root_dir $root_dir \
