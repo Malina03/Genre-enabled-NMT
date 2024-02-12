@@ -64,6 +64,22 @@ else
 fi
 
 
+if [ $language = 'hr' ]; then
+    train_file_hr="${train_file}.hrv"
+    if [[ ! -f $train_file_hr ]]; then
+        echo "Train file for hr not found, create it"
+        awk '{print ">>hrv<< " $0}' $train_file > $train_file_hr
+    fi
+    train_file=$train_file_hr
+    dev_file_hr="${dev_file}.hrv"
+    if [[ ! -f $dev_file_hr ]]; then
+        echo "Dev file for hr not found, create it"
+        awk '{print ">>hrv<< " $0}' $dev_file > $dev_file_hr
+    fi
+    dev_file=$dev_file_hr
+fi
+
+
 echo "train file: $train_file"
 echo "dev file: $dev_file"
 
