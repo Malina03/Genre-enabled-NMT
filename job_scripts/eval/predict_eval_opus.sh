@@ -75,7 +75,7 @@ for test_on in "${test_files[@]}"; do
     test_file="${root_dir}/data/${test_on}"
 
     # if the language is hr make a test file by adding >>hrv<< in front of each line in the test file
-    if [ $language = 'hr' ]; then
+    if [ $language = 'hr' ] && [ $model_type = 'baseline_opus' ]; then
         test_file="${root_dir}/data/${test_on}"
         test_file_hr="${root_dir}/data/${test_on}.hrv"
         if [[ ! -f $test_file_hr ]]; then
