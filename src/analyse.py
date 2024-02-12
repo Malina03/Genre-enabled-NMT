@@ -14,7 +14,7 @@ def print_genre_distribution(data):
 def main():
     labels = ["Other", "Information/Explanation", "News", "Instruction", "Opinion/Argumentation", "Forum", "Prose/Lyrical", "Legal", "Promotion"]
     data = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr_complete.tsv', sep='\t')
-    labels_distr = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/softmax_saves/Macocu-tr-en-sent-doc-labelled-softmax.csv', sep='\t')
+    labels_distr = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/Macocu-tr-en-sent-doc-labelled-softmax.csv', sep='\t')
     # remove all but en_par, X-GENRE, "label_distribution", "chosen_category_distr"
     labels_distr = labels_distr[['en-par-src-text', 'X-GENRE', 'label_distribution', 'chosen_category_distr']]
     # rename X-GENRE to X_GENRE_softmax
