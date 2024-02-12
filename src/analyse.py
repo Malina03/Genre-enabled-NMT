@@ -13,7 +13,14 @@ def print_genre_distribution(data):
 
 def main():
     labels = ["Other", "Information/Explanation", "News", "Instruction", "Opinion/Argumentation", "Forum", "Prose/Lyrical", "Legal", "Promotion"]
-    data = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr_complete.tsv', sep='\t')
+    # data = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr_complete.tsv', sep='\t')
+    dat1 = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.train.tag.tsv', sep='\t')
+    dat2 = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.dev.tag.tsv', sep='\t')
+    dat3 = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.test.tag.tsv', sep='\t')
+    data = pd.concat([dat1, dat2, dat3])
+    data.columns = ['en_par', 'tr_par']
+    data['genre'] = data['en_par'].apply(lambda x: x.split(' ')[0])
+    print(data['genre'].value_counts())
     # labels_distr = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/Macocu-tr-en-sent-doc-labelled-softmax.csv', sep='\t')
     # # remove all but en_par, X-GENRE, "label_distribution", "chosen_category_distr"
     # labels_distr = labels_distr[['en-par-src-text', 'X-GENRE', 'label_distribution', 'chosen_category_distr']]
