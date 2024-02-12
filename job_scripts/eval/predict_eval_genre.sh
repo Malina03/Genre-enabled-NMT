@@ -63,9 +63,17 @@ for genre in "${genres[@]}"; do
         source /home1/s3412768/.envs/nmt2/bin/activate
 
         model_type=$m_type
-
+        test_file="${root_dir}/data/${test_on}"
+        
         if [ $opus == 'yes' ]; then
             model_type="${model_type}_opus_${genre}_${seed}"
+            # add >>hrv<< in front of each line in the test file
+            test_file_hr="${root_dir}/data/${test_on}.hrv"
+            if [[ ! -f $test_file_hr ]]; then
+                echo "Test file for hr not found, create it"
+                awk '{print ">>hrv<< " $0}' $test_file > $test_file_hr
+            fi
+            test_file=$test_file_hr
         else
             model_type="${model_type}_${genre}_${seed}"
         fi
@@ -83,9 +91,6 @@ for genre in "${genres[@]}"; do
         else
             model="Helsinki-NLP/opus-mt-en-${language}"
         fi
-
-        test_file="${root_dir}/data/${test_on}"
-
 
         log_file="${root_dir}/logs/$exp_type/$model_type/eval_${test_on}.log"
         # if log directory does not exist, create it - but it really should exist
