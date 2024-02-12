@@ -39,13 +39,13 @@ fi
 
 
 # HR
-# test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
+test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
 # test_files=("floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
 # IS
 # test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2021.en-${language}.test.tsv")
 # test_files=("floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2021.en-${language}.test.tsv")
 # TR
-test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2018.en-${language}.test.tsv")
+# test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2018.en-${language}.test.tsv")
 
 
 
@@ -73,6 +73,18 @@ for test_on in "${test_files[@]}"; do
     fi
 
     test_file="${root_dir}/data/${test_on}"
+
+    # if the language is hr make a test file by adding >>hrv<< in front of each line in the test file
+    if [ $language = 'hr' ]; then
+        test_file="${root_dir}/data/${test_on}"
+        test_file_hr="${root_dir}/data/${test_on}.hrv"
+        if [[ ! -f $test_file_hr ]]; then
+            echo "Test file for hr not found, create it"
+            awk '{print ">>hrv<< " $0}' $test_file > $test_file_hr
+        fi
+        test_file=$test_file_hr
+    fi
+
 
     log_file="${root_dir}/logs/$exp_type/$model_type/eval_${test_on}.log"
     # if log directory does not exist, create it - but it really should exist
