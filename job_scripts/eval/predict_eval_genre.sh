@@ -51,7 +51,7 @@ fi
 #is
 # genres=('news' 'law' 'info' 'promo' 'random')
 # tr
-genres=('news' 'law' 'arg' 'info' 'promo' 'random')
+genres=('news' 'law' 'info' 'promo' 'random')
 
 for genre in "${genres[@]}"; do 
 
@@ -83,7 +83,7 @@ for genre in "${genres[@]}"; do
         else
             model="Helsinki-NLP/opus-mt-en-${language}"
         fi
-        
+
         test_file="${root_dir}/data/${test_on}"
 
 
