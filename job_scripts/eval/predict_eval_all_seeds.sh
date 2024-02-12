@@ -69,6 +69,9 @@ for test_on in "${test_files[@]}"; do
 
     if [ $language = 'hr' ]; then
         model="Helsinki-NLP/opus-mt-en-sla"
+    elif 
+        [ $language = 'tr' ]; then
+        model="Helsinki-NLP/opus-mt-tc-big-en-tr"
     else
         model="Helsinki-NLP/opus-mt-en-${language}"
     fi

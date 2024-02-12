@@ -77,10 +77,13 @@ for genre in "${genres[@]}"; do
 
         if [ $language = 'hr' ]; then
             model="Helsinki-NLP/opus-mt-en-sla"
+        elif 
+            [ $language = 'tr' ]; then
+            model="Helsinki-NLP/opus-mt-tc-big-en-tr"
         else
             model="Helsinki-NLP/opus-mt-en-${language}"
         fi
-
+        
         test_file="${root_dir}/data/${test_on}"
 
 
