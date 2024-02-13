@@ -60,7 +60,7 @@ fi
 
 if [ $language = 'hr' ]; then
     genres=('news' 'law' 'arg' 'info' 'promo' 'random')
-else then
+else
     genres=('news' 'law' 'info' 'promo' 'random')
 fi
  
