@@ -97,6 +97,8 @@ for test_on in "${test_files[@]}"; do
         mkdir -p $root_dir/logs/$exp_type/$model_type/
     fi
 
+    echo "Log file: $log_file"
+
     if [ $model_type == 'baseline_opus' ] && [ $exp_type == 'opus' ]; then
         echo "Checkpoint: No checkpoint, testing the baseline opus model from HF"
         python /home1/s3412768/Genre-enabled-NMT/src/train.py \
