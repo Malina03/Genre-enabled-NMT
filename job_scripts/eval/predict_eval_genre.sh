@@ -31,13 +31,28 @@ opus=$3 # test the fine-tuned opus model instead of models trained from scratch 
 seed=$SLURM_ARRAY_TASK_ID
 
 if [ $m_type == 'baseline' ]; then
-    test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2018.en-${language}.test.tsv")
-    # test_files=("floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
-    # is wmttest2021
-    # test_files=("floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2021.en-${language}.test.tsv")
+    if [ $language == 'tr' ]; then
+        test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2018.en-${language}.test.tsv")
+    elif [ $language == 'hr' ]; then
+        test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
+    elif [ $language == 'is' ]; then
+        test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2021.en-${language}.test.tsv")
+    else
+        echo "Invalid language"
+        exit 1
+    fi
 elif [ $m_type == 'genre_aware' ] || [ $m_type == 'genre_aware_token' ]; then
-    # test_files=("MaCoCu.en-${language}.test.tag.tsv" "wmttest2022.en-${language}.test.tag.tsv")
-    test_files=("MaCoCu.en-${language}.test.tag.tsv" "floresdev.en-${language}.test.tag.tsv" "floresdevtest.en-${language}.test.tag.tsv" "wmttest2018.en-${language}.test.tag.tsv")
+    if [ $language == 'tr' ]; then
+        test_files=("MaCoCu.en-${language}.test.tag.tsv" "floresdev.en-${language}.test.tag.tsv" "floresdevtest.en-${language}.test.tag.tsv" "wmttest2018.en-${language}.test.tag.tsv")
+    elif [ $language == 'hr' ]; then
+        test_files=("MaCoCu.en-${language}.test.tag.tsv" "floresdev.en-${language}.test.tag.tsv" "floresdevtest.en-${language}.test.tag.tsv" "wmttest2022.en-${language}.test.tag.tsv")
+    elif [ $language == 'is' ]; then
+        test_files=("MaCoCu.en-${language}.test.tag.tsv" "floresdev.en-${language}.test.tag.tsv" "floresdevtest.en-${language}.test.tag.tsv" "wmttest2021.en-${language}.test.tag.tsv")
+    else
+        echo "Invalid language"
+        exit 1
+    fi
+
 else
     echo "Invalid model type"
     exit 1
