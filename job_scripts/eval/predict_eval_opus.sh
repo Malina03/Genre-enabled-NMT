@@ -32,6 +32,9 @@ if [ $model_type == 'baseline_opus' ]; then
     # test_files=("floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
     # IS
     test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2021.en-${language}.test.tsv")
+elif [ $model_type == 'baseline_opus_1' ] || [ $model_type == 'baseline_opus_2' ] || [ $model_type == 'baseline_opus_3' ]; then
+    exp_type="fine_tune"
+    test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
 else
     exp_type="fine_tune"
     test_files=("MaCoCu.en-${language}.test.tag.tsv" "floresdev.en-${language}.test.tag.tsv" "floresdevtest.en-${language}.test.tag.tsv" "wmttest2021.en-${language}.test.tag.tsv")
@@ -39,7 +42,7 @@ fi
 
 
 # HR
-test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
+# test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
 # test_files=("floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
 # IS
 # test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2021.en-${language}.test.tsv")
@@ -75,7 +78,9 @@ for test_on in "${test_files[@]}"; do
     test_file="${root_dir}/data/${test_on}"
 
     # if the language is hr make a test file by adding >>hrv<< in front of each line in the test file
-    if [ $language = 'hr' ] && [ $model_type = 'baseline_opus' ]; then
+
+
+    if [ $language = 'hr' ]; then
         test_file="${root_dir}/data/${test_on}"
         test_file_hr="${root_dir}/data/${test_on}.hrv"
         if [[ ! -f $test_file_hr ]]; then
@@ -92,8 +97,8 @@ for test_on in "${test_files[@]}"; do
         mkdir -p $root_dir/logs/$exp_type/$model_type/
     fi
 
-    if [ $model_type == 'baseline_opus' ]; then
-        echo "Checkpoint: No checkpoint, testing the baseline opus model"
+    if [ $model_type == 'baseline_opus' ] && [ $exp_type == 'opus' ]; then
+        echo "Checkpoint: No checkpoint, testing the baseline opus model from HF"
         python /home1/s3412768/Genre-enabled-NMT/src/train.py \
             --root_dir $root_dir \
             --train_file $test_file \
