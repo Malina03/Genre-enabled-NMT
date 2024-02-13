@@ -57,17 +57,13 @@ else
     echo "Invalid model type"
     exit 1
 fi
-# hr
-# genres=('news' 'law' 'arg' 'info' 'promo' 'random')
-# genres=('arg' 'info' 'promo' 'random')
-# genres=('random')
-# genres=('arg')
-# genres=('arg')
-#is
-# genres=('news' 'law' 'info' 'promo' 'random')
-# tr
-genres=('news' 'law' 'info' 'promo' 'random')
 
+if [ $language = 'hr' ]; then
+    genres=('news' 'law' 'arg' 'info' 'promo' 'random')
+else then
+    genres=('news' 'law' 'info' 'promo' 'random')
+fi
+ 
 for genre in "${genres[@]}"; do 
 
     for test_on in "${test_files[@]}"; do
