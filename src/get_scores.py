@@ -44,7 +44,7 @@ elif args.language == 'is':
     ref_with_tags_wmttest2022 = pd.read_csv(root_data_dir + 'wmttest2021.en-is.test.tag.tsv', sep='\t', header=None)
     genres_wmttest2022 = [tokens_to_genres[line.split(' ')[0]] for line in ref_with_tags_wmttest2022[ref_with_tags_wmttest2022.columns[0]].to_list()]
 elif args.language == 'tr':
-    ref_with_tags_wmttest2022 = pd.read_csv(root_data_dir + 'wmttest2018.en-tr.test.tag.tsv', sep='\t', header=None)
+    ref_with_tags_wmttest2022 = pd.read_csv(root_data_dir + 'wmttest2018.en-tr.test.tag.tsv', sep='\t', header=None, quoting=3)
     genres_wmttest2022 = [tokens_to_genres[line.split(' ')[0]] for line in ref_with_tags_wmttest2022[ref_with_tags_wmttest2022.columns[0]].to_list()]
 else:
     print("Language not recognized")
