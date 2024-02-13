@@ -15,13 +15,18 @@ def main():
     labels = ["Other", "Information/Explanation", "News", "Instruction", "Opinion/Argumentation", "Forum", "Prose/Lyrical", "Legal", "Promotion"]
     # data = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr_complete.tsv', sep='\t')
     dat1 = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.train.tag.tsv', sep='\t')
+    # name columns
+    dat1.columns = ['en_par', 'tr_par']
     dat2 = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.dev.tag.tsv', sep='\t')
+    dat2.columns = ['en_par', 'tr_par']
     dat3 = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.test.tag.tsv', sep='\t')
+    dat3.columns = ['en_par', 'tr_par']
     print(dat1.shape)
     print(dat2.shape)
     print(dat3.shape)
     # put df on top of each other
-    data = pd.concat([dat1, dat2, dat3], axis=0)
+    data = pd.concat([dat1, dat2], axis=0)
+    data = pd.concat([data, dat3], axis=0)
     # reset index
     data = data.reset_index(drop=True)
     # rename columns
