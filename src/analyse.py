@@ -14,13 +14,10 @@ def print_genre_distribution(data):
 def main():
     labels = ["Other", "Information/Explanation", "News", "Instruction", "Opinion/Argumentation", "Forum", "Prose/Lyrical", "Legal", "Promotion"]
     # data = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr_complete.tsv', sep='\t')
-    dat1 = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.train.tag.tsv', sep='\t')
+    dat1 = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.train.tag.tsv', sep='\t', header=None)
     # name columns
-    dat1.columns = ['en_par', 'tr_par']
-    dat2 = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.dev.tag.tsv', sep='\t')
-    dat2.columns = ['en_par', 'tr_par']
-    dat3 = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.test.tag.tsv', sep='\t')
-    dat3.columns = ['en_par', 'tr_par']
+    dat2 = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.dev.tag.tsv', sep='\t', header=None)
+    dat3 = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.test.tag.tsv', sep='\t', header=None)
     print(dat1.shape)
     print(dat2.shape)
     print(dat3.shape)
