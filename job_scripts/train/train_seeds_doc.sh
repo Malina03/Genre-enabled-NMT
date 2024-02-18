@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=72:00:00
+#SBATCH --time=3:00:00
 #SBATCH --job-name=tsd
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=a100:1
@@ -22,11 +22,11 @@ source /home1/s3412768/.envs/nmt2/bin/activate
 
 language=$1 # target language
 model_type=$2 # type of experiment (baseline, genre_aware, genre_aware_token)
-use_tok=$3 # yes or no
 # genre=$5 # genre to fine-tune on 
 
 corpus="MaCoCu"
-exp_type="from_scratch" # type of model (e.g. fine_tuned or from_scratch.)
+# exp_type="from_scratch" # type of model (e.g. fine_tuned or from_scratch.)
+exp_type="fine_tune"
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
 
@@ -37,7 +37,6 @@ elif [ $language = 'tr' ]; then
 else
     model="Helsinki-NLP/opus-mt-en-${language}"
 fi
-
 
 
 if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
@@ -51,16 +50,26 @@ else
     exit 1
 fi
 
+if [ $language = 'hr' ]; then
+    train_file_hr="${train_file}.hrv"
+    if [[ ! -f $train_file_hr ]]; then
+        echo "Train file for hr not found, create it"
+        awk '{print ">>hrv<< " $0}' $train_file > $train_file_hr
+    fi
+    train_file=$train_file_hr
+    
+    dev_file_hr="${dev_file}.hrv"
+    if [[ ! -f $dev_file_hr ]]; then
+        echo "Dev file for hr not found, create it"
+        awk '{print ">>hrv<< " $0}' $dev_file > $dev_file_hr
+    fi
+    dev_file=$dev_file_hr
+fi
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 echo "train file: $train_file"
 echo "dev file: $dev_file"
 
 # use matching tokenizer from sentence level model
-if [ $use_tok = 'yes' ]; then
-    tokenizer_path="/scratch/s3412768/genre_NMT/en-$language/models/from_scratch/tok_${model_type}_${SLURM_ARRAY_TASK_ID}/tokenizer"
-    echo "tokenizer path: $tokenizer_path"
-    model_type="tok_${model_type}"
-fi 
 
 model_type="doc_${model_type}_${SLURM_ARRAY_TASK_ID}"
 
@@ -73,47 +82,24 @@ fi
 echo "log file: $log_file"
 echo "model type: $model_type"
 echo "model: $model"
+echo "exp_type: $exp_type"
 
-if [ $use_tok = 'yes' ]; then
-    python /home1/s3412768/Genre-enabled-NMT/src/train.py \
-        --root_dir $root_dir \
-        --train_file $train_file \
-        --dev_file $dev_file \
-        --wandb \
-        --gradient_accumulation_steps 1 \
-        --batch_size 32 \
-        --gradient_checkpointing \
-        --adafactor \
-        --save_strategy epoch \
-        --evaluation_strategy epoch \
-        --learning_rate 1e-4 \
-        --exp_type $exp_type \
-        --model_type $model_type \
-        --model_name $model \
-        --early_stopping 10 \
-        --num_train_epochs 15 \
-        --use_costum_tokenizer \
-        --tokenizer_path $tokenizer_path \
-        --seed $SLURM_ARRAY_TASK_ID \
-        &> $log_file
-else
-    python /home1/s3412768/Genre-enabled-NMT/src/train.py \
-        --root_dir $root_dir \
-        --train_file $train_file \
-        --dev_file $dev_file \
-        --wandb \
-        --gradient_accumulation_steps 1 \
-        --batch_size 32 \
-        --gradient_checkpointing \
-        --adafactor \
-        --save_strategy epoch \
-        --evaluation_strategy epoch \
-        --learning_rate 1e-4 \
-        --exp_type $exp_type \
-        --model_type $model_type \
-        --model_name $model \
-        --early_stopping 10 \
-        --num_train_epochs 15 \
-        --seed $SLURM_ARRAY_TASK_ID \
-        &> $log_file
-fi
+python /home1/s3412768/Genre-enabled-NMT/src/train.py \
+    --root_dir $root_dir \
+    --train_file $train_file \
+    --dev_file $dev_file \
+    --wandb \
+    --gradient_accumulation_steps 1 \
+    --batch_size 32 \
+    --gradient_checkpointing \
+    --adafactor \
+    --save_strategy epoch \
+    --evaluation_strategy epoch \
+    --learning_rate 1e-4 \
+    --exp_type $exp_type \
+    --model_type $model_type \
+    --model_name $model \
+    --early_stopping 10 \
+    --num_train_epochs 5 \
+    --seed $SLURM_ARRAY_TASK_ID \
+    &> $log_file
