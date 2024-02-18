@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=3:00:00
+#SBATCH --time=5:00:00
 #SBATCH --job-name=tsd
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=a100:1
