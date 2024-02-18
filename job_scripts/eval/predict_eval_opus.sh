@@ -24,32 +24,45 @@ train_corpus=MaCoCu
 # model_type=baseline_opus
 # exp_type=opus
 language=$1 # the target language
-model_type=$2 # type of model (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
+model_type=$2 # type of model - MUST INCLUDE SEED genre_aware_[token]_{seed}
+              # use baseline_opus for the baseline model from HF and baseline_opus_{seed} for fine-tuned models
 
 if [ $model_type == 'baseline_opus' ]; then
     exp_type="opus"
-    # test_files=("MaCoCu.en-${language}.test.tsv")
-    # test_files=("floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
-    # IS
-    test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2021.en-${language}.test.tsv")
+    if [ $language == 'tr' ]; then
+        test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2018.en-${language}.test.tsv")
+    elif [ $language == 'hr' ]; then
+        test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
+    elif [ $language == 'is' ]; then
+        test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2021.en-${language}.test.tsv")
+    else
+        echo "Invalid language"
+        exit 1
 elif [ $model_type == 'baseline_opus_1' ] || [ $model_type == 'baseline_opus_2' ] || [ $model_type == 'baseline_opus_3' ]; then
     exp_type="fine_tune"
-    test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2021.en-${language}.test.tsv")
+    if [ $language == 'tr' ]; then
+            test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2018.en-${language}.test.tsv")
+        elif [ $language == 'hr' ]; then
+            test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
+        elif [ $language == 'is' ]; then
+            test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2021.en-${language}.test.tsv")
+        else
+            echo "Invalid language"
+            exit 1
+        fi
 else
     exp_type="fine_tune"
-    test_files=("MaCoCu.en-${language}.test.tag.tsv" "floresdev.en-${language}.test.tag.tsv" "floresdevtest.en-${language}.test.tag.tsv" "wmttest2021.en-${language}.test.tag.tsv")
+    if [ $language == 'tr' ]; then
+        test_files=("MaCoCu.en-${language}.test.tag.tsv" "floresdev.en-${language}.test.tag.tsv" "floresdevtest.en-${language}.test.tag.tsv" "wmttest2018.en-${language}.test.tag.tsv")
+    elif [ $language == 'hr' ]; then
+        test_files=("MaCoCu.en-${language}.test.tag.tsv" "floresdev.en-${language}.test.tag.tsv" "floresdevtest.en-${language}.test.tag.tsv" "wmttest2022.en-${language}.test.tag.tsv")
+    elif [ $language == 'is' ]; then
+        test_files=("MaCoCu.en-${language}.test.tag.tsv" "floresdev.en-${language}.test.tag.tsv" "floresdevtest.en-${language}.test.tag.tsv" "wmttest2021.en-${language}.test.tag.tsv")
+    else
+        echo "Invalid language"
+        exit 1
+    fi
 fi
-
-
-# HR
-# test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
-# test_files=("floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2022.en-${language}.test.tsv")
-# IS
-# test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2021.en-${language}.test.tsv")
-# test_files=("floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2021.en-${language}.test.tsv")
-# TR
-# test_files=("MaCoCu.en-${language}.test.tsv" "floresdev.en-${language}.test.tsv" "floresdevtest.en-${language}.test.tsv" "wmttest2018.en-${language}.test.tsv")
-
 
 
 for test_on in "${test_files[@]}"; do
