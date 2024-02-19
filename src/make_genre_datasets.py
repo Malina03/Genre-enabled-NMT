@@ -93,7 +93,7 @@ def make_balanced_datasets(language, genres):
     print(min_examples)
     for s in sets:
         for g in genres:
-            if g == 'Instruction':
+            if g == 'Opinion/Argumentation':
                 # randomly sample the required number of lines per set and genre
                 sampled = only_req_genres[only_req_genres['set'] == s][only_req_genres['X-GENRE'] == g].sample(n=min_examples[s])
                 # save en_par and hr_par to tsv
@@ -118,9 +118,9 @@ def make_balanced_datasets(language, genres):
 
 
 def main():
-    make_balanced_datasets('tr', ['Legal', 'News', 'Promotion', 'Information/Explanation', 'Instruction'])
-    make_balanced_datasets('is', ['Legal', 'News', 'Promotion', 'Information/Explanation', 'Instruction'])
-    make_balanced_datasets('hr', ['Legal', 'News', 'Promotion', 'Information/Explanation', 'Opinion/Argumentation', 'Instruction'])
+    make_balanced_datasets('tr', ['Legal', 'News', 'Promotion', 'Information/Explanation', 'Instruction', 'Opinion/Argumentation'])
+    # make_balanced_datasets('is', ['Legal', 'News', 'Promotion', 'Information/Explanation', 'Instruction'])
+    # make_balanced_datasets('hr', ['Legal', 'News', 'Promotion', 'Information/Explanation', 'Opinion/Argumentation', 'Instruction'])
 
     
 if __name__ == "__main__":
