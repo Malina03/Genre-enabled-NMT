@@ -79,6 +79,7 @@ def make_balanced_datasets(language, genres):
         all_data = pd.concat([dat_train, dat_dev])
         all_data = all_data.reset_index(drop=True)
         all_data['X-GENRE'] = all_data['X-GENRE'].apply(lambda x: reverse_genre_tokens[x])
+        print(all_data['X-GENRE'].value_counts())
     else:
         all_data = pd.read_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}_complete.tsv', sep='\t', header=0)
 
