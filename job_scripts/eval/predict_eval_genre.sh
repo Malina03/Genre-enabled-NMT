@@ -58,12 +58,14 @@ else
     exit 1
 fi
 
-if [ $language = 'hr' ]; then
-    genres=('news' 'law' 'arg' 'info' 'promo' 'random')
-else
-    genres=('news' 'law' 'info' 'promo' 'random')
-    # genres=('promo' 'random')
-fi
+# if [ $language = 'hr' ]; then
+#     genres=('news' 'law' 'arg' 'info' 'promo' 'random')
+# else
+#     genres=('news' 'law' 'info' 'promo' 'random')
+#     # genres=('promo' 'random')
+# fi
+
+genres=('instr')
  
 for genre in "${genres[@]}"; do 
 
