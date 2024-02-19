@@ -81,13 +81,15 @@ for genre in "${genres[@]}"; do
         
         if [ $opus == 'yes' ]; then
             model_type="${model_type}_opus_${genre}_${seed}"
-            # add >>hrv<< in front of each line in the test file
-            test_file_hr="${root_dir}/data/${test_on}.hrv"
-            if [[ ! -f $test_file_hr ]]; then
-                echo "Test file for hr not found, create it"
-                awk '{print ">>hrv<< " $0}' $test_file > $test_file_hr
+            if [ $language == 'hrv' ]; then 
+                # add >>hrv<< in front of each line in the test file
+                test_file_hr="${root_dir}/data/${test_on}.hrv"
+                if [[ ! -f $test_file_hr ]]; then
+                    echo "Test file for hr not found, create it"
+                    awk '{print ">>hrv<< " $0}' $test_file > $test_file_hr
+                fi
+                test_file=$test_file_hr
             fi
-            test_file=$test_file_hr
         else
             model_type="${model_type}_${genre}_${seed}"
         fi
