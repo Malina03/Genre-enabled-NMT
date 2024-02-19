@@ -1,11 +1,11 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=6:00:00
+#SBATCH --time=2:00:00
 #SBATCH --job-name=ft_opus
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
 #SBATCH --mem=50G
-#SBATCH --array=1-6
+#SBATCH --array=1
 
 export PATH="$PATH:/home1/s3412768/.local/bin"
 
@@ -29,8 +29,9 @@ train_corpus="MaCoCu"
 exp_type="fine_tune" # type of model (e.g. fine_tuned or from_scratch.)
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
-genres=('news' 'law' 'arg' 'info' 'promo' 'random')
+# genres=('news' 'law' 'arg' 'info' 'promo' 'random')
 # genres=('news' 'law' 'info' 'promo' 'random')
+genres=('instr')
 genre="${genres[$SLURM_ARRAY_TASK_ID-1]}"
 
 # checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
