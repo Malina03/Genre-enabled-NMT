@@ -63,31 +63,27 @@ def make_balanced_datasets(language, genres):
     genre_tokens = {'Prose/Lyrical': '<lit>','Instruction': '<instr>', 'Promotion': '<promo>', 'Opinion/Argumentation': '<arg>' , 'Other': '<other>' , 'Information/Explanation': '<info>', 'News': '<news>', 'Legal': '<law>', 'Forum': '<forum>'}
     reverse_genre_tokens = {v: k for k, v in genre_tokens.items()}
     genre_abv = {g: genre_tokens[g][1:-1] for g in genres}
+    
     # all_data = pd.read_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}_complete.tsv', sep='\t', header=0)
-    dat_train = pd.read_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.train.tag.tsv', sep='\t', header=None)
-    dat_train.columns = ['en_par', f'{language}_par']
-    dat_train['set'] = 'train'
-    dat_train['X-GENRE'] = dat_train['en_par'].apply(lambda x: x.split(' ')[0])
-    dat_train['en_par'] = dat_train['en_par'].apply(lambda x: ' '.join(x.split(' ')[1:]))
-    dat_dev = pd.read_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.dev.tag.tsv', sep='\t', header=None)
-    dat_dev.columns = ['en_par', f'{language}_par']
-    dat_dev['set'] = 'dev'
-    dat_dev['X-GENRE'] = dat_dev['en_par'].apply(lambda x: x.split(' ')[0])
-    dat_dev['en_par'] = dat_dev['en_par'].apply(lambda x: ' '.join(x.split(' ')[1:]))
-    # dat_test = pd.read_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.test.tag.tsv', sep='\t', header=None)
-    # dat_test.columns = ['en_par', f'{language}_par']
-    # dat_test['set'] = 'test'
-    # dat_test['X-GENRE'] = dat_test['en_par'].apply(lambda x: x.split(' ')[0][1:-1])
-    # dat_test['en_par'] = dat_test['en_par'].apply(lambda x: ' '.join(x.split(' ')[1:]))
-    all_data = pd.concat([dat_train, dat_dev])
-    # reindex
-    all_data = all_data.reset_index(drop=True)
-    # rename from values to keys from genre_tokens
-    all_data['X-GENRE'] = all_data['X-GENRE'].apply(lambda x: reverse_genre_tokens[x])
-    # only keep en_doc, hr_doc, X-genre and set columns
-    # all_data = all_data[['en_par', f'{language}_par', 'set', 'X-GENRE']]
-    # remove test set
+    if language == 'tr':
+        dat_train = pd.read_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.train.tag.tsv', sep='\t', header=None)
+        dat_train.columns = ['en_par', f'{language}_par']
+        dat_train['set'] = 'train'
+        dat_train['X-GENRE'] = dat_train['en_par'].apply(lambda x: x.split(' ')[0])
+        dat_train['en_par'] = dat_train['en_par'].apply(lambda x: ' '.join(x.split(' ')[1:]))
+        dat_dev = pd.read_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.dev.tag.tsv', sep='\t', header=None)
+        dat_dev.columns = ['en_par', f'{language}_par']
+        dat_dev['set'] = 'dev'
+        dat_dev['X-GENRE'] = dat_dev['en_par'].apply(lambda x: x.split(' ')[0])
+        dat_dev['en_par'] = dat_dev['en_par'].apply(lambda x: ' '.join(x.split(' ')[1:]))
+        all_data = pd.concat([dat_train, dat_dev])
+        all_data = all_data.reset_index(drop=True)
+        all_data['X-GENRE'] = all_data['X-GENRE'].apply(lambda x: reverse_genre_tokens[x])
+    else:
+        all_data = pd.read_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}_complete.tsv', sep='\t', header=0)
+
     print(all_data.set.unique())
+
     all_data = all_data[all_data['set'] != 'test']
     only_req_genres = all_data[all_data['X-GENRE'].isin(genres)]
     remaining_genres = all_data[~all_data['X-GENRE'].isin(genres)]
@@ -97,31 +93,35 @@ def make_balanced_datasets(language, genres):
     print(min_examples)
     for s in sets:
         for g in genres:
-            # randomly sample the required number of lines per set and genre
-            sampled = only_req_genres[only_req_genres['set'] == s][only_req_genres['X-GENRE'] == g].sample(n=min_examples[s])
-            # save en_par and hr_par to tsv
-            sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.{genre_abv[g]}.tsv', sep='\t', index=False, header=False, quoting=3)
-            # write to tsv adding the genre tag in the beginning of each en_par
-            sampled['en_par'] = genre_tokens[g] + ' ' + sampled['en_par'].astype(str)
-            sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.{genre_abv[g]}.tag.tsv', sep='\t', index=False, header=False, quoting=3)
-            del sampled
+            if g == 'Instruction':
+                # randomly sample the required number of lines per set and genre
+                sampled = only_req_genres[only_req_genres['set'] == s][only_req_genres['X-GENRE'] == g].sample(n=min_examples[s])
+                # save en_par and hr_par to tsv
+                sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.{genre_abv[g]}.tsv', sep='\t', index=False, header=False, quoting=3)
+                # write to tsv adding the genre tag in the beginning of each en_par
+                sampled['en_par'] = genre_tokens[g] + ' ' + sampled['en_par'].astype(str)
+                sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.{genre_abv[g]}.tag.tsv', sep='\t', index=False, header=False, quoting=3)
+                del sampled
     # randomly sample the required number of lines for a random genre dataset balanced wrt the number of lines per set
-    for s in sets:
-        sampled = all_data[all_data['set'] == s].sample(n=min_examples[s])
-        # print to a file the number of lines per genre
-        sampled.groupby('X-GENRE')['en_par'].count().to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.random.counts.log', sep='\t', index=True, header=True)
-        # save en_par and hr_par to tsv
-        sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.random.tsv', sep='\t', index=False, header=False, quoting=3)
-        # write to tsv adding the genre tag in the beginning of each en_par
-        # add the genre tag in the beginning of each en_par
-        sampled['en_par'] = sampled['X-GENRE'].apply(lambda x: genre_tokens[x]) + ' ' + sampled['en_par'].astype(str)
-        sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.random.tag.tsv', sep='\t', index=False, header=False, quoting=3)
-        del sampled
+    # for s in sets:
+    #     sampled = all_data[all_data['set'] == s].sample(n=min_examples[s])
+    #     # print to a file the number of lines per genre
+    #     sampled.groupby('X-GENRE')['en_par'].count().to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.random.counts.log', sep='\t', index=True, header=True)
+    #     # save en_par and hr_par to tsv
+    #     sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.random.tsv', sep='\t', index=False, header=False, quoting=3)
+    #     # write to tsv adding the genre tag in the beginning of each en_par
+    #     # add the genre tag in the beginning of each en_par
+    #     sampled['en_par'] = sampled['X-GENRE'].apply(lambda x: genre_tokens[x]) + ' ' + sampled['en_par'].astype(str)
+    #     sampled[['en_par', f'{language}_par']].to_csv(f'/scratch/s3412768/genre_NMT/en-{language}/data/MaCoCu.en-{language}.{s}.random.tag.tsv', sep='\t', index=False, header=False, quoting=3)
+    #     del sampled
                                                                                                        
 
 
 def main():
-    make_balanced_datasets('tr', ['Legal', 'News', 'Promotion', 'Information/Explanation'])
+    make_balanced_datasets('tr', ['Legal', 'News', 'Promotion', 'Information/Explanation', 'Instruction'])
+    make_balanced_datasets('is', ['Legal', 'News', 'Promotion', 'Information/Explanation', 'Instruction'])
+    make_balanced_datasets('hr', ['Legal', 'News', 'Promotion', 'Information/Explanation', 'Opinion/Argumentation', 'Instruction'])
+
     
 if __name__ == "__main__":
     main()
