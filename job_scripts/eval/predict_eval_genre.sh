@@ -77,6 +77,7 @@ for genre in "${genres[@]}"; do
         source /home1/s3412768/.envs/nmt2/bin/activate
 
         model_type=$m_type
+        root_dir="/scratch/s3412768/genre_NMT/en-${language}"
         test_file="${root_dir}/data/${test_on}"
         
         if [ $opus == 'yes' ]; then
@@ -97,7 +98,7 @@ for genre in "${genres[@]}"; do
         echo "Test on: $test_on"
         echo "Model type: $model_type"
 
-        root_dir="/scratch/s3412768/genre_NMT/en-${language}"
+        
 
         if [ $language = 'hr' ]; then
             model="Helsinki-NLP/opus-mt-en-sla"
