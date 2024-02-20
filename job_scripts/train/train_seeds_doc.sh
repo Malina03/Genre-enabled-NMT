@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=5:00:00
+#SBATCH --time=24:00:00
 #SBATCH --job-name=tsd
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=a100:1
@@ -89,8 +89,8 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --train_file $train_file \
     --dev_file $dev_file \
     --wandb \
-    --gradient_accumulation_steps 1 \
-    --batch_size 32 \
+    --gradient_accumulation_steps 2 \
+    --batch_size 16 \
     --gradient_checkpointing \
     --adafactor \
     --save_strategy epoch \
@@ -100,6 +100,6 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --model_type $model_type \
     --model_name $model \
     --early_stopping 10 \
-    --num_train_epochs 5 \
+    --num_train_epochs 3 \
     --seed $SLURM_ARRAY_TASK_ID \
     &> $log_file
