@@ -82,7 +82,7 @@ for genre in "${genres[@]}"; do
         
         if [ $opus == 'yes' ]; then
             model_type="${model_type}_opus_${genre}_${seed}"
-            if [ $language == 'hrv' ]; then 
+            if [ $language == 'hr' ]; then 
                 # add >>hrv<< in front of each line in the test file
                 test_file_hr="${root_dir}/data/${test_on}.hrv"
                 if [[ ! -f $test_file_hr ]]; then

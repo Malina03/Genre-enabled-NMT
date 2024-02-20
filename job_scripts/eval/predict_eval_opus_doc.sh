@@ -21,13 +21,11 @@ source /home1/s3412768/.envs/nmt2/bin/activate
 
 
 language=$1 # target language
-model_type=$2 # type of experiment (baseline, genre_aware, genre_aware_token)
-# use_tok=$3 # yes or no
-# genre=$5 # genre to fine-tune on 
+model_type="baseline-opus"
 
 corpus="MaCoCu"
 train_corpus="MaCoCu"
-exp_type="fine_tune" # type of model (e.g. fine_tuned or from_scratch.)
+exp_type="opus" # type of model (e.g. fine_tuned or from_scratch.)
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
 
@@ -60,9 +58,7 @@ if [ $language == 'hr' ]; then
     test_file=$test_file_hr
 fi
 
-
 echo "test file: $test_file"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-
 
 model_type="doc_${model_type}_${SLURM_ARRAY_TASK_ID}"
 
