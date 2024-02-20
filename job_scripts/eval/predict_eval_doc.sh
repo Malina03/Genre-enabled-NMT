@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=2:00:00
+#SBATCH --time=01:00:00
 #SBATCH --job-name=pred_doc
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=a100:1
@@ -22,12 +22,12 @@ source /home1/s3412768/.envs/nmt2/bin/activate
 
 language=$1 # target language
 model_type=$2 # type of experiment (baseline, genre_aware, genre_aware_token)
-use_tok=$3 # yes or no
+# use_tok=$3 # yes or no
 # genre=$5 # genre to fine-tune on 
 
 corpus="MaCoCu"
 train_corpus="MaCoCu"
-exp_type="from_scratch" # type of model (e.g. fine_tuned or from_scratch.)
+exp_type="fine_tune" # type of model (e.g. fine_tuned or from_scratch.)
 
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
 
@@ -55,11 +55,11 @@ echo "test file: $test_file"
 # echo "dev file: $dev_file"
 
 # use matching tokenizer from sentence level model
-if [ $use_tok = 'yes' ]; then
-    tokenizer_path="/scratch/s3412768/genre_NMT/en-$language/models/from_scratch/tok_${model_type}_${SLURM_ARRAY_TASK_ID}/tokenizer"
-    echo "tokenizer path: $tokenizer_path"
-    model_type="tok_${model_type}"
-fi 
+# if [ $use_tok = 'yes' ]; then
+#     tokenizer_path="/scratch/s3412768/genre_NMT/en-$language/models/from_scratch/tok_${model_type}_${SLURM_ARRAY_TASK_ID}/tokenizer"
+#     echo "tokenizer path: $tokenizer_path"
+#     model_type="tok_${model_type}"
+# fi 
 
 model_type="doc_${model_type}_${SLURM_ARRAY_TASK_ID}"
 
