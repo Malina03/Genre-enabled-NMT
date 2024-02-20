@@ -40,6 +40,7 @@ fi
 
 
 test_file="${root_dir}/data/${corpus}.en-$language.doc.test.tsv"
+test_on="${corpus}.en-$language.doc.test.tsv"
 
 
 if [ $language == 'hr' ]; then 
@@ -112,7 +113,7 @@ echo "Output file: $out"
 echo "Eval file: $eval"
 
 ref=${eval}.ref
-src=${eval}.src
+# src=${eval}.src
 
 # check if ref and src files exist and create them if not
 if [[ ! -f $ref ]]; then
@@ -126,16 +127,16 @@ if [[ ! -f $ref ]]; then
     fi
 fi
 
-if [[ ! -f $src ]]; then
-    echo "Source file $src not found, create it"
-    # First check if the file exists in the data folder
-    if [[ -f $eval ]]; then
-        # If so, extract the source column
-        cut -d $'\t' -f1 $eval > "$src"
-    else
-        echo "File $eval not found"
-    fi
-fi
+# if [[ ! -f $src ]]; then
+#     echo "Source file $src not found, create it"
+#     # First check if the file exists in the data folder
+#     if [[ -f $eval ]]; then
+#         # If so, extract the source column
+#         cut -d $'\t' -f1 $eval > "$src"
+#     else
+#         echo "File $eval not found"
+#     fi
+# fi
 
 
 if [[ ! -f $out ]]; then
