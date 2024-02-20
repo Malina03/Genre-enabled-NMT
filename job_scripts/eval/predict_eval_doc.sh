@@ -63,7 +63,7 @@ echo "test file: $test_file"
 
 model_type="doc_${model_type}_${SLURM_ARRAY_TASK_ID}"
 
-checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
+checkpoint=$root_dir/models/$exp_type/$model_type/$train_corpus/checkpoint-*
 
 echo "Checkpoint: $checkpoint"
 
