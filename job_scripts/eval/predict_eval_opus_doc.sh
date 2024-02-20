@@ -5,7 +5,6 @@
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=a100:1
 #SBATCH --mem=50G
-#SBATCH --array=1-3
 
 export PATH="$PATH:/home1/s3412768/.local/bin"
 
@@ -39,14 +38,9 @@ else
 fi
 
 
-if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
-    test_file="${root_dir}/data/${corpus}.en-$language.doc.test.tag.tsv"
-elif [ $model_type = 'baseline' ]; then
-    test_file="${root_dir}/data/${corpus}.en-$language.doc.test.tsv"
-else
-    echo "Invalid model type"
-    exit 1
-fi
+
+test_file="${root_dir}/data/${corpus}.en-$language.doc.test.tsv"
+
 
 if [ $language == 'hr' ]; then 
     # add >>hrv<< in front of each line in the test file
@@ -60,7 +54,7 @@ fi
 
 echo "test file: $test_file"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 
-model_type="doc_${model_type}_${SLURM_ARRAY_TASK_ID}"
+model_type="doc_${model_type}"
 
 checkpoint=$root_dir/models/$exp_type/$model_type/$train_corpus/checkpoint-*
 
@@ -93,7 +87,6 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --model_name $model \
     --predict \
     --eval \
-    --checkpoint $checkpoint \
     &> $log_file
 
 
