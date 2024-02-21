@@ -3,6 +3,7 @@
 #SBATCH --time=01:00:00
 #SBATCH --job-name=pred_doc
 #SBATCH --partition=gpu
+#SBATCH --gpus-per-node=1
 #SBATCH --mem=50G
 #SBATCH --array=1-3
 
