@@ -3,7 +3,6 @@
 #SBATCH --time=01:00:00
 #SBATCH --job-name=pred_doc
 #SBATCH --partition=gpu
-#SBATCH --gpus-per-node=a100:1
 #SBATCH --mem=50G
 
 export PATH="$PATH:/home1/s3412768/.local/bin"
