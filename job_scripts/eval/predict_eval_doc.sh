@@ -113,14 +113,17 @@ out=$root_dir/eval/$exp_type/$model_type/${out_file}_predictions.txt
 
 # split file 
 
-python /home1/s3412768/Genre-enabled-NMT/src/split_docs_for_eval.py --input_file $out  --output_dir $out.split
+python /home1/s3412768/Genre-enabled-NMT/src/split_docs_for_eval.py --input_file $out  --output_file $out.split
 
 # eval on the file wothout docs
 eval="$root_dir/data/${out_file}.en-$language.test.tsv"
 
 
-echo "Output file: $out"
+echo "Original Output file: $out"
+out=${out}.split
+echo "Split file for evaluation: $out.split"
 echo "Eval file: $eval"
+
 
 ref=${eval}.ref
 src=${eval}.src
@@ -172,7 +175,7 @@ else
     sacrebleu $out -i $ref -m ter -b > "${out}.eval.ter"
     sacrebleu $out -i $ref -m chrf -b > "${out}.eval.chrf"
     sacrebleu $out -i $ref -m chrf --chrf-word-order 2 -b > "${out}.eval.chrfpp"
-    
+
     comet-score -s $src -t $out -r $ref > "${out}.eval.comet"
 
 fi
