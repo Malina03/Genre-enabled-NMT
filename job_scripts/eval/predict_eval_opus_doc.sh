@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=01:00:00
+#SBATCH --time=02:00:00
 #SBATCH --job-name=pred_doc
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
@@ -98,15 +98,14 @@ out=$root_dir/eval/$exp_type/$model_type/${out_file}_predictions.txt
 
 # split file 
 
-python /home1/s3412768/Genre-enabled-NMT/src/split_docs_for_eval.py --input_file $out  --output_file $out.split
+# python /home1/s3412768/Genre-enabled-NMT/src/split_docs_for_eval.py --input_file $out  --output_file $out.split
 
 # eval on the file wothout docs
-eval="$root_dir/data/${out_file}.en-$language.test.tsv"
+eval="$root_dir/data/${out_file}.en-$language.doc.test.tsv"
 
 
-echo "Original Output file: $out"
-out=${out}.split
-echo "Split file for evaluation: $out.split"
+echo "Output file: $out"
+# out=${out}
 echo "Eval file: $eval"
 
 ref=${eval}.ref
@@ -134,16 +133,16 @@ if [[ ! -f $ref ]]; then
     fi
 fi
 
-if [[ ! -f $src ]]; then
-    echo "Source file $src not found, create it"
-    # First check if the file exists in the data folder
-    if [[ -f $eval ]]; then
-        # If so, extract the source column
-        cut -d $'\t' -f1 $eval > "$src"
-    else
-        echo "File $eval not found"
-    fi
-fi
+# if [[ ! -f $src ]]; then
+#     echo "Source file $src not found, create it"
+#     # First check if the file exists in the data folder
+#     if [[ -f $eval ]]; then
+#         # If so, extract the source column
+#         cut -d $'\t' -f1 $eval > "$src"
+#     else
+#         echo "File $eval not found"
+#     fi
+# fi
 
 
 if [[ ! -f $out ]]; then
@@ -160,6 +159,6 @@ else
     sacrebleu $out -i $ref -m chrf -b > "${out}.eval.chrf"
     sacrebleu $out -i $ref -m chrf --chrf-word-order 2 -b > "${out}.eval.chrfpp"
     
-    comet-score -s $src -t $out -r $ref > "${out}.eval.comet"
+    # comet-score -s $src -t $out -r $ref > "${out}.eval.comet"
 
 fi

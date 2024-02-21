@@ -11,8 +11,12 @@ def split_docs_for_eval(input_file, output_file):
             reader = csv.reader(f, delimiter='\t')
             writer = csv.writer(o, delimiter='\t')
             for row in reader:
-                for sentence in row[0].split('.'):
-                    writer.writerow([sentence])
+                # split by ., !, or ?
+                sentences = row[0].split('.')
+                sentences = [s.strip() for s in sentences if s.strip()]
+                for s in sentences:
+                    writer.writerow([s])
+                    
 
     
 
