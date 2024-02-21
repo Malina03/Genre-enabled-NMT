@@ -91,6 +91,26 @@ echo "model: $model"
 #     &> $log_file
 
 
+eval_file=$test_on
+out_file="$(cut -d'.' -f1 <<<"$test_on")"
+
+out=$root_dir/eval/$exp_type/$model_type/${out_file}_predictions.txt
+
+# split file 
+
+python /home1/s3412768/Genre-enabled-NMT/src/split_docs_for_eval.py --input_file $out  --output_dir $out.split
+
+# eval on the file wothout docs
+eval="$root_dir/data/${out_file}.en-$language.test.tsv"
+
+
+echo "Output file: $out"
+echo "Eval file: $eval"
+
+ref=${eval}.ref
+src=${eval}.src
+
+
 # deactivate the env used for predictions
 deactivate
 # remove the module used for predictions and load the new one
@@ -99,21 +119,6 @@ module load TensorFlow/2.11.0-foss-2022a-CUDA-11.7.0
 source $HOME/.envs/nmt_eval/bin/activate
 set -eu -o pipefail
 
-
-# Calculate all metrics between two files
-eval_file=$test_on
-out_file="$(cut -d'.' -f1 <<<"$test_on")"
-
-out=$root_dir/eval/$exp_type/$model_type/${out_file}_predictions.txt
-
-eval="$root_dir/data/${eval_file}"
-
-
-echo "Output file: $out"
-echo "Eval file: $eval"
-
-ref=${eval}.ref
-# src=${eval}.src
 
 # check if ref and src files exist and create them if not
 if [[ ! -f $ref ]]; then
@@ -127,16 +132,16 @@ if [[ ! -f $ref ]]; then
     fi
 fi
 
-# if [[ ! -f $src ]]; then
-#     echo "Source file $src not found, create it"
-#     # First check if the file exists in the data folder
-#     if [[ -f $eval ]]; then
-#         # If so, extract the source column
-#         cut -d $'\t' -f1 $eval > "$src"
-#     else
-#         echo "File $eval not found"
-#     fi
-# fi
+if [[ ! -f $src ]]; then
+    echo "Source file $src not found, create it"
+    # First check if the file exists in the data folder
+    if [[ -f $eval ]]; then
+        # If so, extract the source column
+        cut -d $'\t' -f1 $eval > "$src"
+    else
+        echo "File $eval not found"
+    fi
+fi
 
 
 if [[ ! -f $out ]]; then
@@ -152,5 +157,7 @@ else
     sacrebleu $out -i $ref -m ter -b > "${out}.eval.ter"
     sacrebleu $out -i $ref -m chrf -b > "${out}.eval.chrf"
     sacrebleu $out -i $ref -m chrf --chrf-word-order 2 -b > "${out}.eval.chrfpp"
+    
+    comet-score -s $src -t $out -r $ref > "${out}.eval.comet"
 
 fi
