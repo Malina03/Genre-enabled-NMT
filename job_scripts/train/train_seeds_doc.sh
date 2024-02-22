@@ -1,9 +1,9 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=24:00:00
+#SBATCH --time=06:00:00
 #SBATCH --job-name=tsd
 #SBATCH --partition=gpu
-#SBATCH --gpus-per-node=a100:1
+#SBATCH --gpus-per-node=1
 #SBATCH --mem=50G
 #SBATCH --array=1-3
 
@@ -100,6 +100,6 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --model_type $model_type \
     --model_name $model \
     --early_stopping 10 \
-    --num_train_epochs 3 \
+    --num_train_epochs 5 \
     --seed $SLURM_ARRAY_TASK_ID \
     &> $log_file
