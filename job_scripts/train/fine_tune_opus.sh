@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=24:00:00
+#SBATCH --time=48:00:00
 #SBATCH --job-name=train_seeds
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
