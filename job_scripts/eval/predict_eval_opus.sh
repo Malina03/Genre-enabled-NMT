@@ -38,6 +38,7 @@ if [ $model_type == 'baseline_opus' ]; then
     else
         echo "Invalid language"
         exit 1
+    fi
 elif [ $model_type == 'baseline_opus_1' ] || [ $model_type == 'baseline_opus_2' ] || [ $model_type == 'baseline_opus_3' ]; then
     exp_type="fine_tune"
     if [ $language == 'tr' ]; then
@@ -49,7 +50,7 @@ elif [ $model_type == 'baseline_opus_1' ] || [ $model_type == 'baseline_opus_2' 
         else
             echo "Invalid language"
             exit 1
-        fi
+    fi
 else
     exp_type="fine_tune"
     if [ $language == 'tr' ]; then
