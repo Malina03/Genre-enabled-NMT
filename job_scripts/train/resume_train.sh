@@ -86,7 +86,7 @@ echo "dev file: $dev_file"
 
 
 # add seed to model type
-model_type="${model_type}_opus_${SLURM_ARRAY_TASK_ID}"
+model_type="${model_type}_opus_${seed}"
 
 log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}.log"
 if [ ! -d "$root_dir/logs/$exp_type/$model_type" ]; then
