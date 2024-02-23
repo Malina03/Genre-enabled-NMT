@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=24:00:00
+#SBATCH --time=10:00:00
 #SBATCH --job-name=res
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
@@ -21,25 +21,23 @@ export CUDA_VISIBLE_DEVICES=0
 #load environment
 source /home1/s3412768/.envs/nmt2/bin/activate
 
-corpus=MaCoCu
+
 language=$1 # the target language
-exp_type=$2 # type of experiment (fine_tuned or from_scratch.)
-model_type=$3 # type of model (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
-# genre=$5 # the genre that the model was trained on
-use_tok=$4 # yes or no
-use_old_data=$5 # yes or no
-epochs=$6 # number of epochs to train for
-seed=$7
+model_type=$2 # type of model (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
+epochs=$3 # number of epochs to train for
+seed=$4
 
-# seed=${SLURM_ARRAY_TASK_ID}
 
-echo "Use tokenizer: $use_tok"
-echo "Use old data: $use_old_data"
-echo "Model type: $model_type"
-echo "Experiment type: $exp_type"
-echo "Epochs: $epochs"
+corpus="MaCoCu"
+exp_type="fine_tune" # type of model (e.g. fine_tuned or from_scratch.)
 
-root_dir="/scratch/s3412768/genre_NMT/en-${language}"
+root_dir="/scratch/s3412768/genre_NMT/en-$language"
+
+echo "corpus: $corpus"
+echo "language: $language"
+echo "exp_type: $exp_type"
+echo "model_type: $model_type"
+
 
 if [ $language = 'hr' ]; then
     model="Helsinki-NLP/opus-mt-en-sla"
@@ -50,115 +48,77 @@ else
 fi
 
 
-
-if [ $use_old_data == 'yes' ]; then
-    train_file="$root_dir/data/old_tokens/${corpus}.en-$language.train.tag.tsv"
-    dev_file="${root_dir}/data/old_tokens/${corpus}.en-$language.dev.tag.tsv"
-elif [ $use_old_data == 'no' ]; then
+if [ $exp_type = 'fine_tune' ]; then
     if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
         train_file="$root_dir/data/${corpus}.en-$language.train.tag.tsv"
         dev_file="${root_dir}/data/${corpus}.en-$language.dev.tag.tsv"
-    elif [ $model_type = 'doc_genre_aware' ] || [ $model_type = 'doc_genre_aware_token' ]; then
-        train_file="$root_dir/data/${corpus}.en-$language.doc.train.tag.tsv"
-        dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tag.tsv"
     elif [ $model_type = 'baseline' ]; then
         train_file="$root_dir/data/${corpus}.en-$language.train.tsv"
         dev_file="${root_dir}/data/${corpus}.en-$language.dev.tsv"
-    elif [ $model_type = 'doc_baseline' ]; then
-        train_file="$root_dir/data/${corpus}.en-$language.doc.train.tsv"
-        dev_file="${root_dir}/data/${corpus}.en-$language.doc.dev.tsv"
     else
         echo "Invalid model type"
         exit 1
     fi
 else
-    echo "Invalid use_old_data input"
+    echo "Invalid experiment type"
     exit 1
 fi
 
-if [ $use_old_data == 'yes' ]; then
-    model_type="od_${model_type}"
+
+if [ $language = 'hr' ]; then
+    train_file_hr="${train_file}.hrv"
+    if [[ ! -f $train_file_hr ]]; then
+        echo "Train file for hr not found, create it"
+        awk '{print ">>hrv<< " $0}' $train_file > $train_file_hr
+    fi
+    train_file=$train_file_hr
+    dev_file_hr="${dev_file}.hrv"
+    if [[ ! -f $dev_file_hr ]]; then
+        echo "Dev file for hr not found, create it"
+        awk '{print ">>hrv<< " $0}' $dev_file > $dev_file_hr
+    fi
+    dev_file=$dev_file_hr
 fi
 
-if [ $use_tok == 'yes' ]; then
-    model_type="tok_${model_type}"
-fi
+
+echo "train file: $train_file"
+echo "dev file: $dev_file"
+
 
 # add seed to model type
-model_type="${model_type}_${seed}"
+model_type="${model_type}_opus_${SLURM_ARRAY_TASK_ID}"
 
-# log_file="${root_dir}/logs/$exp_type/$model_type/train_${corpus}_2.log"
-log_file="${root_dir}/logs/$exp_type/$model_type/train_${corpus}_4.log"
-# if log directory does not exist, create it - but it really should exist
-if [ ! -d "$root_dir/logs/$exp_type/$model_type/" ]; then
-    mkdir -p $root_dir/logs/$exp_type/$model_type/
+log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}.log"
+if [ ! -d "$root_dir/logs/$exp_type/$model_type" ]; then
+    mkdir -p $root_dir/logs/$exp_type/$model_type
 fi
 
-echo "Log file: $log_file"
+echo "log file: $log_file"
 
 
-if [ $model_type == 'tok_genre_aware_token_1' ] || [ $model_type == 'tok_genre_aware_token_2' ]; then
-    checkpoint="$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-202155"
-elif [ $model_type == 'tok_genre_aware_2' ] || [ $model_type == 'tok_genre_aware_3' ] || [ $model_type == 'tok_genre_aware_token_3' ]; then
-    checkpoint="$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-161726"
-elif [ $model_type == 'tok_baseline_1' ] || [ $model_type == 'genre_aware_token_3' ]  || [ $model_type == 'tok_baseline_2' ]; then 
-    checkpoint="$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-121294"
-elif [ $model_type == 'tok_baseline_3' ] || [ $model_type == 'tok_genre_aware_1' ]; then
-    checkpoint="$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-40431"
-else
-    echo "Invalid model type for the checkpoints"
-    exit 1
-fi
+
+checkpoint="$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-*"
 
 echo "Checkpoint: $checkpoint"
 
-if [ $use_tok == 'yes' ]; then 
-    tokenizer_dir="$root_dir/models/from_scratch/$model_type/tokenizer"
-    echo "Tokenizer: $tokenizer_dir"
-    python /home1/s3412768/Genre-enabled-NMT/src/train.py \
-        --root_dir $root_dir \
-        --train_file $train_file \
-        --dev_file $dev_file \
-        --wandb \
-        --gradient_accumulation_steps 2 \
-        --batch_size 16 \
-        --gradient_checkpointing \
-        --adafactor \
-        --save_strategy "epoch" \
-        --evaluation_strategy "epoch" \
-        --learning_rate 0.00001 \
-        --exp_type $exp_type \
-        --model_type $model_type \
-        --model_name $model \
-        --checkpoint $checkpoint \
-        --early_stopping 10 \
-        --num_train_epochs $epochs \
-        --use_costum_tokenizer \
-        --tokenizer_path $tokenizer_dir \
-        --seed $seed \
-        &> $log_file 
-elif [ $use_tok == 'no' ]; then
-    python /home1/s3412768/Genre-enabled-NMT/src/train.py \
-        --root_dir $root_dir \
-        --train_file $train_file \
-        --dev_file $dev_file \
-        --gradient_accumulation_steps 2 \
-        --batch_size 16 \
-        --save_strategy "epoch" \
-        --evaluation_strategy "epoch" \
-        --learning_rate 0.00001 \
-        --gradient_checkpointing \
-        --adafactor \
-        --wandb \
-        --exp_type $exp_type \
-        --model_type $model_type \
-        --model_name $model \
-        --checkpoint $checkpoint \
-        --num_train_epochs $epochs \
-        --early_stopping 10 \
-        --seed $seed \
-        &> $log_file 
-else
-    echo "Invalid use_tok input"
-    exit 1
-fi
+
+python /home1/s3412768/Genre-enabled-NMT/src/train.py \
+    --root_dir $root_dir \
+    --train_file $train_file \
+    --dev_file $dev_file \
+    --gradient_accumulation_steps 2 \
+    --batch_size 16 \
+    --save_strategy "epoch" \
+    --evaluation_strategy "epoch" \
+    --learning_rate 0.00001 \
+    --gradient_checkpointing \
+    --adafactor \
+    --wandb \
+    --exp_type $exp_type \
+    --model_type $model_type \
+    --model_name $model \
+    --checkpoint $checkpoint \
+    --num_train_epochs $epochs \
+    --early_stopping 10 \
+    --seed $seed \
+    &> $log_file 
