@@ -97,7 +97,7 @@ echo "log file: $log_file"
 
 
 
-checkpoint="$root_dir/models/from_scratch/$model_type/$corpus/checkpoint-*"
+checkpoint="$root_dir/models/$exp_type/$model_type/$corpus/checkpoint-*"
 
 echo "Checkpoint: $checkpoint"
 
