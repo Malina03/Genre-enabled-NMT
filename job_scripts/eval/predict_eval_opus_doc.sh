@@ -21,8 +21,8 @@ source /home1/s3412768/.envs/nmt2/bin/activate
 
 language=$1 # target language
 model_type="baseline-opus"
+corpus=$2 # corpus to evaluate on
 
-corpus="MaCoCu"
 train_corpus="MaCoCu"
 exp_type="opus" # type of model (e.g. fine_tuned or from_scratch.)
 
