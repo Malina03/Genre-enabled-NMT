@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=01:30:00
+#SBATCH --time=00:30:00
 #SBATCH --job-name=pred_doc
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
@@ -22,10 +22,11 @@ source /home1/s3412768/.envs/nmt2/bin/activate
 
 language=$1 # target language
 model_type=$2 # type of experiment (baseline, genre_aware, genre_aware_token)
+corpus=$3 # corpus to evaluate on
 # use_tok=$3 # yes or no
 # genre=$5 # genre to fine-tune on 
 
-corpus="MaCoCu"
+# corpus="MaCoCu"
 train_corpus="MaCoCu"
 exp_type="fine_tune" # type of model (e.g. fine_tuned or from_scratch.)
 
