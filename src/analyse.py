@@ -15,10 +15,22 @@ def main():
     # labels = ["Other", "Information/Explanation", "News", "Instruction", "Opinion/Argumentation", "Forum", "Prose/Lyrical", "Legal", "Promotion"]
     data = pd.read_csv('/scratch/s3412768/genre_NMT/en-hr/data/MaCoCu.en-hr_complete.tsv', sep='\t')
     only_doc = data.drop_duplicates('en_doc')
+    # only keep set = test
+    only_doc = only_doc[only_doc['set']=='test']
+    print("Croatin median, mean, and std of the document length:")
+    print(only_doc['er_length'].median())
     print(only_doc['en_length'].mean())
     print(only_doc['en_length'].std())
 
-
+    data = pd.read_csv('/scratch/s3412768/genre_NMT/en-is/data/MaCoCu.en-is_complete.tsv', sep='\t')
+    only_doc = data.drop_duplicates('en_doc')
+    # only keep set = test
+    only_doc = only_doc[only_doc['set']=='test']
+    print("Icelandic median, mean, and std of the document length:")
+    print(only_doc['er_length'].median())
+    print(only_doc['en_length'].mean())
+    print(only_doc['en_length'].std())
+    
 
 
 
