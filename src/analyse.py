@@ -12,24 +12,41 @@ def print_genre_distribution(data):
 #     plt.savefig(save_file)
 
 def main():
-    labels = ["Other", "Information/Explanation", "News", "Instruction", "Opinion/Argumentation", "Forum", "Prose/Lyrical", "Legal", "Promotion"]
-    # data = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr_complete.tsv', sep='\t')
-    dat1 = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.train.tag.tsv', sep='\t', header=None)
-    # name columns
-    dat2 = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.dev.tag.tsv', sep='\t', header=None)
-    dat3 = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.test.tag.tsv', sep='\t', header=None)
-    print(dat1.shape)
-    print(dat2.shape)
-    print(dat3.shape)
-    # put df on top of each other
-    data = pd.concat([dat1, dat2], axis=0)
-    data = pd.concat([data, dat3], axis=0)
-    # reset index
-    data = data.reset_index(drop=True)
-    # rename columns
-    data.columns = ['en_par', 'tr_par']
-    data['genre'] = data['en_par'].apply(lambda x: x.split(' ')[0])
-    print(data['genre'].value_counts())
+    # labels = ["Other", "Information/Explanation", "News", "Instruction", "Opinion/Argumentation", "Forum", "Prose/Lyrical", "Legal", "Promotion"]
+    data = pd.read_csv('/scratch/s3412768/genre_NMT/en-hr/data/MaCoCu.en-hr_complete.tsv', sep='\t')
+    only_doc = data.drop_duplicates('en_doc')
+    print(only_doc['en_length'].mean())
+    print(only_doc['en_length'].std())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # dat1 = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.train.tag.tsv', sep='\t', header=None)
+    # # name columns
+    # dat2 = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.dev.tag.tsv', sep='\t', header=None)
+    # dat3 = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.test.tag.tsv', sep='\t', header=None)
+    # print(dat1.shape)
+    # print(dat2.shape)
+    # print(dat3.shape)
+    # # put df on top of each other
+    # data = pd.concat([dat1, dat2], axis=0)
+    # data = pd.concat([data, dat3], axis=0)
+    # # reset index
+    # data = data.reset_index(drop=True)
+    # # rename columns
+    # data.columns = ['en_par', 'tr_par']
+    # data['genre'] = data['en_par'].apply(lambda x: x.split(' ')[0])
+    # print(data['genre'].value_counts())
     # labels_distr = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/Macocu-tr-en-sent-doc-labelled-softmax.csv', sep='\t')
     # # remove all but en_par, X-GENRE, "label_distribution", "chosen_category_distr"
     # labels_distr = labels_distr[['en-par-src-text', 'X-GENRE', 'label_distribution', 'chosen_category_distr']]
@@ -69,15 +86,15 @@ def main():
     # print("Check if the sources are different by set")
     # print(set(test_src).intersection(set(train_src)).intersection(set(dev_src)))
 
-    print ("Number of lines in the dataset:", len(data))
-    print("Gnre distribution in the entire dataset:")
-    print(data['X-GENRE'].value_counts())
-    print("Genre distribution in the training set:")
-    print(data[data['set']=='train']['X-GENRE'].value_counts())
-    print("Genre distribution in the development set:")
-    print(data[data['set']=='dev']['X-GENRE'].value_counts())
-    print("Genre distribution in the test set:")
-    print(data[data['set']=='test']['X-GENRE'].value_counts())
+    # print ("Number of lines in the dataset:", len(data))
+    # print("Gnre distribution in the entire dataset:")
+    # print(data['X-GENRE'].value_counts())
+    # print("Genre distribution in the training set:")
+    # print(data[data['set']=='train']['X-GENRE'].value_counts())
+    # print("Genre distribution in the development set:")
+    # print(data[data['set']=='dev']['X-GENRE'].value_counts())
+    # print("Genre distribution in the test set:")
+    # print(data[data['set']=='test']['X-GENRE'].value_counts())
 
     print("\n\n\n")
 
