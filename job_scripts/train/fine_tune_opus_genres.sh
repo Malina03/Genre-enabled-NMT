@@ -31,7 +31,7 @@ exp_type="fine_tune" # type of model (e.g. fine_tuned or from_scratch.)
 root_dir="/scratch/s3412768/genre_NMT/en-$language"
 # genres=('news' 'law' 'arg' 'info' 'promo' 'random')
 # genres=('news' 'law' 'info' 'promo' 'random')
-genres=('instr')
+genres=('random')
 genre="${genres[$SLURM_ARRAY_TASK_ID-1]}"
 
 # checkpoint=$root_dir/models/from_scratch/$model_type/$train_corpus/checkpoint-*
