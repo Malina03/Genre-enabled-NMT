@@ -13,7 +13,7 @@ def print_genre_distribution(data):
 
 def main():
     # labels = ["Other", "Information/Explanation", "News", "Instruction", "Opinion/Argumentation", "Forum", "Prose/Lyrical", "Legal", "Promotion"]
-    data = pd.read_csv('/scratch/s3412768/genre_NMT/en-hr/data/MaCoCu.en-hr_complete.tsv', sep='\t')
+    data = pd.read_csv('/scratch/s3412768/genre_NMT/en-hr/data/MaCoCu.en-hr_complete.tsv', sep='\t', header=0)
     only_doc = data.drop_duplicates('en_doc')
     # only keep set = test
     only_doc = only_doc[only_doc['set']=='test']
@@ -22,7 +22,7 @@ def main():
     print(only_doc['en_length'].mean())
     print(only_doc['en_length'].std())
 
-    data = pd.read_csv('/scratch/s3412768/genre_NMT/en-is/data/MaCoCu.en-is_complete.tsv', sep='\t')
+    data = pd.read_csv('/scratch/s3412768/genre_NMT/en-is/data/MaCoCu.en-is_complete.tsv', sep='\t', header=0)
     only_doc = data.drop_duplicates('en_doc')
     # only keep set = test
     only_doc = only_doc[only_doc['set']=='test']
@@ -31,10 +31,10 @@ def main():
     print(only_doc['en_length'].mean())
     print(only_doc['en_length'].std())
     
-
-
-
-
+    # read json file
+    # with open('/scratch/s3412768/genre_NMT/en-hr/data/softmax_saves/label_distribution.json') as f:
+    #     data = json.load(f)
+    #
 
 
 
