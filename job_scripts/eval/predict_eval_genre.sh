@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=04:00:00
+#SBATCH --time=02:00:00
 #SBATCH --job-name=pred_seeds
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
@@ -65,7 +65,7 @@ fi
 #     # genres=('promo' 'random')
 # fi
 
-genres=('instr')
+genres=('random')
  
 for genre in "${genres[@]}"; do 
 
