@@ -14,10 +14,13 @@ def print_genre_distribution(data):
 def main():
     # labels = ["Other", "Information/Explanation", "News", "Instruction", "Opinion/Argumentation", "Forum", "Prose/Lyrical", "Legal", "Promotion"]
     data = pd.read_csv('/scratch/s3412768/genre_NMT/en-hr/data/MaCoCu.en-hr_complete.tsv', sep='\t', header=0)
+    print(data.shape())
     only_doc = data.drop_duplicates('en_doc')
+    print(only_doc.shape())
     # only keep set = test
     only_doc = only_doc[only_doc['set']=='test']
-    print("Croatin median, mean, and std of the document length:")
+    print(only_doc.shape())
+    print("Croatian median, mean, and std of the document length:")
     print(only_doc['er_length'].median())
     print(only_doc['en_length'].mean())
     print(only_doc['en_length'].std())
