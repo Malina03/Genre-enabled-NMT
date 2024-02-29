@@ -224,7 +224,7 @@ def preprocess(path, lang_code, length_threshold, drop_par_duplicates = True, dr
 
 	if info == True:
 		print(f"\nTexts that have less than {length_threshold} words were discarded.\n")
-		sentences_after_length, texts_after_length = calculate_discarded(sentences_after_text_deduplication, texts_after_text_deduplication, True)
+		# sentences_after_length, texts_after_length = calculate_discarded(sentences_after_text_deduplication, texts_after_text_deduplication, True)
 		print("\nNumber of documents shorther than 25 words:{}, which represents {}% of the corpus.".format(corpus_df.en_length[corpus_df.en_length < 25].count(), corpus_df.en_length[corpus_df.en_length < 25].count()/corpus_df.en_length.count())) 
 		print("\nNumber of documents shorther than 50 words:{}, which represents {}% of the corpus.".format(corpus_df.en_length[corpus_df.en_length < 50].count(), corpus_df.en_length[corpus_df.en_length < 50].count()/corpus_df.en_length.count())) 
 		print("\nNumber of documents shorther than 75 words:{}, which represents {}% of the corpus.".format(corpus_df.en_length[corpus_df.en_length < 75].count(), corpus_df.en_length[corpus_df.en_length < 75].count()/corpus_df.en_length.count()))
