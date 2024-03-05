@@ -69,7 +69,7 @@ for f in eval_files:
         except:
             print(f)
             continue
-        comet = float(open(f, "r").readlines()[-1].split(" ")[-1].strip())
+        comet = float(open(f, "r").readlines()[-1].split(" ")[-1].strip())*100
         comet_df = comet_df.append({'model': model, 'test_file': f_name, 'comet': comet}, ignore_index=True)
         # get scores per sentence
         individial_scores_comet = [float(l.split(" ")[-1].strip()) for l in open(f, "r").readlines()[:-1]]
