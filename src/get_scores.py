@@ -22,7 +22,6 @@ for root, dirs, files in os.walk(root_dir):
 # get the scores from the files
 bleu_df = pd.DataFrame(columns=['model', 'test_file', 'bleu'])
 comet_df = pd.DataFrame(columns=['model', 'test_file', 'comet'])
-comet_scores_per_genre = pd.DataFrame(columns=['model', 'test_file', 'genre', 'comet_mean', 'comet_std'])
 list_of_df = []
 # print(eval_files)
 
@@ -89,17 +88,15 @@ for f in eval_files:
         print(len(genres))
         print(len(individial_scores_comet))
         scores_per_genre = pd.DataFrame({'model': [model]*len(genres), 'test_file': [f_name]*len(genres), 'genre': genres, 'comet': individial_scores_comet})
-        comet_scores_per_genre = comet_scores_per_genre.append(scores_per_genre, ignore_index=True)
         # compute the average score per genre and standard deviation across ALL SEEDS at once
         scores_per_genre['seed'] = scores_per_genre['model'].str[-1]
         scores_per_genre['model'] = scores_per_genre['model'].str[:-2]
         scores_per_genre = scores_per_genre.groupby(['model', 'test_file', 'genre']).agg({'comet': ['mean', 'std']}).reset_index()
         scores_per_genre.columns = ['model', 'test_file', 'genre', 'comet_mean', 'comet_std']
 
-        # compute the average score per model and standard deviation
-        scores_per_model = scores_per_genre.groupby(['model', 'test_file', 'genre']).agg({'comet_mean': ['mean', 'std']}).reset_index()
-        scores_per_model.columns = ['model', 'test_file', 'genre', 'comet_mean', 'comet_std']
+        # comet_scores_per_genre = comet_scores_per_genre.append(scores_per_genre, ignore_index=True)
         list_of_df.append(scores_per_genre)
+
 
 
 # print(scores)
