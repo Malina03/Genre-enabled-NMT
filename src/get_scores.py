@@ -72,7 +72,7 @@ for f in eval_files:
         comet = float(open(f, "r").readlines()[-1].split(" ")[-1].strip())*100
         comet_df = comet_df.append({'model': model, 'test_file': f_name, 'comet': comet}, ignore_index=True)
         # get scores per sentence
-        individial_scores_comet = [float(l.split(" ")[-1].strip()) for l in open(f, "r").readlines()[:-1]]
+        individial_scores_comet = [float(l.split(" ")[-1].strip())*100 for l in open(f, "r").readlines()[:-1]]
         if "doc" in f:
             genres = genres_macocu_doc
         elif f_name == "MaCoCu":
