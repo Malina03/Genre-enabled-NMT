@@ -89,10 +89,10 @@ for f in eval_files:
         print(len(individial_scores_comet))
         scores_per_genre = pd.DataFrame({'model': [model]*len(genres), 'test_file': [f_name]*len(genres), 'genre': genres, 'comet': individial_scores_comet})
         # compute the average score per genre and standard deviation across ALL SEEDS at once
-        scores_per_genre['seed'] = scores_per_genre['model'].str[-1]
-        scores_per_genre['model'] = scores_per_genre['model'].str[:-2]
-        scores_per_genre = scores_per_genre.groupby(['model', 'test_file', 'genre']).agg({'comet': ['mean', 'std']}).reset_index()
-        scores_per_genre.columns = ['model', 'test_file', 'genre', 'comet_mean', 'comet_std']
+        # scores_per_genre['seed'] = scores_per_genre['model'].str[-1]
+        # scores_per_genre['model'] = scores_per_genre['model'].str[:-2]
+        # scores_per_genre = scores_per_genre.groupby(['model', 'test_file', 'genre']).agg({'comet': ['mean', 'std']}).reset_index()
+        # scores_per_genre.columns = ['model', 'test_file', 'genre', 'comet_mean', 'comet_std']
 
         # comet_scores_per_genre = comet_scores_per_genre.append(scores_per_genre, ignore_index=True)
         list_of_df.append(scores_per_genre)
