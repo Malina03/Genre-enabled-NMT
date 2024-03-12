@@ -173,6 +173,10 @@ def main():
     # print("\n\n\n")
 
     data = data.drop_duplicates(subset=['en_doc'])
+    data['tr_doc_length'] = data['tr_doc'].apply(lambda x: len(x.split(' ')))
+    data['en_doc_length'] = data['en_doc'].apply(lambda x: len(x.split(' ')))
+    print("Average document length in Turkish: {} and std {}".format(data['tr_doc_length'].mean(), data['tr_doc_length'].std()))
+    print("Average document length in English: {} and std {}".format(data['en_doc_length'].mean(), data['en_doc_length'].std()))
     print ("Number of docs in the dataset:", len(data))
     print("Gnre distribution in the entire dataset:")
     print(data['X-GENRE'].value_counts())
