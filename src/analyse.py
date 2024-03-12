@@ -13,26 +13,26 @@ def print_genre_distribution(data):
 
 def main():
     # labels = ["Other", "Information/Explanation", "News", "Instruction", "Opinion/Argumentation", "Forum", "Prose/Lyrical", "Legal", "Promotion"]
-    data = pd.read_csv('/scratch/s3412768/genre_NMT/en-hr/data/MaCoCu.en-hr_complete.tsv', sep='\t', header=0)
-    print(data.shape())
-    only_doc = data.drop_duplicates('en_doc')
-    print(only_doc.shape())
-    # only keep set = test
-    only_doc = only_doc[only_doc['set']=='test']
-    print(only_doc.shape())
-    print("Croatian median, mean, and std of the document length:")
-    print(only_doc['er_length'].median())
-    print(only_doc['en_length'].mean())
-    print(only_doc['en_length'].std())
+    # data = pd.read_csv('/scratch/s3412768/genre_NMT/en-hr/data/MaCoCu.en-is_complete.tsv', sep='\t', header=0)
+    # print(data.shape())
+    # only_doc = data.drop_duplicates('en_doc')
+    # print(only_doc.shape())
+    # # only keep set = test
+    # only_doc = only_doc[only_doc['set']=='test']
+    # print(only_doc.shape())
+    # print("Croatian median, mean, and std of the document length:")
+    # print(only_doc['er_length'].median())
+    # print(only_doc['en_length'].mean())
+    # print(only_doc['en_length'].std())
 
-    data = pd.read_csv('/scratch/s3412768/genre_NMT/en-is/data/MaCoCu.en-is_complete.tsv', sep='\t', header=0)
-    only_doc = data.drop_duplicates('en_doc')
-    # only keep set = test
-    only_doc = only_doc[only_doc['set']=='test']
-    print("Icelandic median, mean, and std of the document length:")
-    print(only_doc['er_length'].median())
-    print(only_doc['en_length'].mean())
-    print(only_doc['en_length'].std())
+    # data = pd.read_csv('/scratch/s3412768/genre_NMT/en-is/data/MaCoCu.en-is_complete.tsv', sep='\t', header=0)
+    # only_doc = data.drop_duplicates('en_doc')
+    # # only keep set = test
+    # only_doc = only_doc[only_doc['set']=='test']
+    # print("Icelandic median, mean, and std of the document length:")
+    # print(only_doc['er_length'].median())
+    # print(only_doc['en_length'].mean())
+    # print(only_doc['en_length'].std())
     
     # read json file
     # with open('/scratch/s3412768/genre_NMT/en-hr/data/softmax_saves/label_distribution.json') as f:
@@ -41,7 +41,7 @@ def main():
 
 
 
-
+    data = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.doc_complete.tsv')
 
 
 
@@ -172,18 +172,18 @@ def main():
 
     # print("\n\n\n")
 
-    # data = data.drop_duplicates(subset=['en_doc'])
-    # print ("Number of docs in the dataset:", len(data))
-    # print("Gnre distribution in the entire dataset:")
-    # print(data['X-GENRE'].value_counts())
-    # print("Genre distribution in the training set:")
-    # print(data[data['set']=='train']['X-GENRE'].value_counts())
-    # print("Genre distribution in the development set:")
-    # print(data[data['set']=='dev']['X-GENRE'].value_counts())
-    # print("Genre distribution in the test set:")
-    # print(data[data['set']=='test']['X-GENRE'].value_counts())
+    data = data.drop_duplicates(subset=['en_doc'])
+    print ("Number of docs in the dataset:", len(data))
+    print("Gnre distribution in the entire dataset:")
+    print(data['X-GENRE'].value_counts())
+    print("Genre distribution in the training set:")
+    print(data[data['set']=='train']['X-GENRE'].value_counts())
+    print("Genre distribution in the development set:")
+    print(data[data['set']=='dev']['X-GENRE'].value_counts())
+    print("Genre distribution in the test set:")
+    print(data[data['set']=='test']['X-GENRE'].value_counts())
 
-    # print("\n\n\n")
+    print("\n\n\n")
 
 if __name__ == "__main__":
     main()
