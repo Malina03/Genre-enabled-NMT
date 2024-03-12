@@ -41,7 +41,7 @@ def main():
 
 
 
-    data = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.doc_complete.tsv')
+    data = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.doc_complete.tsv', sep='\t', header=0)
 
 
 
