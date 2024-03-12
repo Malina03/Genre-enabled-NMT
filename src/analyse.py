@@ -41,7 +41,7 @@ def main():
 
 
 
-    data = pd.read_csv('/scratch/s3412768/genre_NMT/en-is/data/MaCoCu.en-is.doc_complete.tsv', sep='\t', header=0)
+    data = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.doc_complete.tsv', sep='\t', header=0)
 
 
 
@@ -111,7 +111,7 @@ def main():
     # print("Genre distribution in the test set:")
     # print(data[data['set']=='test']['X-GENRE'].value_counts())
 
-    print("\n\n\n")
+    # print("\n\n\n")
 
     # # average chosen category distribution per genre
     # print("Average chosen category distribution per genre:")
@@ -173,9 +173,9 @@ def main():
     # print("\n\n\n")
 
     data = data.drop_duplicates(subset=['en_doc'])
-    data['is_doc_length'] = data['is_doc'].apply(lambda x: len(x.split(' ')))
+    data['tr_doc_length'] = data['tr_doc'].apply(lambda x: len(x.split(' ')))
     data['en_doc_length'] = data['en_doc'].apply(lambda x: len(x.split(' ')))
-    print("Average document length in Icelandic: {} and std {} and median {}".format(data['is_doc_length'].mean(), data['is_doc_length'].std()), data['is_doc_length'].median())
+    print("Average document length in Icelandic: {} and std {} and median {}".format(data['tr_doc_length'].mean(), data['tr_doc_length'].std()), data['tr_doc_length'].median())
     print("Average document length in English: {} and std {} and median {}".format(data['en_doc_length'].mean(), data['en_doc_length'].std()), data['en_doc_length'].median())
     print ("Number of docs in the dataset:", len(data))
     print("Gnre distribution in the entire dataset:")
