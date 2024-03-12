@@ -41,7 +41,7 @@ def main():
 
 
 
-    data = pd.read_csv('/scratch/s3412768/genre_NMT/en-tr/data/MaCoCu.en-tr.doc_complete.tsv', sep='\t', header=0)
+    data = pd.read_csv('/scratch/s3412768/genre_NMT/en-hr/data/MaCoCu.en-hr.doc_complete.tsv', sep='\t', header=0)
 
 
 
@@ -173,14 +173,14 @@ def main():
     # print("\n\n\n")
 
     data = data.drop_duplicates(subset=['en_doc'])
-    data['tr_doc_length'] = data['tr_doc'].apply(lambda x: len(x.split(' ')))
+    data['hr_doc_length'] = data['hr_doc'].apply(lambda x: len(x.split(' ')))
     data['en_doc_length'] = data['en_doc'].apply(lambda x: len(x.split(' ')))
 
     # print("Average document length in test set: {} and std {} and median {}".format(data[data['set']=='test']['tr_doc_length'].mean(), data[data['set']=='test']['tr_doc_length'].std(), data[data['set']=='test']['tr_doc_length'].median()))
     # print("Average document length in test set English: {} and std {} and median {}".format(data[data['set']=='test']['en_doc_length'].mean(), data[data['set']=='test']['en_doc_length'].std(), data[data['set']=='test']['en_doc_length'].median()))
-    print("Average doc length in the test set:", data[data['set']=='test']['tr_doc_length'].mean())
-    print("Standard deviation of the doc length in the test set:", data[data['set']=='test']['tr_doc_length'].std())
-    print("Median doc length in the test set:", data[data['set']=='test']['tr_doc_length'].median())
+    print("Average doc length in the test set:", data[data['set']=='test']['hr_doc_length'].mean())
+    print("Standard deviation of the doc length in the test set:", data[data['set']=='test']['hr_doc_length'].std())
+    print("Median doc length in the test set:", data[data['set']=='test']['hr_doc_length'].median())
     print ("Number of docs in the dataset:", len(data))
     print("Gnre distribution in the entire dataset:")
     print(data['X-GENRE'].value_counts())
