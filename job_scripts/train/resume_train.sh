@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job scheduling info, only for us specifically
-#SBATCH --time=10:00:00
+#SBATCH --time=4:00:00
 #SBATCH --job-name=res
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
@@ -26,7 +26,7 @@ language=$1 # the target language
 model_type=$2 # type of model (genre_aware, genre_aware_token -genres are added as proper tokens- or baseline)
 epochs=$3 # number of epochs to train for
 seed=$4
-
+genre="random"
 
 corpus="MaCoCu"
 exp_type="fine_tune" # type of model (e.g. fine_tuned or from_scratch.)
@@ -50,8 +50,8 @@ fi
 
 if [ $exp_type = 'fine_tune' ]; then
     if [ $model_type = 'genre_aware' ] || [ $model_type = 'genre_aware_token' ]; then
-        train_file="$root_dir/data/${corpus}.en-$language.train.tag.tsv"
-        dev_file="${root_dir}/data/${corpus}.en-$language.dev.tag.tsv"
+        train_file="$root_dir/data/${corpus}.en-$language.train.${genre}.tag.tsv"
+        dev_file="${root_dir}/data/${corpus}.en-$language.dev.${genre}.tag.tsv"
     elif [ $model_type = 'baseline' ]; then
         train_file="$root_dir/data/${corpus}.en-$language.train.tsv"
         dev_file="${root_dir}/data/${corpus}.en-$language.dev.tsv"
@@ -86,7 +86,7 @@ echo "dev file: $dev_file"
 
 
 # add seed to model type
-model_type="${model_type}_opus_${seed}"
+model_type="${model_type}_opus_${genre}_${seed}"
 
 log_file="/scratch/s3412768/genre_NMT/en-$language/logs/$exp_type/$model_type/train_${corpus}.log"
 if [ ! -d "$root_dir/logs/$exp_type/$model_type" ]; then
@@ -110,7 +110,7 @@ python /home1/s3412768/Genre-enabled-NMT/src/train.py \
     --batch_size 16 \
     --save_strategy "epoch" \
     --evaluation_strategy "epoch" \
-    --learning_rate 0.00001 \
+    --learning_rate 0.0001 \
     --gradient_checkpointing \
     --adafactor \
     --wandb \
