@@ -5,7 +5,7 @@
 #SBATCH --partition=gpu
 #SBATCH --gpus-per-node=1
 #SBATCH --mem=20G
-#SBATCH --array=1-3
+#SBATCH --array=1-2
 
 
 export PATH="$PATH:/home1/s3412768/.local/bin"
